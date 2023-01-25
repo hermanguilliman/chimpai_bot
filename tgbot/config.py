@@ -19,15 +19,15 @@ class TgBot:
 
 
 @dataclass
-class Miscellaneous:
-    other_params: str = None
+class OpenAI:
+    token: str
 
 
 @dataclass
 class Config:
     tg_bot: TgBot
     db: DbConfig
-    misc: Miscellaneous
+    openai: OpenAI
 
 
 def load_config(path: str = None):
@@ -46,5 +46,7 @@ def load_config(path: str = None):
             user=env.str('DB_USER'),
             database=env.str('DB_NAME')
         ),
-        misc=Miscellaneous()
+        openai=OpenAI(
+            token=env.str('OPENAI_TOKEN')
+        )
     )
