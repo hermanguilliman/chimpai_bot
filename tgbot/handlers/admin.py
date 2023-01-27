@@ -24,7 +24,7 @@ async def admin_start(m: Message, repo: Repo):
     markup = ReplyKeyboardMarkup(resize_keyboard=True)
     btn_settings = KeyboardButton(text='/settings')
     markup.add(btn_settings)
-    await m.answer("\nAdmin permissions granted!\n\nWelcome to OpenAI bot!", reply_markup=markup)
+    await m.answer("\nAdmin permissions granted!\n\nWelcome to ChimpAI bot!", reply_markup=markup)
 
 
 def register_admin(dp: Dispatcher):

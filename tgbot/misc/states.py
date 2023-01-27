@@ -2,7 +2,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 
 
 class Main(StatesGroup):
-    chat = State()
+    main = State()
 
 
 class Settings(StatesGroup):
