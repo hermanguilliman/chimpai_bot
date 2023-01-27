@@ -47,6 +47,6 @@ def load_config(path: str = None):
             database=env.str('DB_NAME')
         ),
         openai=OpenAI(
-            token=env.str('OPENAI_TOKEN')
+            token=env.str('OPENAI_API_KEY')
         )
     )

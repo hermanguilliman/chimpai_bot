@@ -1,8 +1,8 @@
 from openai.error import RateLimitError, APIConnectionError, AuthenticationError
-
+import openai
 class OpenAIService():
-    def __init__(self, openai):
-        self.openai = openai
+    def __init__(self, openai: openai):
+        self.openai: openai = openai
 
     async def get_answer(
         self,
@@ -35,10 +35,10 @@ class OpenAIService():
                 temperature=float(temperature),
                 )
         except RateLimitError:
-            return 'Достигнут лимит по тарифному плану. Проверьте ваш личный кабинет OpenAI'
+            return 'Достигнут лимит по тарифному плану. Проверьте ваш личный кабинет https://beta.openai.com/account/usage'
 
         except APIConnectionError:
-            return 'Ошибка сетевого подключения к OpenAI API'
+            return 'Ошибка подключения к OpenAI API'
 
         except AuthenticationError:
             return 'Ошибка аутентификации OpenAI API'
@@ -46,4 +46,5 @@ class OpenAIService():
         message = completions.choices[0].text
         return message.strip()
 
-    
+    async def get_engines(self):
+        return self.openai.Engine.list()

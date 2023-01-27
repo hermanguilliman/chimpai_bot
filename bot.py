@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from tgbot.config import load_config
 
 import openai
 
@@ -9,18 +10,18 @@ from tgbot.models.base import Base
 from tgbot.models.user import Users
 from tgbot.models.aisettings import AISettings
 
-
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
-
-from tgbot.config import load_config
 from tgbot.filters.admin import AdminFilter
+#handlers
 from tgbot.handlers.admin import register_admin
 from tgbot.handlers.settings import register_admin_settings
 from tgbot.handlers.answer_ai import register_answer_ai
 from tgbot.handlers.user import register_user
-#from tgbot.middlewares.environment import EnvironmentMiddleware
+
+from tgbot.callbacks.settings import register_settings_callbacks
+
 from tgbot.middlewares.db import DbMiddleware
 from tgbot.middlewares.openai import OpenAIMiddleware
 logger = logging.getLogger(__name__)
@@ -60,6 +61,9 @@ def register_all_handlers(dp: Dispatcher):
     register_answer_ai(dp)
 
 
+def register_all_callbacks(dp: Dispatcher):
+    register_settings_callbacks(dp)
+
 async def main():
     logging.basicConfig(
         level=logging.INFO,
@@ -78,6 +82,7 @@ async def main():
     register_all_middlewares(dp, config, session, openai)
     register_all_filters(dp)
     register_all_handlers(dp)
+    register_all_callbacks(dp)
 
     # start
     try:
