@@ -24,7 +24,7 @@ async def on_new_model_selected(callback: ChatEvent, select: Any,
     """Обновляет значение максимальной длины по нажатию кнопки"""
     repo: Repo = manager.data['repo']
     user_id = manager.current_context().start_data['user_id']
-    await repo.update_user_max_tokens(user_id=user_id, max_tokens=item_id)
+    await repo.update_user_model(user_id=user_id, model=item_id)
     await manager.done()
 
 
@@ -38,11 +38,12 @@ async def on_max_length_selected(callback: ChatEvent, select: Any,
     await manager.done()
 
 
-async def get_model_selector(openai: OpenAIService, dialog_manager: DialogManager, **kwargs):
+async def get_data_model_selector(openai: OpenAIService, dialog_manager: DialogManager, **kwargs):
     engines = await openai.get_engines()
-    return [
-        {'engines': engines,}
-    ]
+    engine_ids = [engine['id'] for engine in engines['data']]
+    return {
+        'models': engine_ids,
+    }
 
 # Диалог настроек
 settings_dialog = Dialog(
@@ -66,16 +67,17 @@ settings_dialog = Dialog(
             Select(
                 Format("{item}"),
                 # нужно кинуть сюда список моделей
-                items=list(range(0, 4000+1, 100)),
+                items='models',
                 item_id_getter=lambda x: x,
                 id='select_max_new_model',
                 on_click=on_new_model_selected,
             ),
-            # width=5,
+            width=1,
         ),
         Cancel(Const('🙊 Отмена')),
         state=Settings.model,
         parse_mode='HTML',
+        getter=get_data_model_selector,
     ),
     Window(
         # окно выбора максимального числа токенов на запрос,
