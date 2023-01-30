@@ -26,11 +26,6 @@ class Repo:
         """получить все данные о пользователе по id"""
         return await self.session.get(Users, user_id)
     
-    async def get_user_settings(self, user_id: int) -> AISettings | None:
-        # Выбрать настройку пользователя user_id
-        stmt = select(AISettings).where(AISettings.user_id == user_id)
-        settings = await self.session.scalar(stmt)
-        return settings
 
     async def update_user_full_name(self, user_id: int, fullname: str) -> None:
         """update full_name of exist user / обновляет """
@@ -57,3 +52,19 @@ class Repo:
         curr = result.scalars()
         return list(curr)
 
+
+    async def get_user_settings(self, user_id: int) -> AISettings | None:
+        # Выбрать настройку пользователя user_id
+        stmt = select(AISettings).where(AISettings.user_id == user_id)
+        settings = await self.session.scalar(stmt)
+        return settings
+
+
+    async def update_user_max_tokens(self, user_id: int, max_tokens: int) -> None:
+        stmt = (
+            update(AISettings).
+            where(AISettings.user_id == user_id).
+            values(max_tokens=max_tokens)
+        )
+        await self.session.execute(stmt)
+        await self.session.commit()

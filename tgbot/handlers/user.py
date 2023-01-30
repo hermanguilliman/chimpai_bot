@@ -20,8 +20,9 @@ async def user_start(m: Message, repo: Repo):
             fullname=m.from_user.full_name,
             language_code=m.from_user.language_code,
         )
+    # заглушка для посторонних пользователей
     await m.answer("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
 
 
 def register_user(dp: Dispatcher):
-    dp.register_message_handler(user_start, commands=["start"], state="*")
+    dp.register_message_handler(user_start, commands=["start"], state="*", is_admin=False)
