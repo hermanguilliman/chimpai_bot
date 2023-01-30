@@ -31,7 +31,8 @@ from tgbot.middlewares.openai import OpenAIMiddleware
 
 # dialogs
 from aiogram_dialog import DialogRegistry
-from tgbot.dialogs.settings import main_dialog, settings_dialog
+from tgbot.dialogs.main import main_dialog
+from tgbot.dialogs.settings import settings_dialog
 # additional tools
 import openai
 
