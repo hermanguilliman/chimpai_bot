@@ -1,4 +1,4 @@
-from openai.error import RateLimitError, APIConnectionError, AuthenticationError
+from openai.error import RateLimitError, APIConnectionError, AuthenticationError, APIError
 import openai
 class OpenAIService():
     def __init__(self, openai: openai):
@@ -42,6 +42,9 @@ class OpenAIService():
 
         except AuthenticationError:
             return 'Ошибка аутентификации OpenAI API'
+
+        except APIError:
+            return 'Сервер вернул ошибку API'
 
         message = completions.choices[0].text
         return message.strip()

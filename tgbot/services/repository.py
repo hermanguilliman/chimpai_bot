@@ -70,11 +70,22 @@ class Repo:
         await self.session.commit()
 
 
-    async def update_user_model(self, user_id: int, model: int) -> None:
+    async def update_user_settings_model(self, user_id: int, model: str) -> None:
         stmt = (
             update(AISettings).
             where(AISettings.user_id == user_id).
             values(model=model)
+        )
+        await self.session.execute(stmt)
+        await self.session.commit()
+
+
+
+    async def update_temperature(self, user_id: int, temperature: str) -> None:
+        stmt = (
+            update(AISettings).
+            where(AISettings.user_id == user_id).
+            values(temperature=temperature)
         )
         await self.session.execute(stmt)
         await self.session.commit()

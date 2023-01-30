@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 
 async def create_sessionmaker(echo) -> AsyncSession:
     # url = f"postgresql+asyncpg://{user}:{password}@{host}/{database}"
-    url = "sqlite+aiosqlite:///database.db"
+    url = "sqlite+aiosqlite:///settings.db"
 
     engine = create_async_engine(url, echo=echo, future=True)
 

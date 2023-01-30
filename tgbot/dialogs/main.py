@@ -15,48 +15,46 @@ class Main(StatesGroup):
 async def show_settings(callback: CallbackQuery, button: Button,
                     manager: DialogManager):
     """ Стартует диалог с настройками"""
-    await manager.start(Settings.select, data=manager.current_context().data)
+    data = manager.current_context().dialog_data
+    await manager.start(Settings.select, data=data)
 
 
-async def get_main_data(repo: Repo, dialog_manager: DialogManager, **kwargs):
-    data = dialog_manager.current_context().start_data
-    settings: AISettings = await repo.get_user_settings(data.get('user_id'))
-    # какой то костыль получается, временное решение для обновления данных в бд
-    if data.get('new_model'):
-        print('got new model', data.get('new_model'))
-        # await repo.update_model(data.get('user_id'), data.get('new_model'))
-    if data.get('new_max_length'):
-        print("Обнаружена новая хуйня:", data)
-        # await repo.update_model(data.get('user_id'), data.get('new_max_length'))
-    if data.get('new_temperature'):
-        print(data.get('new_temperature'))
-        # await repo.update_model(data.get('user_id'), data.get('new_temperature'))
+async def get_main_data(repo: Repo, dialog_manager: DialogManager, **kwargs) -> dict:
+    # Здесь происходит первичный запрос данных из команды запустившей диалог и бд 
+    start_data = dialog_manager.current_context().start_data
+    user_id:int = start_data.get('user_id')
+    full_name:str = start_data.get('full_name')
+    settings: AISettings = await repo.get_user_settings(user_id)
 
-
-    base = {
-        'full_name': data.get('full_name'),
+    # Задача: вернуть данные для текущего контекста 
+    # базовая схема с данными, которая доступна после старта
+    base_view:dict = {
+        'user_id': user_id,
+        'full_name': full_name,
         'model': settings.model,
         'max_length': settings.max_tokens,
         'temperature': settings.temperature,
     }
-    return base
+
+    # обновляем текущий контекст?
+    dialog_manager.current_context().dialog_data.update(base_view)
+    return base_view
 
 
 main_dialog = Dialog(
     Window(
         # Главное окно
-        Const("<b>ChimpAI [beta]</b>\n"),
-        Format("Привет, <b>{full_name}</b>!\n", when='full_name'),
-        Format("Активная модель: {model}", when='model'),
-        Format("Максимальная длина: {max_length}", when='max_length'),
-        Format("Температура: {temperature}", when='temperature'),
-        # Start(Const("🛠 Настройки"), id='settings', state=Settings.select, data="user_id"),
-        Button(Const("🛠 Настройки"), id='settings', on_click=show_settings),
+        Const("<b>ChimpAI 🐵 [v0.1 beta]</b>\n"),
+        # Format("Привет, <b>{full_name}</b>!\n", when='full_name'),
+        Format("🤖 Выбрана модель: <b>{model}</b>", when='model'),
+        Format("🔋 Длина ответа: <b>{max_length}</b>", when='max_length'),
+        Format("🌡 Температура: <b>{temperature}</b>", when='temperature'),
+        Button(Const("📝 Параметры"), id='settings', on_click=show_settings),
         state=Main.main,
         getter=get_main_data,
         parse_mode='HTML',
         preview_data={
-            'full_name':'Незнакомец',
+            'full_name':'братик',
         }
     ),
 )
