@@ -7,7 +7,7 @@ class AISettings(Base):
     __tablename__ = "ai_settings"
 
     id = Column(Integer, primary_key=True, unique=True)
-    max_tokens = Column(Integer(), default=1024)
+    max_tokens = Column(Integer(), default=256)
     model = Column(Text(), default='text-davinci-003')
     temperature = Column(Text(), default='0.7')
     user_id = Column(Integer, ForeignKey("users.id"))

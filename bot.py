@@ -25,8 +25,6 @@ from tgbot.handlers.settings import register_admin_settings
 from tgbot.handlers.ai_echo import register_answer_ai
 from tgbot.handlers.user import register_user
 
-
-
 # middlewares
 from tgbot.middlewares.db import DbMiddleware
 from tgbot.middlewares.openai import OpenAIMiddleware
