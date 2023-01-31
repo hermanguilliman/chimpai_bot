@@ -21,8 +21,10 @@ from tgbot.filters.admin import AdminFilter
 
 # handlers
 from tgbot.handlers.admin import register_admin
+from tgbot.handlers.settings import register_admin_settings
 from tgbot.handlers.ai_echo import register_answer_ai
 from tgbot.handlers.user import register_user
+
 
 
 # middlewares
@@ -68,6 +70,7 @@ def register_all_filters(dp: Dispatcher):
 
 def register_all_handlers(dp: Dispatcher):
     register_admin(dp)
+    register_admin_settings(dp)
     register_user(dp)
     register_answer_ai(dp)
 
