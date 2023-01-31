@@ -14,7 +14,7 @@ async def answer_ai(message: types.Message, openai: OpenAIService, repo: Repo):
         prompt=message.text,
         )
     if ai_text_answer is not None:
-        await message.answer(ai_text_answer)
+        await message.answer(ai_text_answer, parse_mode='HTML')
     else:
         await message.answer('Что-то пошло не так, сообщение от AI не получено')
 
