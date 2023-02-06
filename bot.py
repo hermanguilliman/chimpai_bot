@@ -1,5 +1,6 @@
 import asyncio
-import logging
+import sys
+from loguru import logger
 from tgbot.config import load_config
 
 # database
@@ -36,7 +37,6 @@ from tgbot.dialogs.settings import settings_dialog
 # additional tools
 import openai
 
-logger = logging.getLogger(__name__)
 
 
 async def create_sessionmaker(echo) -> AsyncSession:
@@ -74,15 +74,13 @@ def register_all_handlers(dp: Dispatcher):
 
 
 async def main():
-    logging.basicConfig(
-        level=logging.INFO,
-        format=u'%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s',
-    )
-    logger.info("Starting bot")
+    logger.add(sys.stdout, level="DEBUG")
+
+    logger.info("Starting ChimpAI")
     config = load_config(".env")
 
     storage = MemoryStorage()
-    bot = Bot(token=config.tg_bot.token, parse_mode='HTML')
+    bot = Bot(token=config.tg_bot.token)
     dp = Dispatcher(bot, storage=storage)
     openai.api_key = config.openai.token
 
@@ -111,4 +109,4 @@ if __name__ == '__main__':
     try:
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
-        logger.error("Bot stopped!")
+        logger.error("ChimpAI stopped!")
