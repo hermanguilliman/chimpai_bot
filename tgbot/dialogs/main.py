@@ -36,7 +36,8 @@ async def neural_handler(
             await message.answer('Настройки не найдены. Попробуйте выполнить /start')
 
         if ai_text_answer is not None:
-            await message.answer(ai_text_answer)
+            """выдача успешного запроса"""
+            await message.reply(ai_text_answer)
         else:
             await message.answer('Что-то пошло не так, сообщение от AI не получено')
     
@@ -60,24 +61,14 @@ async def get_main_data(repo: Repo, dialog_manager: DialogManager, **kwargs) -> 
     full_name:str = start_data.get('full_name')
     settings: AISettings = await repo.get_user_settings(user_id)
 
-    if settings is None:
-        base_view:dict = {
+    base_view:dict = {
         'user_id': user_id,
         'full_name': full_name,
-        'api_key': 'Error',
-        'model': 'Error',
-        'max_length': 'Error',
-        'temperature': 'Error',
+        'api_key': '...' + settings.api_key[-10:] if settings.api_key else 'не установлен',
+        'model': settings.model if settings.model else 'отсутствует',
+        'max_length': settings.max_tokens if settings.max_tokens else 'отсутствует',
+        'temperature': settings.temperature if settings.temperature else 'отсутствует',
     }
-    else:
-        base_view:dict = {
-            'user_id': user_id,
-            'full_name': full_name,
-            'api_key': '...' + settings.api_key[-10:] if settings.api_key else 'не установлен',
-            'model': settings.model,
-            'max_length': settings.max_tokens,
-            'temperature': settings.temperature,
-        }
 
     # обновляем текущий контекст?
     dialog_manager.current_context().dialog_data.update(base_view)
@@ -87,14 +78,9 @@ async def get_main_data(repo: Repo, dialog_manager: DialogManager, **kwargs) -> 
 main_dialog = Dialog(
     Window(
         # Главное окно
-        Const("<b>ChimpAI 🐵 [v0.2]</b>"),
-        # Format("Привет, <b>{full_name}</b>!\n", when='full_name'),
-        # Format("🔑 API ключ: <b>{api_key}</b>", when='api_key'),
-        # Format("🤖 Выбрана модель: <b>{model}</b>", when='model'),
-        # Format("🔋 Длина ответа: <b>{max_length}</b>", when='max_length'),
-        # Format("🌡 Температура: <b>{temperature}</b>", when='temperature'),
+        Const("<b>Главное меню - ChimpAI 🐵 v0.2</b>\n"),
         Row(                
-            SwitchTo(Const("🤖 НейроЧат"), id='neural', state=Main.neural),
+            SwitchTo(Const("🤖 Нейро-чат"), id='neural', state=Main.neural),
             Button(Const("📝 Параметры"), id='settings', on_click=show_settings),
         ),
         state=Main.main,
@@ -108,7 +94,7 @@ main_dialog = Dialog(
         MessageInput(neural_handler, content_types=[ContentType.TEXT]),
 
         Const("<b>🤖 Введите запрос для нейросети:</b>"),
-        Back(Const('Вернуться')),
+        Back(Const('↩️ Назад')),
         state=Main.neural,
         parse_mode=ParseMode.HTML,
     )
