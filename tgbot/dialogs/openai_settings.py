@@ -9,6 +9,7 @@ from aiogram_dialog.widgets.input import MessageInput
 from tgbot.models.aisettings import AISettings
 from tgbot.services.repository import Repo
 from tgbot.services.openai import OpenAIService
+import re
 
 
 class Settings(StatesGroup):
@@ -25,9 +26,12 @@ async def api_key_handler(message: Message, message_input: MessageInput,
     repo: Repo = manager.data['repo']
     dialog_data = manager.current_context().dialog_data
     new_api_key = message.text
-    if len(new_api_key) != 51:
+    # туду: валидировать такие ключи через regexp?
+    new_api_key = bool(re.match('sk-[a-zA-Z0-9]{48}$', new_api_key))
+
+    if not new_api_key:
         await message.answer(
-            f'⛔️ <b>Неправильная длина API ключа!</b> ⛔️\nКлюч должен состоять из 51 знака и начинается с sk-...',
+            f'⛔️ <b>Ошибка API ключа!</b>\n Подсказка: Ключ должен выглядеть как sk-...',
             parse_mode=ParseMode.HTML)
         await manager.done()
         return

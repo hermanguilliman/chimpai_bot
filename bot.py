@@ -18,20 +18,20 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 
 # filters
-from tgbot.filters.admin import AdminFilter
+from tgbot.filters.admin_filter import AdminFilter
 
 # handlers
-from tgbot.handlers.admin import register_admin
-from tgbot.handlers.user import register_user
+from tgbot.handlers.admin_start import register_admin
+from tgbot.handlers.user_start import register_user
 
 # middlewares
-from tgbot.middlewares.db import DbMiddleware
-from tgbot.middlewares.openai import OpenAIMiddleware
+from tgbot.middlewares.db_and_repo import DbMiddleware
+from tgbot.middlewares.openai_api import OpenAIMiddleware
 
 # dialogs
 from aiogram_dialog import DialogRegistry
-from tgbot.dialogs.main import main_dialog
-from tgbot.dialogs.settings import settings_dialog
+from tgbot.dialogs.admin_main import main_dialog
+from tgbot.dialogs.openai_settings import settings_dialog
 # additional tools
 import openai
 

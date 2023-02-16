@@ -3,7 +3,7 @@ from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup, ChatActi
 from tgbot.models.user import Users
 from tgbot.models.aisettings import AISettings
 from tgbot.services.repository import Repo
-from tgbot.dialogs.main import Main
+from tgbot.dialogs.admin_main import Main
 from aiogram_dialog import DialogManager, StartMode
 
 async def admin_start(m: Message, repo: Repo, dialog_manager: DialogManager):

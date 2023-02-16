@@ -5,7 +5,7 @@ from aiogram_dialog.widgets.kbd import Button, Row, SwitchTo, Back
 from aiogram_dialog.widgets.input import MessageInput
 from tgbot.models.aisettings import AISettings
 from tgbot.services.repository import Repo
-from tgbot.dialogs.settings import Settings
+from tgbot.dialogs.openai_settings import Settings
 from aiogram.types import CallbackQuery, ContentType, Message, ChatActions, ParseMode
 from loguru import logger
 
@@ -44,8 +44,6 @@ async def neural_handler(
     except:
         logger.error('Ошибка получения запроса!')
     
-            
-
 
 async def show_settings(callback: CallbackQuery, button: Button,
                     manager: DialogManager):
@@ -78,7 +76,10 @@ async def get_main_data(repo: Repo, dialog_manager: DialogManager, **kwargs) -> 
 main_dialog = Dialog(
     Window(
         # Главное окно
+        # если пользователь
         Const("<b>Главное меню - ChimpAI 🐵 v0.2</b>\n"),
+        # если администратор
+        Format("[Вы администратор]"),
         Row(                
             SwitchTo(Const("🤖 Нейро-чат"), id='neural', state=Main.neural),
             Button(Const("📝 Параметры"), id='settings', on_click=show_settings),
