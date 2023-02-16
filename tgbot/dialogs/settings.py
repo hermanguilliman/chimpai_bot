@@ -1,5 +1,5 @@
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, ContentType, ParseMode
 from typing import Any
 from decimal import Decimal
 from aiogram_dialog import Dialog, DialogManager, Window, ChatEvent, Data
@@ -13,9 +13,29 @@ from tgbot.services.openai import OpenAIService
 
 class Settings(StatesGroup):
     select = State()
+    api_key = State()
     model = State()
     max_length = State()
     temperature = State()
+
+async def api_key_handler(message: Message, message_input: MessageInput,
+                       manager: DialogManager):
+
+    user_id = manager.current_context().start_data['user_id']
+    repo: Repo = manager.data['repo']
+    dialog_data = manager.current_context().dialog_data
+    new_api_key = message.text
+    if len(new_api_key) != 51:
+        await message.answer(
+            f'⛔️ <b>Неправильная длина API ключа!</b> ⛔️\nКлюч должен состоять из 51 знака и начинается с sk-...',
+            parse_mode=ParseMode.HTML)
+        await manager.done()
+        return
+        
+    dialog_data["api_key"] = new_api_key
+    await repo.update_user_api_key(user_id, new_api_key)
+    await message.answer(f'<b>Новый API ключ успешно установлен!</b>', parse_mode=ParseMode.HTML)
+    await manager.done()
 
 
 async def on_new_model_selected(callback: ChatEvent, select: Any,
@@ -25,7 +45,7 @@ async def on_new_model_selected(callback: ChatEvent, select: Any,
     repo: Repo = manager.data['repo']
     user_id = manager.current_context().start_data['user_id']
     await repo.update_user_settings_model(user_id=user_id, model=item_id)
-    await callback.answer(f'Модель {item_id} успешно установлена')
+    await callback.answer(f'Модель {item_id} успешно установлена!')
     await manager.done()
 
 
@@ -36,7 +56,7 @@ async def on_max_length_selected(callback: ChatEvent, select: Any,
     repo: Repo = manager.data['repo']
     user_id = manager.current_context().start_data['user_id']
     await repo.update_user_max_tokens(user_id=user_id, max_tokens=item_id)
-    await callback.answer(f'Длина ответа {item_id} токенов')
+    await callback.answer(f'Новая длина ответа составляет {item_id} токенов')
     await manager.done()
 
 
@@ -104,14 +124,23 @@ settings_dialog = Dialog(
         # Окно выбора настроек
         Const('<b>Выберите параметр, который хотели бы изменить:</b>'),
         Group(
+        SwitchTo(Format('🔑 API ключ: {api_key}'), id='set_api_key', state=Settings.api_key, when='api_key'),
         SwitchTo(Format('🤖 Модель: {model}'), id='set_model', state=Settings.model, when='model'),
         SwitchTo(Format('🔋 Длина ответа: {max_length}'), id='set_max_length', state=Settings.max_length, when='max_length'),
         SwitchTo(Format('🌡️ Температура {temperature}'), id='set_temperature', state=Settings.temperature, when='temperature'),
         width=1),
         Cancel(Const('🤚 Отмена')),
         state=Settings.select,
-        parse_mode='HTML',
+        parse_mode=ParseMode.HTML,
         getter=main_settings_getter,
+    ),
+    Window(
+        # Список доступных моделей
+        MessageInput(api_key_handler, content_types=[ContentType.TEXT]),
+        Const("<b>Укажите новый API ключ:</b>"),
+        Cancel(Const('🤚 Отмена')),
+        state=Settings.api_key,
+        parse_mode=ParseMode.HTML,
     ),
     Window(
         # Список доступных моделей
@@ -129,7 +158,7 @@ settings_dialog = Dialog(
         ),
         Cancel(Const('🤚 Отмена')),
         state=Settings.model,
-        parse_mode='HTML',
+        parse_mode=ParseMode.HTML,
         getter=get_data_model_selector,
     ),
     Window(
@@ -149,7 +178,7 @@ settings_dialog = Dialog(
         ),
         Cancel(Const('🤚 Отмена')),
         state=Settings.max_length,
-        parse_mode='HTML',
+        parse_mode=ParseMode.HTML,
     ),
     Window(
         # окно выбора температуры 
@@ -171,7 +200,7 @@ settings_dialog = Dialog(
             
         ),
         state=Settings.temperature,
-        parse_mode='HTML',
+        parse_mode=ParseMode.HTML,
         getter=temp_getter,
     ),
 )

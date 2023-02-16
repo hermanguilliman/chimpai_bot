@@ -8,7 +8,6 @@
 ```bash
 docker run -d \
     -e BOT_TOKEN=<TOKEN> \
-    -e ADMINS=<IDS> \
-    -e OPENAI_API_KEY=<KEY> \
-    gentlemantleman/chimpai:latest
+    -e ADMINS=<ID1, ID2...> \
+    gentlemantlimpai:latest
 ```

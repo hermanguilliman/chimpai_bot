@@ -9,14 +9,8 @@ class TgBot:
     admin_ids: list[int]
 
 @dataclass
-class OpenAI:
-    token: str
-
-
-@dataclass
 class Config:
     tg_bot: TgBot
-    openai: OpenAI
 
 
 def load_config(path: str = None):
@@ -28,7 +22,4 @@ def load_config(path: str = None):
             token=env.str("BOT_TOKEN"),
             admin_ids=list(map(int, env.list("ADMINS"))),
         ),
-        openai=OpenAI(
-            token=env.str('OPENAI_API_KEY')
-        )
     )

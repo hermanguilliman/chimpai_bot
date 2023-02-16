@@ -23,7 +23,7 @@ magic-filter==1.0.9
 MarkupSafe==2.1.2
 marshmallow==3.19.0
 multidict==6.0.4
-openai==0.26.4
+openai==0.26.5
 packaging==23.0
 pydantic==1.10.4
 python-dotenv==0.21.1

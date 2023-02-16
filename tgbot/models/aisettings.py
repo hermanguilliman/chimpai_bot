@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Text, ForeignKey
+from sqlalchemy import Column, Integer, Text, ForeignKey, String
 from sqlalchemy.orm import relationship
 from tgbot.models.base import Base
 
@@ -7,6 +7,7 @@ class AISettings(Base):
     __tablename__ = "ai_settings"
 
     id = Column(Integer, primary_key=True, unique=True)
+    api_key = Column(String(51), nullable=True)
     max_tokens = Column(Integer(), default=256)
     model = Column(Text(), default='text-davinci-003')
     temperature = Column(Text(), default='0.7')

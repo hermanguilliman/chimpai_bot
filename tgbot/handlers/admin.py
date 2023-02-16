@@ -22,18 +22,12 @@ async def admin_start(m: Message, repo: Repo, dialog_manager: DialogManager):
             fullname=m.from_user.full_name,
             language_code=m.from_user.language_code,
         )
-    start_button = KeyboardButton('/start')
-    settings_button = KeyboardButton('/settings')
-    keyborard = ReplyKeyboardMarkup([[start_button], [settings_button]], resize_keyboard=True)
-
-    await m.answer(
-        "<b>Добро пожаловать в ChimpAI! 🐵</b>\n\n" +
-        "Бот работает в автоматическом режиме, любое сообщение будет принято для формирования запроса к нейросети.\n\n" +
-        "/settings - для вызова настроек",
-
-        reply_markup=keyborard,
-        parse_mode='HTML',
-        )
+    data = {
+        "full_name" : m.from_user.full_name,
+        "user_id" : m.from_user.id,
+    }
+    # точка входа в основной диалог
+    await dialog_manager.start(Main.main, mode=StartMode.RESET_STACK, data=data)
 
 
 def register_admin(dp: Dispatcher):
