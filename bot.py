@@ -39,7 +39,7 @@ import openai
 
 async def create_sessionmaker(echo) -> AsyncSession:
     # url = f"postgresql+asyncpg://{user}:{password}@{host}/{database}"
-    url = "sqlite+aiosqlite:///database///settings.db"
+    url = "sqlite+aiosqlite:///database/settings.db"
 
     engine = create_async_engine(url, echo=echo, future=True)
 
