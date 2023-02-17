@@ -1,6 +1,6 @@
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram_dialog import Dialog, Window, Dialog, DialogManager
-from aiogram_dialog.widgets.text import Format, Const
+from aiogram_dialog import Dialog, Window, Dialog, DialogManager, BaseDialogManager
+from aiogram_dialog.widgets.text import Format, Const, Progress
 from aiogram_dialog.widgets.kbd import Button, Row, SwitchTo, Back
 from aiogram_dialog.widgets.input import MessageInput
 from tgbot.models.aisettings import AISettings
@@ -8,6 +8,8 @@ from tgbot.services.repository import Repo
 from tgbot.dialogs.openai_settings import Settings
 from aiogram.types import CallbackQuery, ContentType, Message, ChatActions, ParseMode
 from loguru import logger
+import datetime
+import asyncio
 
 class Main(StatesGroup):
     main = State()
@@ -17,7 +19,7 @@ class Main(StatesGroup):
 async def neural_handler(
     message: Message,
     message_input: MessageInput,
-    manager: DialogManager):
+    manager: DialogManager,):
     repo: Repo = manager.data['repo']
     openai = manager.data['openai']
     settings: AISettings = await repo.get_user_settings(message.from_id)
@@ -35,7 +37,7 @@ async def neural_handler(
         else:
             await message.answer('Настройки не найдены. Попробуйте выполнить /start')
 
-        if ai_text_answer is not None:
+        if ai_text_answer:
             """выдача успешного запроса"""
             await message.reply(ai_text_answer)
         else:
@@ -54,9 +56,8 @@ async def show_settings(callback: CallbackQuery, button: Button,
 
 async def get_main_data(repo: Repo, dialog_manager: DialogManager, **kwargs) -> dict:
     # Здесь происходит первичный запрос данных из команды запустившей диалог и бд 
-    start_data = dialog_manager.current_context().start_data
-    user_id:int = start_data.get('user_id')
-    full_name:str = start_data.get('full_name')
+    user_id:int = dialog_manager.bg().user.id
+    full_name:str = dialog_manager.bg().user.full_name
     settings: AISettings = await repo.get_user_settings(user_id)
 
     base_view:dict = {
@@ -76,27 +77,22 @@ async def get_main_data(repo: Repo, dialog_manager: DialogManager, **kwargs) -> 
 main_dialog = Dialog(
     Window(
         # Главное окно
-        # если пользователь
-        Const("<b>Главное меню - ChimpAI 🐵 v0.2</b>\n"),
-        # если администратор
-        Format("[Вы администратор]"),
+        Const("<b>ChimpAI 🐵 v0.2</b>\n"),
         Row(                
             SwitchTo(Const("🤖 Нейро-чат"), id='neural', state=Main.neural),
             Button(Const("📝 Параметры"), id='settings', on_click=show_settings),
+
         ),
         state=Main.main,
         getter=get_main_data,
         parse_mode=ParseMode.HTML,
-        preview_data={
-            'full_name':'братик',
-        }
     ),
     Window(
         MessageInput(neural_handler, content_types=[ContentType.TEXT]),
-
-        Const("<b>🤖 Введите запрос для нейросети:</b>"),
+        Format('{timer}', when='timer'),
+        Const("<b>🤖 Введите запрос:</b>"),
         Back(Const('↩️ Назад')),
         state=Main.neural,
         parse_mode=ParseMode.HTML,
-    )
+    ),
 )

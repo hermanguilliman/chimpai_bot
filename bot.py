@@ -18,7 +18,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 
 # filters
-from tgbot.filters.admin_filter import AdminFilter
+from tgbot.filters.admin_filter import RoleFilter, AdminFilter
 
 # handlers
 from tgbot.handlers.admin_start import register_admin
@@ -60,6 +60,7 @@ def register_all_middlewares(dp: Dispatcher, config, session: AsyncSession, open
 
 
 def register_all_filters(dp: Dispatcher):
+    dp.filters_factory.bind(RoleFilter)
     dp.filters_factory.bind(AdminFilter)
 
 

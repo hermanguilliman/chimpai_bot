@@ -19,10 +19,11 @@ class Settings(StatesGroup):
     max_length = State()
     temperature = State()
 
+
 async def api_key_handler(message: Message, message_input: MessageInput,
                        manager: DialogManager):
 
-    user_id = manager.current_context().start_data['user_id']
+    user_id = manager.bg().user.id
     repo: Repo = manager.data['repo']
     dialog_data = manager.current_context().dialog_data
     new_api_key = message.text
@@ -47,7 +48,7 @@ async def on_new_model_selected(callback: ChatEvent, select: Any,
                          item_id: str):
     """Обновляет значение модели в бд по нажатию кнопки"""
     repo: Repo = manager.data['repo']
-    user_id = manager.current_context().start_data['user_id']
+    user_id = manager.bg().user.id
     await repo.update_user_settings_model(user_id=user_id, model=item_id)
     await callback.answer(f'Модель {item_id} успешно установлена!')
     await manager.done()
@@ -58,7 +59,7 @@ async def on_max_length_selected(callback: ChatEvent, select: Any,
                          item_id: str):
     """Обновляет значение максимальной длины по нажатию кнопки"""
     repo: Repo = manager.data['repo']
-    user_id = manager.current_context().start_data['user_id']
+    user_id = manager.bg().user.id
     await repo.update_user_max_tokens(user_id=user_id, max_tokens=item_id)
     await callback.answer(f'Новая длина ответа составляет {item_id} токенов')
     await manager.done()
@@ -75,7 +76,7 @@ async def get_data_model_selector(openai: OpenAIService, dialog_manager: DialogM
 async def on_temperature_selected(callback: ChatEvent, select: Any,
                          manager: DialogManager):
     repo: Repo = manager.data['repo']
-    user_id = manager.current_context().start_data['user_id']
+    user_id = manager.bg().user.id
     temperature = manager.current_context().dialog_data.get('temperature')
     await repo.update_temperature(user_id=user_id, temperature=str(temperature))
     await callback.answer(f'Задана температура: {temperature}')
@@ -187,7 +188,7 @@ settings_dialog = Dialog(
     Window(
         # окно выбора температуры 
         # от 0.00 до 1.00 с двумя знаками после запятой
-        Const("Выберите новое значение температуры и нажмите на градусник, чтобы подтвердить выбор. \nДопустимый диапазон значений от 0.0 до 1.0"),
+        Const("Температура влияет на непредсказуемость ответа\nВыберите новое значение и нажмите на градусник."),
         Group(
             Button(Format('🌡 Установить значение: {temperature}'), id='new_temperature', when='temperature', on_click=on_temperature_selected),
             width=1,
