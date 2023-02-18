@@ -9,6 +9,7 @@ from aiogram_dialog.widgets.input import MessageInput
 from tgbot.models.aisettings import AISettings
 from tgbot.services.repository import Repo
 from tgbot.services.openai import OpenAIService
+import re
 
 
 class Settings(StatesGroup):
@@ -18,16 +19,20 @@ class Settings(StatesGroup):
     max_length = State()
     temperature = State()
 
+
 async def api_key_handler(message: Message, message_input: MessageInput,
                        manager: DialogManager):
 
-    user_id = manager.current_context().start_data['user_id']
+    user_id = manager.bg().user.id
     repo: Repo = manager.data['repo']
     dialog_data = manager.current_context().dialog_data
     new_api_key = message.text
-    if len(new_api_key) != 51:
+    # туду: валидировать такие ключи через regexp?
+    new_api_key = bool(re.match('sk-[a-zA-Z0-9]{48}$', new_api_key))
+
+    if not new_api_key:
         await message.answer(
-            f'⛔️ <b>Неправильная длина API ключа!</b> ⛔️\nКлюч должен состоять из 51 знака и начинается с sk-...',
+            f'⛔️ <b>Ошибка API ключа!</b>\n Подсказка: Ключ должен выглядеть как sk-...',
             parse_mode=ParseMode.HTML)
         await manager.done()
         return
@@ -43,7 +48,7 @@ async def on_new_model_selected(callback: ChatEvent, select: Any,
                          item_id: str):
     """Обновляет значение модели в бд по нажатию кнопки"""
     repo: Repo = manager.data['repo']
-    user_id = manager.current_context().start_data['user_id']
+    user_id = manager.bg().user.id
     await repo.update_user_settings_model(user_id=user_id, model=item_id)
     await callback.answer(f'Модель {item_id} успешно установлена!')
     await manager.done()
@@ -54,7 +59,7 @@ async def on_max_length_selected(callback: ChatEvent, select: Any,
                          item_id: str):
     """Обновляет значение максимальной длины по нажатию кнопки"""
     repo: Repo = manager.data['repo']
-    user_id = manager.current_context().start_data['user_id']
+    user_id = manager.bg().user.id
     await repo.update_user_max_tokens(user_id=user_id, max_tokens=item_id)
     await callback.answer(f'Новая длина ответа составляет {item_id} токенов')
     await manager.done()
@@ -62,7 +67,9 @@ async def on_max_length_selected(callback: ChatEvent, select: Any,
 
 async def get_data_model_selector(openai: OpenAIService, dialog_manager: DialogManager, **kwargs):
     # Получаем список моделей доступных в OpenAI
-    engines = await openai.get_engines()
+    repo: Repo = dialog_manager.data['repo']
+    settings: AISettings = await repo.get_user_settings(dialog_manager.bg().user.id)
+    engines = await openai.get_engines(api_key=settings.api_key)
     engine_ids = [engine['id'] for engine in engines['data']]
     return {
         'models': engine_ids,
@@ -71,7 +78,7 @@ async def get_data_model_selector(openai: OpenAIService, dialog_manager: DialogM
 async def on_temperature_selected(callback: ChatEvent, select: Any,
                          manager: DialogManager):
     repo: Repo = manager.data['repo']
-    user_id = manager.current_context().start_data['user_id']
+    user_id = manager.bg().user.id
     temperature = manager.current_context().dialog_data.get('temperature')
     await repo.update_temperature(user_id=user_id, temperature=str(temperature))
     await callback.answer(f'Задана температура: {temperature}')
@@ -138,6 +145,7 @@ settings_dialog = Dialog(
         # Список доступных моделей
         MessageInput(api_key_handler, content_types=[ContentType.TEXT]),
         Const("<b>Укажите новый API ключ:</b>"),
+        Const("Подсказка: OpenAI API ключ выглядит как <b>sk-...</b>"),
         Cancel(Const('🤚 Отмена')),
         state=Settings.api_key,
         parse_mode=ParseMode.HTML,
@@ -145,6 +153,7 @@ settings_dialog = Dialog(
     Window(
         # Список доступных моделей
         Const("<b>Выберите модель из списка:</b>"),
+        Const("Подсказка: стандартное значение <b>text-davinci-003</b>"),
         Group(
             Select(
                 Format("🤖 {item}"),
@@ -165,7 +174,8 @@ settings_dialog = Dialog(
         # окно выбора максимального числа токенов на запрос,
         # для разных моделей диапазон отличается
         # например от 1 до 4000 для модели text-davinci-003
-        Const("<b>Укажите максимальное число токенов расходуемое для ответа нейросети:</b>"),
+        Const("<b>Укажите максимальную длину ответа:</b>"),
+        Const("Подсказка: стандартное значение <b>256</b>, но лучше использовать <b>500+</b>"),
         Group(
             Select(
                 Format("🔋 {item}"),
@@ -183,7 +193,7 @@ settings_dialog = Dialog(
     Window(
         # окно выбора температуры 
         # от 0.00 до 1.00 с двумя знаками после запятой
-        Const("Выберите новое значение температуры и нажмите на градусник, чтобы подтвердить выбор. \nДопустимый диапазон значений от 0.0 до 1.0"),
+        Const("Температура влияет на непредсказуемость ответа\nВыберите новое значение и нажмите на градусник."),
         Group(
             Button(Format('🌡 Установить значение: {temperature}'), id='new_temperature', when='temperature', on_click=on_temperature_selected),
             width=1,

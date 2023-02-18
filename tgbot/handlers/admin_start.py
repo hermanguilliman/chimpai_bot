@@ -3,7 +3,7 @@ from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup, ChatActi
 from tgbot.models.user import Users
 from tgbot.models.aisettings import AISettings
 from tgbot.services.repository import Repo
-from tgbot.dialogs.main import Main
+from tgbot.dialogs.admin_main import Main
 from aiogram_dialog import DialogManager, StartMode
 
 async def admin_start(m: Message, repo: Repo, dialog_manager: DialogManager):
@@ -22,12 +22,9 @@ async def admin_start(m: Message, repo: Repo, dialog_manager: DialogManager):
             fullname=m.from_user.full_name,
             language_code=m.from_user.language_code,
         )
-    data = {
-        "full_name" : m.from_user.full_name,
-        "user_id" : m.from_user.id,
-    }
+
     # точка входа в основной диалог
-    await dialog_manager.start(Main.main, mode=StartMode.RESET_STACK, data=data)
+    await dialog_manager.start(Main.main, mode=StartMode.RESET_STACK)
 
 
 def register_admin(dp: Dispatcher):
