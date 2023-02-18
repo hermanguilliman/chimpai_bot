@@ -1,7 +1,6 @@
 from aiogram import Dispatcher
-from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup, ChatActions
+from aiogram.types import Message
 from tgbot.models.user import Users
-from tgbot.models.aisettings import AISettings
 from tgbot.services.repository import Repo
 from tgbot.dialogs.admin_main import Main
 from aiogram_dialog import DialogManager, StartMode

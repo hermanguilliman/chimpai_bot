@@ -1,12 +1,12 @@
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram_dialog import Dialog, Window, Dialog, DialogManager, BaseDialogManager
-from aiogram_dialog.widgets.text import Format, Const, Progress
+from aiogram_dialog import Dialog, Window, Dialog, DialogManager
+from aiogram_dialog.widgets.text import Format, Const
 from aiogram_dialog.widgets.kbd import Button, Row, SwitchTo, Back
 from aiogram_dialog.widgets.input import MessageInput
 from tgbot.models.aisettings import AISettings
 from tgbot.services.repository import Repo
 from tgbot.dialogs.openai_settings import Settings
-from aiogram.types import CallbackQuery, ContentType, Message, ChatActions, ParseMode, LabeledPrice
+from aiogram.types import CallbackQuery, ContentType, Message, ChatActions, ParseMode
 from loguru import logger
 
 

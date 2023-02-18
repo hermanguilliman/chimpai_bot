@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List
 from loguru import logger
 from sqlalchemy import update, delete
