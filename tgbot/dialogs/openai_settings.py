@@ -67,7 +67,9 @@ async def on_max_length_selected(callback: ChatEvent, select: Any,
 
 async def get_data_model_selector(openai: OpenAIService, dialog_manager: DialogManager, **kwargs):
     # Получаем список моделей доступных в OpenAI
-    engines = await openai.get_engines()
+    repo: Repo = dialog_manager.data['repo']
+    settings: AISettings = await repo.get_user_settings(dialog_manager.bg().user.id)
+    engines = await openai.get_engines(api_key=settings.api_key)
     engine_ids = [engine['id'] for engine in engines['data']]
     return {
         'models': engine_ids,
@@ -143,6 +145,7 @@ settings_dialog = Dialog(
         # Список доступных моделей
         MessageInput(api_key_handler, content_types=[ContentType.TEXT]),
         Const("<b>Укажите новый API ключ:</b>"),
+        Const("Подсказка: OpenAI API ключ выглядит как <b>sk-...</b>"),
         Cancel(Const('🤚 Отмена')),
         state=Settings.api_key,
         parse_mode=ParseMode.HTML,
@@ -150,6 +153,7 @@ settings_dialog = Dialog(
     Window(
         # Список доступных моделей
         Const("<b>Выберите модель из списка:</b>"),
+        Const("Подсказка: стандартное значение <b>text-davinci-003</b>"),
         Group(
             Select(
                 Format("🤖 {item}"),
@@ -170,7 +174,8 @@ settings_dialog = Dialog(
         # окно выбора максимального числа токенов на запрос,
         # для разных моделей диапазон отличается
         # например от 1 до 4000 для модели text-davinci-003
-        Const("<b>Укажите максимальное число токенов расходуемое для ответа нейросети:</b>"),
+        Const("<b>Укажите максимальную длину ответа:</b>"),
+        Const("Подсказка: стандартное значение <b>256</b>, но лучше использовать <b>500+</b>"),
         Group(
             Select(
                 Format("🔋 {item}"),

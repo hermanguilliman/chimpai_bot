@@ -65,5 +65,6 @@ class OpenAIService():
         logger.debug('Получено сообщение', message)
         return message.strip()
 
-    async def get_engines(self):
+    async def get_engines(self, api_key):
+        self.openai.api_key = api_key
         return self.openai.Engine.list()
