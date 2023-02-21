@@ -1,5 +1,4 @@
 import asyncio
-import sys
 from loguru import logger
 from tgbot.config import load_config
 
