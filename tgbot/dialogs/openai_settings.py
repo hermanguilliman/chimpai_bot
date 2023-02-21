@@ -27,10 +27,9 @@ async def api_key_handler(message: Message, message_input: MessageInput,
     repo: Repo = manager.data['repo']
     dialog_data = manager.current_context().dialog_data
     new_api_key = message.text
-    # туду: валидировать такие ключи через regexp?
-    new_api_key = bool(re.match('sk-[a-zA-Z0-9]{48}$', new_api_key))
+    is_valid_key = bool(re.match('sk-[a-zA-Z0-9]{48}$', new_api_key))
 
-    if not new_api_key:
+    if not is_valid_key:
         await message.answer(
             f'⛔️ <b>Ошибка API ключа!</b>\n Подсказка: Ключ должен выглядеть как sk-...',
             parse_mode=ParseMode.HTML)

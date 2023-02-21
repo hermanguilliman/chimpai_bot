@@ -1,5 +1,4 @@
 import asyncio
-import sys
 from loguru import logger
 from tgbot.config import load_config
 
@@ -15,7 +14,6 @@ from tgbot.models.aisettings import AISettings
 # base aiogram with FSM
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram.contrib.fsm_storage.redis import RedisStorage2
 
 # filters
 from tgbot.filters.admin_filter import RoleFilter, AdminFilter

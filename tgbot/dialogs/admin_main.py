@@ -1,12 +1,12 @@
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram_dialog import Dialog, Window, Dialog, DialogManager, BaseDialogManager
-from aiogram_dialog.widgets.text import Format, Const, Progress
+from aiogram_dialog import Dialog, Window, Dialog, DialogManager
+from aiogram_dialog.widgets.text import Format, Const
 from aiogram_dialog.widgets.kbd import Button, Row, SwitchTo, Back
 from aiogram_dialog.widgets.input import MessageInput
 from tgbot.models.aisettings import AISettings
 from tgbot.services.repository import Repo
 from tgbot.dialogs.openai_settings import Settings
-from aiogram.types import CallbackQuery, ContentType, Message, ChatActions, ParseMode, LabeledPrice
+from aiogram.types import CallbackQuery, ContentType, Message, ChatActions, ParseMode
 from loguru import logger
 
 
@@ -22,6 +22,11 @@ async def neural_handler(
     repo: Repo = manager.data['repo']
     openai = manager.data['openai']
     settings: AISettings = await repo.get_user_settings(message.from_id)
+    
+    prompt = message.text
+    if message.reply_to_message:
+        prompt = message.text + f'\n"{message.reply_to_message.text}"'
+    
     await message.answer('<b>⌛️ Запрос отправлен. Ожидание ответа...</b>', parse_mode=ParseMode.HTML)
     await message.answer_chat_action(ChatActions.TYPING)
 
@@ -33,7 +38,7 @@ async def neural_handler(
                 max_tokens=settings.max_tokens,
                 model=settings.model,
                 temperature=settings.temperature,
-                prompt=message.text,
+                prompt=prompt,
                 )
         else:
             await message.answer('Настройки не найдены. Попробуйте выполнить /start')
@@ -61,16 +66,16 @@ async def get_main_data(repo: Repo, dialog_manager: DialogManager, **kwargs) -> 
     user_id:int = dialog_manager.bg().user.id
     full_name:str = dialog_manager.bg().user.full_name
     settings: AISettings = await repo.get_user_settings(user_id)
-    counter:int = dialog_manager.current_context().dialog_data.get('counter', 0)
+    chimpai:int = dialog_manager.current_context().dialog_data.get('chimpai', 'ChimpAI')
 
     base_view:dict = {
         'user_id': user_id,
-        'counter': counter, 
+        'chimpai': chimpai,
         'full_name': full_name,
-        'api_key': '...' + settings.api_key[-10:] if settings.api_key else 'не установлен',
+        'api_key': '✅ Установлен' if settings.api_key else '❌ Отсутствует',
         'model': settings.model if settings.model else 'отсутствует',
-        'max_length': settings.max_tokens if settings.max_tokens else 'отсутствует',
-        'temperature': settings.temperature if settings.temperature else 'отсутствует',
+        'max_length': settings.max_tokens if settings.max_tokens else '❌ Отсутствует',
+        'temperature': settings.temperature if settings.temperature else '❌ Отсутствует',
     }
 
     # обновляем текущий контекст?
@@ -81,10 +86,11 @@ async def get_main_data(repo: Repo, dialog_manager: DialogManager, **kwargs) -> 
 main_dialog = Dialog(
     Window(
         # Главное окно
-        Const("<b>ChimpAI 🐵 v0.2</b>\n\n"),
+        Format("<b>{chimpai} 🐵 v0.2</b>\n"),
+        Format('<b>Конфигурация:</b>\n{model} / max: {max_length} / temp: {temperature}'),
         Row(                
-            SwitchTo(Const("🤖 Нейро-чат"), id='neural', state=Main.neural),
-            Button(Const("📝 Параметры"), id='settings', on_click=show_settings),
+            SwitchTo(Const("🤖 Нейро-Чат"), id='neural', state=Main.neural),
+            Button(Const("📝 Настройки"), id='settings', on_click=show_settings),
         ),
         state=Main.main,
         getter=get_main_data,
