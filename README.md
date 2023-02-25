@@ -12,7 +12,7 @@ docker run -d \
     gentlemantleman/chimpai:latest
 ```
 
-Так же пример docker-compose.yml
+Пример docker-compose.yml
 
 ```bash
 version: '3'
