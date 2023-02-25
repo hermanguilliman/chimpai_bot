@@ -7,13 +7,6 @@ from aiogram_dialog.widgets.kbd import Button
 from tgbot.misc.states import Settings
 
 
-async def show_settings(callback: CallbackQuery, button: Button,
-                    manager: DialogManager):
-    """ Стартует диалог с настройками"""
-    data = manager.current_context().dialog_data
-    await manager.start(Settings.select, data=data)
-
-
 async def on_new_model_selected(callback: ChatEvent, select: Any,
                          manager: DialogManager,
                          item_id: str):
