@@ -4,7 +4,6 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 
 class Main(StatesGroup):
     main = State()
-    neural = State()
 
 
 class Neural(StatesGroup):
