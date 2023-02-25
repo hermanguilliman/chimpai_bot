@@ -1,7 +1,5 @@
-from tgbot.misc.states import Settings
-from aiogram_dialog.widgets.kbd import Button
 
-from aiogram.types import Message, ChatActions, ParseMode, CallbackQuery
+from aiogram.types import Message, ChatActions, ParseMode
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog import DialogManager
 from tgbot.services.repository import Repo
@@ -47,31 +45,3 @@ async def neural_handler(
         await message.answer('Ошибка получения ответа!')
         logger.error('Ошибка получения ответа!')
     
-
-async def show_settings(callback: CallbackQuery, button: Button,
-                    manager: DialogManager):
-    """ Стартует диалог с настройками"""
-    data = manager.current_context().dialog_data
-    await manager.start(Settings.select, data=data)
-
-
-async def get_main_data(repo: Repo, dialog_manager: DialogManager, **kwargs) -> dict:
-    # Здесь происходит первичный запрос данных из команды запустившей диалог и бд 
-    user_id:int = dialog_manager.bg().user.id
-    full_name:str = dialog_manager.bg().user.full_name
-    settings: AISettings = await repo.get_user_settings(user_id)
-    chimpai:int = dialog_manager.current_context().dialog_data.get('chimpai', 'ChimpAI')
-
-    base_view:dict = {
-        'user_id': user_id,
-        'chimpai': chimpai,
-        'full_name': full_name,
-        'api_key': '✅ Установлен' if settings.api_key else '❌ Отсутствует',
-        'model': settings.model if settings.model else 'отсутствует',
-        'max_length': settings.max_tokens if settings.max_tokens else '❌ Отсутствует',
-        'temperature': settings.temperature if settings.temperature else '❌ Отсутствует',
-    }
-
-    # обновляем текущий контекст?
-    dialog_manager.current_context().dialog_data.update(base_view)
-    return base_view

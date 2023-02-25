@@ -7,6 +7,10 @@ class Main(StatesGroup):
     neural = State()
 
 
+class Neural(StatesGroup):
+    chat = State()
+
+
 class Settings(StatesGroup):
     select = State()
     api_key = State()

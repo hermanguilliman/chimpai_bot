@@ -2,7 +2,7 @@ from aiogram import Dispatcher
 from aiogram.types import Message
 from tgbot.models.user import Users
 from tgbot.services.repository import Repo
-from tgbot.dialogs.admin_main import Main
+from tgbot.dialogs.main import Main
 from aiogram_dialog import DialogManager, StartMode
 
 async def admin_start(m: Message, repo: Repo, dialog_manager: DialogManager):

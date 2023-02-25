@@ -4,17 +4,17 @@ from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.text import Format, Const
 from aiogram_dialog.widgets.kbd import Button, Cancel, Select, SwitchTo, Group
 from aiogram_dialog.widgets.input import MessageInput
-from tgbot.handlers.settings import (
-    api_key_handler,
-    get_data_model_selector,
-    main_settings_getter,
+from tgbot.handlers.settings import api_key_handler
+from tgbot.getters.settings import get_data_model_selector, get_temperature
+from tgbot.getters.base_data import get_base_data
+from tgbot.handlers.settings import api_key_handler
+from tgbot.callbacks.settings import (
     on_decrease_temp,
     on_increase_temp,
     on_max_length_selected,
     on_new_model_selected,
     on_reset_temp,
     on_temperature_selected,
-    temp_getter
 )
 
 
@@ -32,7 +32,7 @@ settings_dialog = Dialog(
         Cancel(Const('🤚 Отмена')),
         state=Settings.select,
         parse_mode=ParseMode.HTML,
-        getter=main_settings_getter,
+        getter=get_base_data,
     ),
     Window(
         # Список доступных моделей
@@ -104,6 +104,6 @@ settings_dialog = Dialog(
         ),
         state=Settings.temperature,
         parse_mode=ParseMode.HTML,
-        getter=temp_getter,
+        getter=get_temperature,
     ),
 )

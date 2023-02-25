@@ -28,8 +28,10 @@ from tgbot.middlewares.openai_api import OpenAIMiddleware
 
 # dialogs
 from aiogram_dialog import DialogRegistry
-from tgbot.dialogs.admin_main import main_dialog
+from tgbot.dialogs.main import main_dialog
 from tgbot.dialogs.openai_settings import settings_dialog
+from tgbot.dialogs.neural import neural_chat
+
 # additional tools
 import openai
 
@@ -86,6 +88,7 @@ async def main():
     registry = DialogRegistry(dp)
     registry.register(main_dialog)
     registry.register(settings_dialog)
+    registry.register(neural_chat)
     # start
     try:
         await dp.start_polling()
