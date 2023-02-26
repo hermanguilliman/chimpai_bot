@@ -35,7 +35,7 @@ services:
     container_name: chimpai_redis
     image: redis:7.0.8-alpine
     restart: on-failure
-    port:
+    ports:
       - "6379:6379"
     volumes:
       - chimai-redis-data:/data
