@@ -43,10 +43,10 @@ services:
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL,CONFIG
       - ALLOW_EMPTY_PASSWORD=yes
     volumes:
-      - chimai-redis-data:/data
+      - chimpai-redis-data:/data
 
 volumes:
-  chimai-redis-data:
+  chimpai-redis-data:
 
 networks:
   chimpai-network:
