@@ -25,7 +25,7 @@ hstspreload==2023.1.1
 httpcore==0.9.1
 httpx==0.13.3
 hyperframe==5.2.0
-idna==3.4
+idna==2.5
 Jinja2==3.1.2
 loguru==0.6.0
 magic-filter==1.0.9
