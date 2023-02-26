@@ -28,7 +28,7 @@ services:
       - USE_REDIS=True
     volumes:
       - ./database:/app/database
-    depends-on: 
+    depends_on: 
       - redis
 
   redis:
