@@ -25,6 +25,7 @@ openai==0.26.5
 packaging==23.0
 python-dotenv==1.0.0
 pytz==2022.7.1
+redis==4.5.1
 requests==2.28.2
 SQLAlchemy==2.0.4
 tqdm==4.64.1
