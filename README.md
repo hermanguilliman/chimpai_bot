@@ -9,6 +9,7 @@
 docker run -d \
     -e BOT_TOKEN=<TOKEN> \
     -e ADMINS=<IDS> \
+    -e USE_REDIS=False \
     gentlemantleman/chimpai:latest
 ```
 
@@ -20,8 +21,24 @@ services:
   chimpai:
     container_name: chimpai
     image: gentlemantleman/chimpai:latest
+    restart: on-failure
     environment:
       - BOT_TOKEN=TOKEN
       - ADMINS=12345,54321
+      - USE_REDIS=True
     volumes:
       - ./database:/app/database
+    depends-on: 
+      - redis
+
+  redis:
+    container_name: chimpai_redis
+    image: redis:7.0.8-alpine
+    restart: on-failure
+    port:
+      - "6379:6379"
+    volumes:
+      - chimai-redis-data:/data
+
+volumes:
+  chimai-redis-data:
