@@ -16,7 +16,7 @@ docker run -d \
 Пример docker-compose.yml
 
 ```bash
-version: '3'
+version: '3.8'
 services:
   chimpai:
     container_name: chimpai
@@ -28,17 +28,26 @@ services:
       - USE_REDIS=True
     volumes:
       - ./database:/app/database
-    depends_on: 
+    networks:
+      - chimpai-network
+    depends_on:
       - redis
 
   redis:
     container_name: chimpai_redis
     image: redis:7.0.8-alpine
     restart: on-failure
-    ports:
-      - "6379:6379"
+    networks:
+      - chimpai-network
+    environment:
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL,CONFIG
+      - ALLOW_EMPTY_PASSWORD=yes
     volumes:
       - chimai-redis-data:/data
 
 volumes:
   chimai-redis-data:
+
+networks:
+  chimpai-network:
+    driver: bridge
