@@ -14,6 +14,8 @@ from tgbot.models.aisettings import AISettings
 # base aiogram with FSM
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.contrib.fsm_storage.redis import RedisStorage2
+
 
 # filters
 from tgbot.filters.admin_filter import RoleFilter, AdminFilter
@@ -73,10 +75,9 @@ async def main():
     logger.info("Starting ChimpAI")
     config = load_config(".env")
 
-    storage = MemoryStorage()
+    storage = RedisStorage2() if config.tg_bot.use_redis else MemoryStorage()
     bot = Bot(token=config.tg_bot.token)
     dp = Dispatcher(bot, storage=storage)
-
     bot['config'] = config
 
     session = await create_sessionmaker(echo=False)
