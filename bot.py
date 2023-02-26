@@ -75,7 +75,9 @@ async def main():
     logger.info("Starting ChimpAI")
     config = load_config(".env")
 
-    storage = RedisStorage2() if config.tg_bot.use_redis else MemoryStorage()
+    storage = RedisStorage2(
+        'localhost', 6379, db=5, pool_size=10, prefix='chimpai_fsm'
+    ) if config.tg_bot.use_redis else MemoryStorage()
     bot = Bot(token=config.tg_bot.token)
     dp = Dispatcher(bot, storage=storage)
     bot['config'] = config
