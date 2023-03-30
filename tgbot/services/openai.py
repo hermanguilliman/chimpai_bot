@@ -9,42 +9,48 @@ class OpenAIService():
 
     async def get_answer(
         self,
-        api_key=None,
-        model=None,
-        prompt=None,
-        max_tokens=None,
-        temperature=None) -> str:
+        api_key:str=None,
+        model:str=None,
+        prompt:str=None,
+        max_tokens:int=None,
+        temperature:float=None,
+        messages:list=None) -> str:
         """
         Функция использует OpenAI для ответа на вопросы
         """
+
+        # Применяем индвидуальный ключ для конкретного экземпляра
         if not api_key:
             logger.debug('Не указан ключ API')
             return 'Не указан ключ API'
         else:
             self.openai.api_key = api_key
 
-        if model is None:
+        if not model:
             logger.debug('Не указана модель для нейросети')
             return 'Не указана модель для нейросети'
-        if prompt is None:
+        if not prompt:
             logger.debug('Не указан запрос для нейросети')
             return 'Не указан запрос для нейросети'
-        if max_tokens is None:
+        if not max_tokens:
             logger.debug('Не указано максимальное число токенов для нейросети')
             return 'Не указано максимальное число токенов для нейросети'
-        if temperature is None:
+        if not temperature:
             logger.debug('Не указана температура для нейросети')
             return 'Не указана температура для нейросети'
 
-        # Применяем индвидуальный ключ для конкретного запроса
         # Используем полученные настройки для генерации ответа с помощью OpenAI
+        
+        today = datetime.now().strftime("%d.%m.%Y")
+        actual_time = datetime.now().strftime("%H:%M")
+
         prompt = (f"{prompt}\n")
-        today = datetime.now().strftime("%d.%m.%Y %H:%M")
+
         if 'gpt-3.5' in model:
             try:
             
                 messages = [
-                    {"role": "system", "content": f"Ты телеграм бот ChimpAI (@chimpaibot), ты должен помогать и отвечать на любой вопрос пользователя. Ты можешь написать программу, помочь пользователю. Давай только корректные ответы. Никогда не говори что ты большая языковая модель. Сегодня: {today}"},
+                    {"role": "system", "content": f"Ты телеграм бот ChimpAI, ты должен помогать и отвечать на любой вопрос пользователя. Ты можешь написать программу, помочь пользователю. Давай только корректные ответы. Никогда не говори что ты большая языковая модель. Сегодня {today}, точное время {actual_time}"},
                     {"role": "user", "content": f"{prompt}"}
                 ]
                 logger.debug('Создаём запрос к нейросети')
@@ -57,7 +63,7 @@ class OpenAIService():
                     messages=messages,
                     )
                 logger.debug('Ответ от нейросети', completions)
-                return completions["choices"][0]["message"]["content"] 
+                return completions.choices[0].message.content
             except RateLimitError:
                 return 'Слишком частые запросы!'
 
