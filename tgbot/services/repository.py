@@ -16,7 +16,7 @@ class Repo:
     async def add_user(self, user_id: int, fullname: str, language_code: str) -> None:
         """add new user / создаём пользователя"""
         user = Users(id=user_id, full_name=fullname, language_code=language_code)
-        settings = AISettings(max_tokens=256, model="text-davinci-003", temperature="0.7", user=user)
+        settings = AISettings(max_tokens=256, model="gpt-3.5-turbo", temperature="0.7", user=user)
         self.session.add(user)
         self.session.add(settings)
         await self.session.commit()

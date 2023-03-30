@@ -9,7 +9,7 @@ class AISettings(Base):
     id = Column(Integer, primary_key=True, unique=True)
     api_key = Column(String(51), nullable=True)
     max_tokens = Column(Integer(), default=256)
-    model = Column(Text(), default='text-davinci-003')
+    model = Column(Text(), default='gpt-3.5-turbo')
     temperature = Column(Text(), default='0.7')
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("Users", back_populates="settings")

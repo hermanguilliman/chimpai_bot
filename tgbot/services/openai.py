@@ -1,5 +1,6 @@
 from openai.error import RateLimitError, APIConnectionError, AuthenticationError, APIError
 import openai
+from datetime import datetime
 from loguru import logger
 
 class OpenAIService():
@@ -16,7 +17,7 @@ class OpenAIService():
         """
         Функция использует OpenAI для ответа на вопросы
         """
-        if api_key is None:
+        if not api_key:
             logger.debug('Не указан ключ API')
             return 'Не указан ключ API'
         else:
@@ -38,32 +39,64 @@ class OpenAIService():
         # Применяем индвидуальный ключ для конкретного запроса
         # Используем полученные настройки для генерации ответа с помощью OpenAI
         prompt = (f"{prompt}\n")
-        try:
-            logger.debug('Создаём запрос к нейросети')
-            completions = self.openai.Completion.create(
-                engine=str(model),
-                prompt=str(prompt),
-                max_tokens=int(max_tokens),
-                n=1,
-                stop=None,
-                temperature=float(temperature),
-                )
-            logger.debug('Ответ от нейросети', completions)
-        except RateLimitError:
-            return 'Слишком частые запросы!'
+        today = datetime.now().strftime("%d.%m.%Y %H:%M")
+        if 'gpt-3.5' in model:
+            try:
+            
+                messages = [
+                    {"role": "system", "content": f"Ты телеграм бот ChimpAI (@chimpaibot), ты должен помогать и отвечать на любой вопрос пользователя. Ты можешь написать программу, помочь пользователю. Давай только корректные ответы. Никогда не говори что ты большая языковая модель. Сегодня: {today}"},
+                    {"role": "user", "content": f"{prompt}"}
+                ]
+                logger.debug('Создаём запрос к нейросети')
+                completions = self.openai.ChatCompletion.create(
+                    model=str(model),
+                    max_tokens=int(max_tokens),
+                    n=1,
+                    stop=None,
+                    temperature=float(temperature),
+                    messages=messages,
+                    )
+                logger.debug('Ответ от нейросети', completions)
+                return completions["choices"][0]["message"]["content"] 
+            except RateLimitError:
+                return 'Слишком частые запросы!'
 
-        except APIConnectionError:
-            return 'Ошибка подключения к API'
+            except APIConnectionError:
+                return 'Ошибка подключения к API'
 
-        except AuthenticationError:
-            return 'Ошибка аутентификации API'
+            except AuthenticationError:
+                return 'Ошибка аутентификации API'
 
-        except APIError:
-            return 'Сервер вернул ошибку API'
+            except APIError:
+                return 'Сервер вернул ошибку API'
+        else:
+            try:
+                logger.debug('Создаём запрос к нейросети')
+                completions = self.openai.Completion.create(
+                    model=str(model),
+                    prompt=str(prompt),
+                    max_tokens=int(max_tokens),
+                    n=1,
+                    stop=None,
+                    temperature=float(temperature),
+                    )
+                logger.debug('Ответ от нейросети', completions)
+            except RateLimitError:
+                return 'Слишком частые запросы!'
+
+            except APIConnectionError:
+                return 'Ошибка подключения к API'
+
+            except AuthenticationError:
+                return 'Ошибка аутентификации API'
+
+            except APIError:
+                return 'Сервер вернул ошибку API'
 
         message = completions.choices[0].text
         logger.debug('Получено сообщение', message)
         return message.strip()
+    
 
     async def get_engines(self, api_key):
         self.openai.api_key = api_key
