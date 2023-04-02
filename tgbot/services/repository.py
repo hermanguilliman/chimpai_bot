@@ -97,3 +97,17 @@ class Repo:
         await self.session.execute(stmt)
         await self.session.commit()
         logger.debug('Апи ключ обновлен')
+
+    # Обновление значения личности бота
+    async def update_personality(self,
+                                 user_id: int,
+                                 personality_name: str,
+                                 personality_text: str) -> None:
+        stmt = (
+            update(AISettings).
+            where(AISettings.user_id == user_id).
+            values(personality_name=personality_name, personality_text=personality_text)
+        )
+        await self.session.execute(stmt)
+        await self.session.commit()
+        logger.debug('Личность бота обновлена')

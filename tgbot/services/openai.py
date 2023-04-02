@@ -14,7 +14,7 @@ class OpenAIService():
         prompt:str=None,
         max_tokens:int=None,
         temperature:float=None,
-        messages:list=None) -> str:
+        personality_text:str=None) -> str:
         """
         Функция использует OpenAI для ответа на вопросы
         """
@@ -42,15 +42,15 @@ class OpenAIService():
         # Используем полученные настройки для генерации ответа с помощью OpenAI
         
         today = datetime.now().strftime("%d.%m.%Y")
-        actual_time = datetime.now().strftime("%H:%M")
+        time = datetime.now().strftime("%H:%M")
 
         prompt = (f"{prompt}\n")
 
         if 'gpt-3.5' in model:
             try:
-            
+                # ЗАГЛУШКА, ТОДО: ВЫНЕСТИ ЕЁ НАРУЖУ
                 messages = [
-                    {"role": "system", "content": f"Ты телеграм бот ChimpAI, ты должен помогать и отвечать на любой вопрос пользователя. Ты можешь написать программу, помочь пользователю. Давай только корректные ответы. Никогда не говори что ты большая языковая модель. Сегодня {today}, точное время {actual_time}"},
+                    {"role": "system", "content": f"{personality_text} На календаре: {today}. Точное время: {time}"},
                     {"role": "user", "content": f"{prompt}"}
                 ]
                 logger.debug('Создаём запрос к нейросети')
@@ -104,6 +104,9 @@ class OpenAIService():
         return message.strip()
     
 
-    async def get_engines(self, api_key):
-        self.openai.api_key = api_key
-        return self.openai.Engine.list()
+    async def get_engines(self, api_key) -> list:
+        if api_key:
+            self.openai.api_key = api_key
+            return self.openai.Engine.list()
+        else:
+            return 'error'

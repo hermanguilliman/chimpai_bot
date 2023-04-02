@@ -16,7 +16,6 @@ from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 
-
 # filters
 from tgbot.filters.admin_filter import RoleFilter, AdminFilter
 
@@ -31,12 +30,12 @@ from tgbot.middlewares.openai_api import OpenAIMiddleware
 # dialogs
 from aiogram_dialog import DialogRegistry
 from tgbot.dialogs.main import main_dialog
-from tgbot.dialogs.openai_settings import settings_dialog
+from tgbot.dialogs.settings import settings_dialog
 from tgbot.dialogs.neural import neural_chat
+from tgbot.dialogs.personality import person
 
 # additional tools
 import openai
-
 
 
 async def create_sessionmaker(echo) -> AsyncSession:
@@ -92,6 +91,7 @@ async def main():
     registry.register(main_dialog)
     registry.register(settings_dialog)
     registry.register(neural_chat)
+    registry.register(person)
     # start
     try:
         await dp.start_polling()

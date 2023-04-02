@@ -11,6 +11,8 @@ class AISettings(Base):
     max_tokens = Column(Integer(), default=256)
     model = Column(Text(), default='gpt-3.5-turbo')
     temperature = Column(Text(), default='0.7')
+    personality_name = Column(Text(), nullable=True)
+    personality_text = Column(Text(), nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("Users", back_populates="settings")
 

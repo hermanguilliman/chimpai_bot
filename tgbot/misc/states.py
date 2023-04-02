@@ -16,3 +16,9 @@ class Settings(StatesGroup):
     model = State()
     max_length = State()
     temperature = State()
+    personality = State()
+
+class Personality(StatesGroup):
+    name = State()
+    text = State()
+    finish = State()

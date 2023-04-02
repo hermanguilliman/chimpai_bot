@@ -16,6 +16,7 @@ async def neural_handler(
     settings: AISettings = await repo.get_user_settings(message.from_id)
     
     prompt = message.text
+
     if message.reply_to_message:
         prompt = message.text + f'\n"{message.reply_to_message.text}"'
     
@@ -31,6 +32,7 @@ async def neural_handler(
                 model=settings.model,
                 temperature=settings.temperature,
                 prompt=prompt,
+                personality_text=settings.personality_text,
                 )
         else:
             await message.answer('Настройки не найдены. Попробуйте выполнить /start')
