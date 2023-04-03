@@ -1,8 +1,10 @@
 # chimpai bot 🐵
 
-[![Интерфейс бота](https://i.ibb.co/N1JDST3/1.jpg 'gui')](https://ibb.co/N1JDST3)
-[![Интерфейс бота](https://i.ibb.co/WP7T39Y/2.jpg 'gui')](https://ibb.co/WP7T39Y)
-[![Интерфейс бота](https://i.ibb.co/Bg6Wf7g/3.jpg 'gui')](https://ibb.co/Bg6Wf7g)
+[![Интерфейс бота](https://i.ibb.co/Z8HvGRT/4.jpg 'gui')](https://ibb.co/Z8HvGRT)
+[![Интерфейс бота](https://i.ibb.co/fFHrZLF/1.jpg 'gui')](https://ibb.co/fFHrZLF)
+[![Интерфейс бота](https://i.ibb.co/HH3JpQg/2.jpg 'gui')](https://ibb.co/HH3JpQg)
+[![Интерфейс бота](https://i.ibb.co/K6vjVZ7/3.jpg 'gui')](https://ibb.co/K6vjVZ7)
+[![Интерфейс бота](https://i.ibb.co/Jm4G3WV/5.jpg 'gui')](https://ibb.co/Jm4G3WV)
 
 Это ChimpAI - Telegram bot с интерфейсом OpenAI API. Он имеет возможность настройки параметров запроса, а так же поддерживает преднастройку личности по готовому или ручному описанию личности
 
