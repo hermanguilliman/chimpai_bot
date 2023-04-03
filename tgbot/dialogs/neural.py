@@ -12,8 +12,8 @@ neural_chat = Dialog(
     Window(
         # Нейрочат. Пока просто непрерывно читает текст от пользователя
         MessageInput(neural_handler, content_types=[ContentType.TEXT]),
-        Const('<b>Введите запрос:</b>'),
-        Format("<b>[ Личность: {personality_name} ]</b>", when='personality_name'),
+        Format("<b>Личность: {personality_name}</b>\n", when='personality_name'),
+        Const('<b>Отправьте запрос:</b>'),
         Row(
             Cancel(Const('👈 Назад')),
             Start(Const("📝 Настройки"), id='settings', state=Settings.select),

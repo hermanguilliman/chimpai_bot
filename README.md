@@ -76,3 +76,9 @@ docker-compose up -d
 ```bash
 docker-compose down
 ```
+
+### Чтобы перезапустить
+
+```bash
+docker-compose restart
+```
