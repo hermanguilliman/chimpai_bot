@@ -28,7 +28,7 @@ settings_dialog = Dialog(
         SwitchTo(Format('🔐 API ключ: {api_key}'), id='set_api_key', state=Settings.api_key),
         SwitchTo(Format('🤖 Модель: {model}'), id='set_model', state=Settings.model),
         SwitchTo(Format('🔋 Длина ответа: {max_length} токенов'), id='set_max_length', state=Settings.max_length),
-        SwitchTo(Format('🌡️ Температура {temperature}'), id='set_temperature', state=Settings.temperature),
+        SwitchTo(Format('🌡️ Оригинальность ответа {temperature}'), id='set_temperature', state=Settings.temperature),
         width=1),
         SwitchTo(Format('Личность: {personality_name}'), id='personality', state=Settings.personality),
         Cancel(Const('🤚 Отмена')),
@@ -41,7 +41,7 @@ settings_dialog = Dialog(
         # Установка нового ключа апи
         MessageInput(api_key_handler, content_types=[ContentType.TEXT]),
         Const("<b>Укажите новый API ключ:</b>"),
-        Const("Подсказка: Ключ OpenAI API выглядит как <b>sk-...</b>"),
+        Const("<b>Подсказка:</b> Ключ OpenAI API выглядит как <b>sk-...</b>"),
         Cancel(Const('🤚 Отмена')),
         state=Settings.api_key,
         parse_mode=ParseMode.HTML,
@@ -50,7 +50,7 @@ settings_dialog = Dialog(
     Window(
         # Список доступных моделей
         Const("<b>Выберите модель из списка:</b>"),
-        Const("Подсказка: стандартное значение <b>gpt-3.5-turbo</b>"),
+        Const("<b>Подсказка:</b> стандартное значение <b>gpt-3.5-turbo</b>"),
         Group(
             Select(
                 Format("🤖 {item}"),
@@ -60,7 +60,7 @@ settings_dialog = Dialog(
                 id='select_max_new_model',
                 on_click=on_new_model_selected,
             ),
-            width=1,
+            width=2,
         ),
         Cancel(Const('🤚 Отмена')),
         state=Settings.model,
@@ -72,8 +72,8 @@ settings_dialog = Dialog(
         # окно выбора максимального числа токенов на запрос,
         # для разных моделей диапазон отличается
         # например от 1 до 4000 для модели text-davinci-003
-        Const("<b>Укажите максимальную длину ответа:</b>"),
-        Const("Подсказка: стандартное значение <b>256</b>, но лучше использовать <b>500+</b>"),
+        Const("<b>Укажите максимальную длину ответа</b>"),
+        Const("\n<b>Подсказка:</b> стандартное значение <b>256</b> токенов, но лучше использовать около <b>1000</b> токенов"),
         Group(
             Select(
                 Format("🔋 {item}"),
@@ -92,7 +92,7 @@ settings_dialog = Dialog(
     Window(
         # окно выбора температуры 
         # от 0.00 до 1.00 с двумя знаками после запятой
-        Const("Температура влияет на непредсказуемость ответа\nВыберите новое значение и нажмите на градусник."),
+        Const("<b>Оригинальность ответа задаётся в диапазоне от 0 до 1</b>\n\nНастройте новое значение с помощью стрелок и нажмите на градусник для подтверждения."),
         Group(
             Button(Format('🌡 Установить значение: {temperature}'), id='new_temperature', when='temperature', on_click=on_temperature_selected),
             width=1,
