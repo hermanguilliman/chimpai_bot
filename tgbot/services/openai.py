@@ -54,7 +54,7 @@ class OpenAIService():
                     {"role": "user", "content": f"{prompt}"}
                 ]
                 logger.debug('Создаём запрос к нейросети')
-                completions = self.openai.ChatCompletion.create(
+                completions = await self.openai.ChatCompletion.acreate(
                     model=str(model),
                     max_tokens=int(max_tokens),
                     n=1,
@@ -78,7 +78,7 @@ class OpenAIService():
         else:
             try:
                 logger.debug('Создаём запрос к нейросети')
-                completions = self.openai.Completion.create(
+                completions = await self.openai.Completion.acreate(
                     model=str(model),
                     prompt=str(prompt),
                     max_tokens=int(max_tokens),
@@ -100,7 +100,6 @@ class OpenAIService():
                 return 'Сервер вернул ошибку API'
 
         message = completions.choices[0].text
-        logger.debug('Получено сообщение', message)
         return message.strip()
     
 
