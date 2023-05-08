@@ -5,7 +5,7 @@ from tgbot.services.repository import Repo
 from aiogram.types import CallbackQuery
 from aiogram_dialog.widgets.kbd import Button
 from tgbot.misc.states import Settings
-from tgbot.misc.personality import personality
+from tgbot.misc.personality import personality_base
 
 
 async def on_new_model_selected(callback: ChatEvent, select: Any,
@@ -14,7 +14,7 @@ async def on_new_model_selected(callback: ChatEvent, select: Any,
     """Обновляет значение модели в бд по нажатию кнопки"""
     repo: Repo = manager.data['repo']
     user_id = manager.bg().user.id
-    await repo.update_user_settings_model(user_id=user_id, model=item_id)
+    await repo.update_settings(user_id=user_id, model=item_id)
     await callback.answer(f'Модель {item_id} успешно установлена!')
     await manager.done()
 
@@ -25,13 +25,19 @@ async def on_new_personality_selected(callback: ChatEvent, select: Any,
     """Обновляет значение личности в бд по нажатию кнопки"""
     repo: Repo = manager.data['repo']
     user_id = manager.bg().user.id
-    for person in personality:
+    personality = await repo.get_personality(user_id=user_id)
+
+    for person in personality_base:
         if person['person'] == item_id:
-            personality_text = person['message']
-            await repo.update_personality(user_id=user_id,
-                                          personality_name=item_id,
-                                          personality_text=personality_text
-                                          )
+            text = person['message']
+
+            if not personality:
+                await repo.add_new_personality(user_id=user_id, name=item_id, text=text)
+            else:
+                await repo.update_personality(user_id=user_id,
+                                            name=item_id,
+                                            text=text
+                                            )
 
     await callback.answer(f'Выбрана личность: {item_id}!')
     await manager.done()
@@ -43,7 +49,7 @@ async def on_max_length_selected(callback: ChatEvent, select: Any,
     """Обновляет значение максимальной длины по нажатию кнопки"""
     repo: Repo = manager.data['repo']
     user_id = manager.bg().user.id
-    await repo.update_user_max_tokens(user_id=user_id, max_tokens=item_id)
+    await repo.update_max_token(user_id=user_id, max_tokens=item_id)
     await callback.answer(f'Новая длина ответа составляет {item_id} токенов')
     await manager.done()
 

@@ -14,7 +14,7 @@ main_dialog = Dialog(
         Format('🤖 Активная модель: <b>{model}</b>', when='model'),
         Format('🔋 Длина ответа: <b>{max_length}</b> токенов', when='max_length'),
         Format('🧠 Оригинальность ответа: <b>{temperature}</b>', when='temperature'),
-        Format('🎭 Личность: <b>{personality_name}</b>', when='personality_name'),
+        Format('🎭 Личность: <b>{personality}</b>', when='personality'),
         Row(                
             Start(Const("🤖 Чат"), id='neural', state=Neural.chat),
             Start(Const("📝 Настройки"), id='settings', state=Settings.select),

@@ -19,6 +19,7 @@ class Settings(StatesGroup):
     personality = State()
 
 class Personality(StatesGroup):
+    reset = State()
     name = State()
     text = State()
     finish = State()

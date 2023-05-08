@@ -9,7 +9,8 @@ from sqlalchemy.orm import sessionmaker
 # models
 from tgbot.models.base import Base
 from tgbot.models.user import Users
-from tgbot.models.aisettings import AISettings
+from tgbot.models.settings import Settings
+from tgbot.models.personality import Personality
 
 # base aiogram with FSM
 from aiogram import Bot, Dispatcher

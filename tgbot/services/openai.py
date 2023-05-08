@@ -14,18 +14,14 @@ class OpenAIService():
         prompt:str=None,
         max_tokens:int=None,
         temperature:float=None,
-        personality_text:str=None) -> str:
+        personality:str=None) -> str:
         """
         Функция использует OpenAI для ответа на вопросы
         """
-
         # Применяем индвидуальный ключ для конкретного экземпляра
         if not api_key:
             logger.debug('Не указан ключ API')
             return 'Не указан ключ API'
-        else:
-            self.openai.api_key = api_key
-
         if not model:
             logger.debug('Не указана модель для нейросети')
             return 'Не указана модель для нейросети'
@@ -38,31 +34,29 @@ class OpenAIService():
         if not temperature:
             logger.debug('Не указана температура для нейросети')
             return 'Не указана температура для нейросети'
-
+        
+        self.openai.api_key = api_key
+        
         # Используем полученные настройки для генерации ответа с помощью OpenAI
         
         today = datetime.now().strftime("%d.%m.%Y")
         time = datetime.now().strftime("%H:%M")
 
-        prompt = (f"{prompt}\n")
-
         if 'gpt-3.5' in model:
             try:
-                # ЗАГЛУШКА, ТОДО: ВЫНЕСТИ ЕЁ НАРУЖУ
                 messages = [
-                    {"role": "system", "content": f"{personality_text} На календаре: {today}. Точное время: {time}"},
+                    {"role": "system", "content": f"{personality} Сегодня на календаре: {today}. Точное время: {time}"},
                     {"role": "user", "content": f"{prompt}"}
                 ]
-                logger.debug('Создаём запрос к нейросети')
+
                 completions = await self.openai.ChatCompletion.acreate(
-                    model=str(model),
-                    max_tokens=int(max_tokens),
+                    model=model,
+                    max_tokens=max_tokens,
                     n=1,
                     stop=None,
-                    temperature=float(temperature),
+                    temperature=temperature,
                     messages=messages,
                     )
-                logger.debug('Ответ от нейросети', completions)
                 return completions.choices[0].message.content
             except RateLimitError:
                 return 'Слишком частые запросы!'
@@ -79,14 +73,14 @@ class OpenAIService():
             try:
                 logger.debug('Создаём запрос к нейросети')
                 completions = await self.openai.Completion.acreate(
-                    model=str(model),
-                    prompt=str(prompt),
-                    max_tokens=int(max_tokens),
+                    model=model,
+                    prompt=prompt,
+                    max_tokens=max_tokens,
                     n=1,
                     stop=None,
-                    temperature=float(temperature),
+                    temperature=temperature,
                     )
-                logger.debug('Ответ от нейросети', completions)
+                logger.debug('Ответ от нейросети получен')
             except RateLimitError:
                 return 'Слишком частые запросы!'
 

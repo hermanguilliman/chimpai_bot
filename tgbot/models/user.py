@@ -10,7 +10,8 @@ class Users(Base):
     full_name = Column(Text(250))
     registration_date = Column(DateTime, default=datetime.datetime.now())
     language_code = Column(Text(3))
-    settings = relationship("AISettings", back_populates="user")
+    settings = relationship("Settings", back_populates="user")
+    personality = relationship("Personality", back_populates="user")
 
     def is_new_user(self) -> bool:
         return self.registration_date >= (datetime.datetime.now() - datetime.timedelta(minutes=1))

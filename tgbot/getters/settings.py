@@ -1,13 +1,13 @@
 from aiogram_dialog import DialogManager
 from tgbot.services.openai import OpenAIService
 from tgbot.services.repository import Repo
-from tgbot.models.aisettings import AISettings
-from tgbot.misc.personality import personality
+from tgbot.models.settings import Settings
+from tgbot.misc.personality import personality_base
 
 async def get_data_model_selector(openai: OpenAIService, dialog_manager: DialogManager, **kwargs):
     # Получаем список моделей доступных в OpenAI
     repo: Repo = dialog_manager.data['repo']
-    settings: AISettings = await repo.get_user_settings(dialog_manager.bg().user.id)
+    settings: Settings = await repo.get_settings(dialog_manager.bg().user.id)
     engines = await openai.get_engines(api_key=settings.api_key)
     if engines is not list:
         engine_ids = [engine['id'] for engine in engines['data']]
@@ -21,7 +21,7 @@ async def get_data_model_selector(openai: OpenAIService, dialog_manager: DialogM
 async def get_person_selector(openai: OpenAIService, dialog_manager: DialogManager, **kwargs):
     # Получаем список личностей
     return {
-        'persons': [person['person'] for person in personality],
+        'persons': [person['person'] for person in personality_base],
     }
 
 

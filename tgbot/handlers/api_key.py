@@ -24,7 +24,7 @@ async def api_key_handler(message: Message, message_input: MessageInput,
         return
         
     dialog_data["api_key"] = new_api_key
-    await repo.update_user_api_key(user_id, new_api_key)
-    await message.answer(f'<b>Новый API ключ успешно установлен!</b>', parse_mode=ParseMode.HTML)
+    await repo.update_api_key(user_id, new_api_key)
+    await message.answer(f'<b>✅ Новый API ключ успешно установлен!</b>', parse_mode=ParseMode.HTML)
     await manager.done()
     

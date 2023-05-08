@@ -10,7 +10,7 @@ async def admin_start(m: Message, repo: Repo, dialog_manager: DialogManager):
     if isinstance(user, Users):
         if user.full_name != m.from_user.full_name:
             # update full name if changed
-            await repo.update_user_full_name(
+            await repo.update_full_name(
                 user_id=m.from_user.id,
                 fullname=m.from_user.full_name)
 

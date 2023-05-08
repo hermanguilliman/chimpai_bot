@@ -2,7 +2,7 @@ from tgbot.misc.states import Settings, Personality
 from aiogram.types import ContentType, ParseMode
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.text import Format, Const
-from aiogram_dialog.widgets.kbd import Button, Cancel, Select, SwitchTo, Group, Start
+from aiogram_dialog.widgets.kbd import Button, Cancel, Select, SwitchTo, Group, Start, Row
 from aiogram_dialog.widgets.input import MessageInput
 from tgbot.handlers.api_key import api_key_handler
 from tgbot.getters.settings import get_data_model_selector, get_temperature, get_person_selector
@@ -30,7 +30,7 @@ settings_dialog = Dialog(
         SwitchTo(Format('🔋 Длина ответа: {max_length} токенов'), id='set_max_length', state=Settings.max_length),
         SwitchTo(Format('🌡️ Оригинальность ответа {temperature}'), id='set_temperature', state=Settings.temperature),
         width=1),
-        SwitchTo(Format('Личность: {personality_name}'), id='personality', state=Settings.personality),
+        SwitchTo(Format('Личность: {personality}'), id='personality', state=Settings.personality),
         Cancel(Const('🤚 Отмена')),
         state=Settings.select,
         parse_mode=ParseMode.HTML,
@@ -129,12 +129,11 @@ settings_dialog = Dialog(
             ),
             width=2,
         ),
-        Group(
-            Start(Const("✏️ Создать личность"), id='custom_person', state=Personality.name),
+        Row(
+            Start(Const("✏️ Создать"), id='custom_person', state=Personality.name),
+            Start(Const("♻️ Сбросить"), id='reset_person', state=Personality.reset),
             Cancel(Const('🤚 Отмена')),
-            width=1,
-        )
-        ,
+        ),
         state=Settings.personality,
         parse_mode='HTML',
         getter=get_person_selector,
