@@ -1,6 +1,6 @@
 FROM python:3.11-alpine
 WORKDIR /app
-RUN curl -sSL https://install.python-poetry.org | python3 -
+RUN pip install poetry
 COPY pyproject.toml poetry.lock ./
 RUN poetry install --no-root --no-dev
 COPY . .
