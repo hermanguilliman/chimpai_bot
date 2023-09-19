@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "chimpai-bot"
+version = "0.1.0"
+description = "OpenAI telegram bot"
+authors = ["Herman Guilliman <glmn.dev@protonmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiogram = "2.25.1"
+aioredis = "^2.0.1"
+aiogram-dialog = "1.9.0"
+environs = "^9.5.0"
+loguru = "^0.7.2"
+openai = "^0.28.0"
+sqlalchemy = "^2.0.21"
+redis = "^5.0.0"
+aiosqlite = "^0.19.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
