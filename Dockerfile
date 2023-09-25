@@ -1,7 +1,7 @@
 FROM python:3.11-alpine
 WORKDIR /app
-RUN pip install poetry
-COPY pyproject.toml poetry.lock ./
-RUN poetry install --no-root --no-dev
 COPY . .
+RUN pip install --upgrade pip
+RUN pip install poetry
+RUN poetry install --no-root --no-dev
 CMD [ "python", "./bot.py" ]
