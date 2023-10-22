@@ -49,7 +49,7 @@ async def neural_handler(
 
     if ai_text_answer:
         """выдача успешного запроса"""
-        await message.reply(ai_text_answer)
+        await message.reply(ai_text_answer, parse_mode=ParseMode.MARKDOWN)
         logger.debug('Ответ от нейросети получен')
     else:
         await message.answer('Что-то пошло не так, ответ от OpenAI не получен')
