@@ -25,7 +25,7 @@ async def new_personality_text(message: Message, message_input: MessageInput,
     user_id = manager.bg().user.id
     repo: Repo = manager.data['repo']
     dialog_data = manager.current_context().dialog_data
-    personality: Personality = repo.get_personality(user_id=user_id)
+    personality: Personality = await repo.get_personality(user_id=user_id)
 
     name = dialog_data.get('name')
     text = message.text
