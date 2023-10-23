@@ -9,6 +9,7 @@ class TgBot:
     admin_ids: list[int]
     use_redis: bool
 
+
 @dataclass
 class Config:
     tg_bot: TgBot
