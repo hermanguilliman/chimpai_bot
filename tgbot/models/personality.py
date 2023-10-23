@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Text, ForeignKey, String
+from sqlalchemy import Column, Integer, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from tgbot.models.base import Base
 
