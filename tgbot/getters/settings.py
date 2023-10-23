@@ -1,27 +1,33 @@
 from aiogram_dialog import DialogManager
+
+from tgbot.misc.personality import personality_base
+from tgbot.models.settings import Settings
 from tgbot.services.openai import OpenAIService
 from tgbot.services.repository import Repo
-from tgbot.models.settings import Settings
-from tgbot.misc.personality import personality_base
 
-async def get_data_model_selector(openai: OpenAIService, dialog_manager: DialogManager, **kwargs):
+
+async def get_data_model_selector(
+    openai: OpenAIService, dialog_manager: DialogManager, **kwargs
+):
     # Получаем список моделей доступных в OpenAI
-    repo: Repo = dialog_manager.data['repo']
+    repo: Repo = dialog_manager.data["repo"]
     settings: Settings = await repo.get_settings(dialog_manager.bg().user.id)
     engines = await openai.get_engines(api_key=settings.api_key)
     if engines is not list:
-        engine_ids = [engine['id'] for engine in engines['data']]
+        engine_ids = [engine["id"] for engine in engines["data"]]
     else:
         engine_ids = ["gpt-3.5-turbo"]
     return {
-        'models': engine_ids,
+        "models": engine_ids,
     }
 
 
-async def get_person_selector(openai: OpenAIService, dialog_manager: DialogManager, **kwargs):
+async def get_person_selector(
+    openai: OpenAIService, dialog_manager: DialogManager, **kwargs
+):
     # Получаем список личностей
     return {
-        'persons': [person['person'] for person in personality_base],
+        "persons": [person["person"] for person in personality_base],
     }
 
 
@@ -29,7 +35,8 @@ async def get_person_selector(openai: OpenAIService, dialog_manager: DialogManag
 async def get_temperature(dialog_manager: DialogManager, **kwargs):
     # При первом запуске получаем значение из предыдущего диалога?
     dialog_data = dialog_manager.current_context().dialog_data
-    if len(dialog_data)==0:
-        dialog_manager.current_context().dialog_data.update(dialog_manager.current_context().start_data)
+    if len(dialog_data) == 0:
+        dialog_manager.current_context().dialog_data.update(
+            dialog_manager.current_context().start_data
+        )
     return dialog_data
-    
