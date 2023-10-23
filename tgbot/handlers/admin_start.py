@@ -1,9 +1,11 @@
 from aiogram import Dispatcher
 from aiogram.types import Message
+from aiogram_dialog import DialogManager, StartMode
+
+from tgbot.dialogs.main import Main
 from tgbot.models.user import Users
 from tgbot.services.repository import Repo
-from tgbot.dialogs.main import Main
-from aiogram_dialog import DialogManager, StartMode
+
 
 async def admin_start(m: Message, repo: Repo, dialog_manager: DialogManager):
     user: Users | None = await repo.get_user(m.from_user.id)
@@ -11,8 +13,8 @@ async def admin_start(m: Message, repo: Repo, dialog_manager: DialogManager):
         if user.full_name != m.from_user.full_name:
             # update full name if changed
             await repo.update_full_name(
-                user_id=m.from_user.id,
-                fullname=m.from_user.full_name)
+                user_id=m.from_user.id, fullname=m.from_user.full_name
+            )
 
     else:
         # register new user
@@ -28,8 +30,5 @@ async def admin_start(m: Message, repo: Repo, dialog_manager: DialogManager):
 
 def register_admin(dp: Dispatcher):
     dp.register_message_handler(
-        admin_start, 
-        commands=["start"], 
-        state="*", 
-        is_admin=True
-        )
+        admin_start, commands=["start"], state="*", is_admin=True
+    )
