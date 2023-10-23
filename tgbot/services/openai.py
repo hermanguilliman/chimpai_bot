@@ -42,59 +42,25 @@ class OpenAIService():
         today = datetime.now().strftime("%d.%m.%Y")
         time = datetime.now().strftime("%H:%M")
 
-        if 'gpt-3.5' in model:
-            try:
-                messages = [
-                    {"role": "system", "content": f"{personality} Сегодня на календаре: {today}. Точное время: {time}"},
-                    {"role": "user", "content": f"{prompt}"}
-                ]
+        try:
+            messages = [
+                {"role": "system", "content": f"{personality} Сегодня на календаре: {today}. Точное время: {time}"},
+                {"role": "user", "content": f"{prompt}"}
+            ]
 
-                completions = await self.openai.ChatCompletion.acreate(
-                    model=model,
-                    max_tokens=max_tokens,
-                    n=1,
-                    stop=None,
-                    temperature=temperature,
-                    messages=messages,
-                    )
-                return completions.choices[0].message.content
-            except RateLimitError:
-                return 'Слишком частые запросы!'
-
-            except APIConnectionError:
-                return 'Ошибка подключения к API'
-
-            except AuthenticationError:
-                return 'Ошибка аутентификации API'
-
-            except APIError:
-                return 'Сервер вернул ошибку API'
-        else:
-            try:
-                logger.debug('Создаём запрос к нейросети')
-                completions = await self.openai.Completion.acreate(
-                    model=model,
-                    prompt=prompt,
-                    max_tokens=max_tokens,
-                    n=1,
-                    stop=None,
-                    temperature=temperature,
-                    )
-                logger.debug('Ответ от нейросети получен')
-            except RateLimitError:
-                return 'Слишком частые запросы!'
-
-            except APIConnectionError:
-                return 'Ошибка подключения к API'
-
-            except AuthenticationError:
-                return 'Ошибка аутентификации API'
-
-            except APIError:
-                return 'Сервер вернул ошибку API'
-
-        message = completions.choices[0].text
-        return message.strip()
+            completions = await self.openai.ChatCompletion.acreate(
+                model=model,
+                max_tokens=max_tokens,
+                n=1,
+                stop=None,
+                temperature=temperature,
+                messages=messages,
+                )
+        except Exception as e:
+            return f'{e}'
+        
+        message = completions.choices[0].message.content
+        return str(message)
     
 
     async def get_engines(self, api_key) -> list:
