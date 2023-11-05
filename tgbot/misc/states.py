@@ -1,5 +1,4 @@
-
-from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.filters.state import State, StatesGroup
 
 
 class Main(StatesGroup):
@@ -8,6 +7,7 @@ class Main(StatesGroup):
 
 class Neural(StatesGroup):
     chat = State()
+    transcribe = State()
 
 
 class Settings(StatesGroup):
@@ -17,6 +17,7 @@ class Settings(StatesGroup):
     max_length = State()
     temperature = State()
     personality = State()
+
 
 class Personality(StatesGroup):
     reset = State()

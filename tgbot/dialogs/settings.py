@@ -1,4 +1,4 @@
-from aiogram.types import ContentType, ParseMode
+from aiogram.enums import ContentType, ParseMode
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import (
@@ -96,9 +96,7 @@ settings_dialog = Dialog(
         getter=get_data_model_selector,
     ),
     Window(
-        # окно выбора максимального числа токенов на запрос,
-        # для разных моделей диапазон отличается
-        # например от 1 до 4000 для модели text-davinci-003
+
         Const("<b>Укажите максимальную длину ответа</b>"),
         Const(
             "\n<b>Подсказка:</b> стандартное значение <b>256</b> токенов, но лучше использовать около <b>1000</b> токенов"
@@ -106,7 +104,7 @@ settings_dialog = Dialog(
         Group(
             Select(
                 Format("🔋 {item}"),
-                items=list(range(100, 4000 + 1, 100)),
+                items=list(range(256, 4000, 256)),
                 item_id_getter=lambda x: x,
                 id="select_max_length",
                 on_click=on_max_length_selected,

@@ -1,4 +1,5 @@
-from aiogram.types import Message, ParseMode
+from aiogram.types import Message
+from aiogram.enums import ParseMode
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import MessageInput
 
@@ -9,10 +10,9 @@ from tgbot.services.repository import Repo
 async def new_personality_name(
     message: Message, message_input: MessageInput, manager: DialogManager
 ):
-    dialog_data = manager.current_context().dialog_data
     new_name = message.text
     if len(new_name) <= 20:
-        dialog_data["name"] = new_name
+        manager.dialog_data["name"] = new_name
         await manager.switch_to(Personality.text)
     else:
         await message.answer(
@@ -25,11 +25,10 @@ async def new_personality_text(
     message: Message, message_input: MessageInput, manager: DialogManager
 ):
     user_id = manager.bg().user.id
-    repo: Repo = manager.data["repo"]
-    dialog_data = manager.current_context().dialog_data
+    repo: Repo = manager.middleware_data.get("repo")
     personality: Personality = await repo.get_personality(user_id=user_id)
 
-    name = dialog_data.get("name")
+    name = manager.dialog_data.get("name")
     text = message.text
 
     if not personality:

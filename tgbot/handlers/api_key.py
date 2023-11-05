@@ -1,6 +1,7 @@
 import re
 
-from aiogram.types import Message, ParseMode
+from aiogram.enums import ParseMode
+from aiogram.types import Message
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import MessageInput
 
@@ -11,8 +12,7 @@ async def api_key_handler(
     message: Message, message_input: MessageInput, manager: DialogManager
 ):
     user_id = manager.bg().user.id
-    repo: Repo = manager.data["repo"]
-    dialog_data = manager.current_context().dialog_data
+    repo: Repo = manager.middleware_data.get("repo")
     new_api_key = message.text
     is_valid_key = bool(re.match("sk-[a-zA-Z0-9]{48}$", new_api_key))
 
@@ -24,7 +24,7 @@ async def api_key_handler(
         await manager.done()
         return
 
-    dialog_data["api_key"] = new_api_key
+    manager.dialog_data["api_key"] = new_api_key
     await repo.update_api_key(user_id, new_api_key)
     await message.answer(
         "<b>✅ Новый API ключ успешно установлен!</b>", parse_mode=ParseMode.HTML

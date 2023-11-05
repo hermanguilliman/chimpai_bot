@@ -13,7 +13,7 @@ async def on_new_model_selected(
     callback: ChatEvent, select: Any, manager: DialogManager, item_id: str
 ):
     """Обновляет значение модели в бд по нажатию кнопки"""
-    repo: Repo = manager.data["repo"]
+    repo: Repo = manager.middleware_data.get("repo")
     user_id = manager.bg().user.id
     await repo.update_settings(user_id=user_id, model=item_id)
     await callback.answer(f"Модель {item_id} успешно установлена!")
@@ -24,7 +24,7 @@ async def on_new_personality_selected(
     callback: ChatEvent, select: Any, manager: DialogManager, item_id: str
 ):
     """Обновляет значение личности в бд по нажатию кнопки"""
-    repo: Repo = manager.data["repo"]
+    repo: Repo = manager.middleware_data.get("repo")
     user_id = manager.bg().user.id
     personality = await repo.get_personality(user_id=user_id)
 
@@ -45,7 +45,7 @@ async def on_max_length_selected(
     callback: ChatEvent, select: Any, manager: DialogManager, item_id: str
 ):
     """Обновляет значение максимальной длины по нажатию кнопки"""
-    repo: Repo = manager.data["repo"]
+    repo: Repo = manager.middleware_data.get("repo")
     user_id = manager.bg().user.id
     await repo.update_max_token(user_id=user_id, max_tokens=item_id)
     await callback.answer(f"Новая длина ответа составляет {item_id} токенов")
@@ -91,7 +91,7 @@ async def on_temperature_selected(
     callback: ChatEvent, select: Any, manager: DialogManager
 ):
     # кнопка выбора температуры
-    repo: Repo = manager.data["repo"]
+    repo: Repo = manager.middleware_data.get("repo")
     user_id = manager.bg().user.id
     temperature = manager.current_context().dialog_data.get("temperature")
     await repo.update_temperature(user_id=user_id, temperature=str(temperature))

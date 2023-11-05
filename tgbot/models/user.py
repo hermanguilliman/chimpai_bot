@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, BigInteger, Text, ForeignKey, DateTime, ForeignKey
+from sqlalchemy import Column, BigInteger, Text, DateTime
 from sqlalchemy.orm import relationship
 from tgbot.models.base import Base
 

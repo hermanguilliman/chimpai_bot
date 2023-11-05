@@ -1,4 +1,4 @@
-from aiogram.types import ContentType, ParseMode
+from aiogram.enums import ContentType, ParseMode
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Back, Button, Cancel, Row

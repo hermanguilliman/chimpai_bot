@@ -2,15 +2,21 @@ from aiogram_dialog import DialogManager
 
 from tgbot.models.personality import Personality
 from tgbot.models.settings import Settings
+from tgbot.services.openai import OpenAIService
 from tgbot.services.repository import Repo
 
 
-async def get_base_data(repo: Repo, dialog_manager: DialogManager, **kwargs) -> dict:
+async def get_base_data(dialog_manager: DialogManager, **kwargs) -> dict:
     # Здесь происходит первичный запрос данных из команды запустившей диалог и бд
+    repo: Repo = dialog_manager.middleware_data.get("repo")
+    openai: OpenAIService = dialog_manager.middleware_data.get("openai")
+    
     user_id: int = dialog_manager.bg().user.id
     full_name: str = dialog_manager.bg().user.full_name
     settings: Settings = await repo.get_settings(user_id)
     personality: Personality = await repo.get_personality(user_id)
+    dialog_manager.dialog_data["repo"] = repo
+    dialog_manager.dialog_data["openai"] = openai
 
     base_view = {
         "user_id": user_id,
@@ -25,5 +31,5 @@ async def get_base_data(repo: Repo, dialog_manager: DialogManager, **kwargs) -> 
     }
 
     # обновляем текущий контекст
-    dialog_manager.current_context().dialog_data.update(base_view)
+    dialog_manager.dialog_data.update(base_view)
     return base_view

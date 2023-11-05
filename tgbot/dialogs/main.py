@@ -1,4 +1,4 @@
-from aiogram.types import ParseMode
+from aiogram.enums import ParseMode
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.kbd import Row, Start
 from aiogram_dialog.widgets.text import Const, Format
@@ -16,9 +16,10 @@ main_dialog = Dialog(
         Format("🧠 Оригинальность ответа: <b>{temperature}</b>", when="temperature"),
         Format("🎭 Личность: <b>{personality}</b>", when="personality"),
         Row(
-            Start(Const("🤖 Чат"), id="neural", state=Neural.chat),
-            Start(Const("📝 Настройки"), id="settings", state=Settings.select),
+            Start(Const("🤖 Чат"), id="neural_chat", state=Neural.chat),
+            Start(Const("🎧 Транскрибация"), id="voice_transcribe", state=Neural.transcribe),
         ),
+        Start(Const("📝 Настройки"), id="settings", state=Settings.select),
         state=Main.main,
         getter=get_base_data,
         parse_mode=ParseMode.HTML,

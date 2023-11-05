@@ -67,9 +67,17 @@ class OpenAIService:
         message = completions.choices[0].message.content
         return str(message)
 
-    async def get_engines(self, api_key) -> list:
+    async def get_engines(self, api_key: str) -> list:
         if api_key:
             self.openai.api_key = api_key
             return self.openai.Engine.list()
         else:
             return "error"
+        
+
+    async def audio_to_text(self, audio_path: str, api_key: str) -> str:
+        if api_key:
+            self.openai.api_key = api_key
+            with open(audio_path, "rb") as file:
+                transcript = await self.openai.Audio.atranscribe("whisper-1", file)
+                return transcript.text

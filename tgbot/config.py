@@ -1,6 +1,8 @@
 from dataclasses import dataclass
+from sys import stdout
 
 from environs import Env
+from loguru import logger
 
 
 @dataclass
@@ -25,4 +27,15 @@ def load_config(path: str = None):
             admin_ids=list(map(int, env.list("ADMINS"))),
             use_redis=env.bool("USE_REDIS", False),
         ),
+    )
+
+
+def setup_logger():
+    logger.remove()
+    logger.add("logs/chimpai.log", level="DEBUG", rotation="10 MB")
+    logger.add(
+        stdout,
+        colorize=True,
+        format="<green>{time}</green> <level>{message}</level>",
+        level="DEBUG",
     )

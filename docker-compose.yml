@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  chimpai:
+    container_name: chimpai
+    build:
+      context: .
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./database:/app/database
+    networks:
+      - chimpai-network
+    depends_on:
+      - redis
+
+  redis:
+    container_name: chimpai_redis
+    image: redis:7-alpine
+    restart: always
+    networks:
+      - chimpai-network
+    environment:
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL,CONFIG
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - chimai-redis-data:/data
+
+volumes:
+  chimai-redis-data:
+
+networks:
+  chimpai-network:
+    driver: bridge

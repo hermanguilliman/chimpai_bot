@@ -1,110 +1,94 @@
 import asyncio
 
-# additional tools
 import openai
-
-# base aiogram with FSM
 from aiogram import Bot, Dispatcher
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram.contrib.fsm_storage.redis import RedisStorage2
-
-# dialogs
-from aiogram_dialog import DialogRegistry
+from aiogram.filters import CommandStart, ExceptionTypeFilter
+from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.fsm.storage.redis import RedisStorage, DefaultKeyBuilder
+from aiogram.methods import DeleteWebhook
+from aiogram_dialog import setup_dialogs
+from aiogram_dialog.api.exceptions import UnknownIntent, UnknownState
 from loguru import logger
+from redis.asyncio.client import Redis
+from sqlalchemy.ext.asyncio import (
+    AsyncSession, async_sessionmaker, create_async_engine
+)
 
-# database
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
-
-from tgbot.config import load_config
+from tgbot.config import load_config, setup_logger
 from tgbot.dialogs.main import main_dialog
 from tgbot.dialogs.neural import neural_chat
 from tgbot.dialogs.personality import person
 from tgbot.dialogs.settings import settings_dialog
-
-# filters
-from tgbot.filters.admin_filter import AdminFilter, RoleFilter
-
-# handlers
-from tgbot.handlers.admin_start import register_admin
-from tgbot.handlers.user_start import register_user
-
-# middlewares
-from tgbot.middlewares.db_and_repo import DbMiddleware
+from tgbot.filters.is_admin import AdminFilter
+from tgbot.handlers.admin_start import admin_start
+from tgbot.handlers.unknown_errors import on_unknown_intent, on_unknown_state
+from tgbot.handlers.user_start import user_start
 from tgbot.middlewares.openai_api import OpenAIMiddleware
-
-# models
+from tgbot.middlewares.repo import RepoMiddleware
 from tgbot.models.base import Base
 
 
 async def create_sessionmaker(echo) -> AsyncSession:
-    # url = f"postgresql+asyncpg://{user}:{password}@{host}/{database}"
     url = "sqlite+aiosqlite:///database/settings.db"
-
     engine = create_async_engine(url, echo=echo, future=True)
 
-    # create metadata
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    # session
-    session = sessionmaker(
+
+    sessionmaker = async_sessionmaker(
         engine,
         expire_on_commit=False,
         class_=AsyncSession,
+        autoflush=False,
     )
-    return session
-
-
-def register_all_middlewares(dp: Dispatcher, config, session: AsyncSession, openai):
-    dp.setup_middleware(DbMiddleware(session=session))
-    dp.setup_middleware(OpenAIMiddleware(openai=openai))
-
-
-def register_all_filters(dp: Dispatcher):
-    dp.filters_factory.bind(RoleFilter)
-    dp.filters_factory.bind(AdminFilter)
-
-
-def register_all_handlers(dp: Dispatcher):
-    register_admin(dp)
-    register_user(dp)
+    return sessionmaker
 
 
 async def main():
-    logger.info("Starting ChimpAI")
+    setup_logger()
+    logger.info("ChimpAI запущен")
     config = load_config(".env")
 
     storage = (
-        RedisStorage2("redis", 6379, db=5, pool_size=10, prefix="chimpai_fsm")
+        RedisStorage(
+            Redis("redis", 6379, db=5),
+            key_builder=DefaultKeyBuilder(with_destiny=True),
+        )
         if config.tg_bot.use_redis
         else MemoryStorage()
     )
     bot = Bot(token=config.tg_bot.token)
-    dp = Dispatcher(bot, storage=storage)
-    bot["config"] = config
+    dp = Dispatcher(storage=storage)
+    sessionmaker = await create_sessionmaker(echo=False)
 
-    session = await create_sessionmaker(echo=False)
+    dp.errors.register(
+        on_unknown_intent,
+        ExceptionTypeFilter(UnknownIntent),
+    )
+    dp.errors.register(
+        on_unknown_state,
+        ExceptionTypeFilter(UnknownState),
+    )
 
-    register_all_middlewares(dp, config, session, openai)
-    register_all_filters(dp)
-    register_all_handlers(dp)
+    dp.include_router(main_dialog)
+    dp.include_router(settings_dialog)
+    dp.include_router(neural_chat)
+    dp.include_router(person)
 
-    registry = DialogRegistry(dp)
-    registry.register(main_dialog)
-    registry.register(settings_dialog)
-    registry.register(neural_chat)
-    registry.register(person)
-    # start
-    try:
-        await dp.start_polling()
-    finally:
-        await dp.storage.close()
-        await dp.storage.wait_closed()
-        await bot.session.close()
+    setup_dialogs(dp)
+
+    dp.update.middleware(RepoMiddleware(sessionmaker))
+    dp.update.middleware(OpenAIMiddleware(openai))
+    dp.message.register(
+        admin_start, CommandStart(), AdminFilter(config.tg_bot.admin_ids)
+    )
+    dp.message.register(user_start, CommandStart())
+    await bot(DeleteWebhook(drop_pending_updates=True))
+    await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
     try:
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
-        logger.error("ChimpAI stopped!")
+        logger.error("ChimpAI остановлен!")

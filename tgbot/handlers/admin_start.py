@@ -1,11 +1,8 @@
-from aiogram import Dispatcher
 from aiogram.types import Message
 from aiogram_dialog import DialogManager, StartMode
-
-from tgbot.dialogs.main import Main
 from tgbot.models.user import Users
 from tgbot.services.repository import Repo
-
+from tgbot.misc.states import Main
 
 async def admin_start(m: Message, repo: Repo, dialog_manager: DialogManager):
     user: Users | None = await repo.get_user(m.from_user.id)
@@ -24,11 +21,4 @@ async def admin_start(m: Message, repo: Repo, dialog_manager: DialogManager):
             language_code=m.from_user.language_code,
         )
 
-    # точка входа в основной диалог
     await dialog_manager.start(Main.main, mode=StartMode.RESET_STACK)
-
-
-def register_admin(dp: Dispatcher):
-    dp.register_message_handler(
-        admin_start, commands=["start"], state="*", is_admin=True
-    )

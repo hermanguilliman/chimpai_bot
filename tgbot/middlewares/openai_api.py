@@ -1,17 +1,20 @@
-from aiogram.dispatcher.middlewares import LifetimeControllerMiddleware
+from typing import Any, Awaitable, Callable, Dict
+
+from aiogram import BaseMiddleware
+from aiogram.types import TelegramObject
+
 from tgbot.services.openai import OpenAIService
 
 
-class OpenAIMiddleware(LifetimeControllerMiddleware):
-    skip_patterns = ["error", "update"]
-
+class OpenAIMiddleware(BaseMiddleware):
     def __init__(self, openai):
-        super().__init__()
         self.openai = openai
-  
-  
-    async def pre_process(self, obj, data, *args):
-        data["openai"] = OpenAIService(self.openai)
 
-    async def post_process(self, obj, data, *args):
-        del data["openai"]
+    async def __call__(
+        self,
+        handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
+        event: TelegramObject,
+        data: Dict[str, Any],
+    ) -> Any:
+        data["openai"] = OpenAIService(self.openai)
+        return await handler(event, data)
