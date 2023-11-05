@@ -9,6 +9,7 @@ services:
       - .env
     volumes:
       - ./database:/app/database
+      - ./voices:/app/voices
     networks:
       - chimpai-network
     depends_on:
