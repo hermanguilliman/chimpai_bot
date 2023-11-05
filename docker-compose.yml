@@ -10,6 +10,7 @@ services:
     volumes:
       - ./database:/app/database
       - ./voices:/app/voices
+      - ./logs:/app/logs
     networks:
       - chimpai-network
     depends_on:
