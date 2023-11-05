@@ -14,16 +14,21 @@ class Repo:
     def __init__(self, session: AsyncSession):
         self.session: AsyncSession = session
 
-    async def add_user(self, user_id: int, fullname: str, language_code: str) -> None:
+    async def add_user(self,
+                       user_id: int,
+                       fullname: str,
+                       language_code: str) -> None:
         """создаём пользователя с базовыми настройками"""
-        user = Users(id=user_id, full_name=fullname, language_code=language_code)
+        user = Users(id=user_id,
+                     full_name=fullname,
+                     language_code=language_code,)
         settings = Settings(
-            max_tokens=256, model="gpt-3.5-turbo", temperature="0.7", user=user
-        )
-        # personality = Personality(name='ChimpAI', text="Ты играешь роль разумного орангутана", user=user)
+            max_tokens=256,
+            model="gpt-3.5-turbo",
+            temperature="0.7",
+            user=user,)
         self.session.add(user)
         self.session.add(settings)
-        # self.session.add(personality)
         await self.session.commit()
         logger.info("Добавлен пользователь")
 
