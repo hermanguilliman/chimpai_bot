@@ -1,6 +1,6 @@
 # chimpai bot 🐵
 
-[![Интерфейс бота](https://i.ibb.co/5jH3nP0/main.jpg 'gui')](https://i.ibb.co/5jH3nP0/main.jpg)
+[![Интерфейс бота](https://i.ibb.co/VC4GQs1/main.jpg 'gui')](https://i.ibb.co/VC4GQs1/main.jpg)
 
 **ChimpAI - это Telegram бот с интерфейсом OpenAI.**
 
