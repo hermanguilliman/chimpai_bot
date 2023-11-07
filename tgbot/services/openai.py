@@ -71,7 +71,8 @@ class OpenAIService:
     async def get_engines(self, api_key: str = None) -> list:
         if api_key:
             self.openai.api_key = api_key
-            return self.openai.models.list()
+            engines = await self.openai.models.list()
+            return engines.data
         else:
             return "error"
 

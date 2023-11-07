@@ -14,7 +14,7 @@ async def get_data_model_selector(dialog_manager: DialogManager, **kwargs):
 
     engines = await openai.get_engines(api_key=settings.api_key)
     if engines is not list:
-        engine_ids = [engine["id"] for engine in engines["data"]]
+        engine_ids = [engine.id for engine in engines]
     else:
         engine_ids = ["gpt-3.5-turbo"]
     return {
