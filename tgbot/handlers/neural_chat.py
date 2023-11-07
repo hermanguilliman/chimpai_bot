@@ -57,7 +57,7 @@ async def neural_handler(
         if ai_text_answer:
             """выдача успешного запроса"""
             await message.reply(
-                ai_text_answer, parse_mode=ParseMode.MARKDOWN
+                ai_text_answer, parse_mode=ParseMode.HTML
             )
             logger.debug("Ответ от нейросети получен")
         else:
