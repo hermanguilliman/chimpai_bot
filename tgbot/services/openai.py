@@ -1,12 +1,11 @@
 from datetime import datetime
-
-import openai
+from openai import AsyncOpenAI
 from loguru import logger
 
 
 class OpenAIService:
-    def __init__(self, openai: openai):
-        self.openai: openai = openai
+    def __init__(self, openai: AsyncOpenAI):
+        self.openai: AsyncOpenAI = openai
 
     async def get_answer(
         self,
@@ -48,18 +47,18 @@ class OpenAIService:
             messages = [
                 {
                     "role": "system",
-                    "content": f"{personality} Сегодня на календаре: {today}. Точное время: {time}",
+                    "content": f"{personality} Дата: {today}. Время: {time}",
                 },
                 {"role": "user", "content": f"{prompt}"},
             ]
 
-            completions = await self.openai.ChatCompletion.acreate(
+            completions = await self.openai.chat.completions.create(
+                messages=messages,
                 model=model,
                 max_tokens=max_tokens,
                 n=1,
                 stop=None,
                 temperature=temperature,
-                messages=messages,
             )
         except Exception as e:
             return f"{e}"
@@ -67,17 +66,31 @@ class OpenAIService:
         message = completions.choices[0].message.content
         return str(message)
 
-    async def get_engines(self, api_key: str) -> list:
+    async def get_engines(self, api_key: str = None) -> list:
         if api_key:
             self.openai.api_key = api_key
-            return self.openai.Engine.list()
+            return self.openai.models.list()
         else:
             return "error"
-        
 
-    async def audio_to_text(self, audio_path: str, api_key: str) -> str:
+    async def audio_to_text(self, audio_path: str, api_key: str = None) -> str:
         if api_key:
             self.openai.api_key = api_key
             with open(audio_path, "rb") as file:
-                transcript = await self.openai.Audio.atranscribe("whisper-1", file)
+                transcript = await self.openai.audio.transcriptions.create(file=file, model="whisper-1")
                 return transcript.text
+
+    async def create_image(self, prompt: str = None, api_key: str = None) -> str:
+        if prompt:
+            if api_key:
+                self.openai.api_key = api_key
+                image_url = await self.openai.images.generate(
+                    prompt=prompt,
+                    model='dall-e-3',
+                    n=1,
+                    size="1024x1024",
+                    quality="hd",
+                    response_format="url")
+                return image_url.data[0].url
+        else:
+            return "Не указано текстовое описание"

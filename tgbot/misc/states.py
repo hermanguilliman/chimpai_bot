@@ -8,6 +8,7 @@ class Main(StatesGroup):
 class Neural(StatesGroup):
     chat = State()
     transcribe = State()
+    image_create = State()
 
 
 class Settings(StatesGroup):

@@ -1,6 +1,6 @@
 import asyncio
 
-import openai
+from openai import AsyncOpenAI
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart, ExceptionTypeFilter
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -46,7 +46,6 @@ async def create_sessionmaker(echo) -> AsyncSession:
 
 async def main():
     setup_logger()
-    logger.info("ChimpAI запущен")
     config = load_config(".env")
 
     storage = (
@@ -60,7 +59,7 @@ async def main():
     bot = Bot(token=config.tg_bot.token)
     dp = Dispatcher(storage=storage)
     sessionmaker = await create_sessionmaker(echo=False)
-
+    openai = AsyncOpenAI(api_key="sk-")
     dp.errors.register(
         on_unknown_intent,
         ExceptionTypeFilter(UnknownIntent),
@@ -84,6 +83,8 @@ async def main():
     )
     dp.message.register(user_start, CommandStart())
     await bot(DeleteWebhook(drop_pending_updates=True))
+    logger.info(config.tg_bot.admin_ids)
+    logger.info("Запуск ChimpAI")
     await dp.start_polling(bot)
 
 

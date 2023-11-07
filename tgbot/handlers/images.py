@@ -1,17 +1,16 @@
 from aiogram.enums import ParseMode
-from aiogram.types import Message
+from aiogram.types import Message, URLInputFile
 from aiogram.utils.chat_action import ChatActionSender
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import MessageInput
 from loguru import logger
 
-from tgbot.models.personality import Personality
 from tgbot.models.settings import Settings
-from tgbot.services.repository import Repo
 from tgbot.services.openai import OpenAIService
+from tgbot.services.repository import Repo
 
 
-async def neural_handler(
+async def image_creator_handler(
     message: Message,
     message_input: MessageInput,
     manager: DialogManager,
@@ -19,7 +18,6 @@ async def neural_handler(
     repo: Repo = manager.middleware_data.get("repo")
     openai: OpenAIService = manager.middleware_data.get("openai")
     settings: Settings = await repo.get_settings(message.from_user.id)
-    personality: Personality = await repo.get_personality(message.from_user.id)
     prompt: str = message.text
 
     if settings is None:
@@ -34,34 +32,27 @@ async def neural_handler(
             parse_mode=ParseMode.HTML,
         )
         return
-    if personality:
-        personality = personality.text
-    else:
-        personality = " "
-
-    if message.reply_to_message:
-        prompt = f"{message.text}:\n{message.reply_to_message.text}"
 
     await message.answer(
-        "<b>⌛️ Запрос отправлен. Ожидание ответа...</b>",
+        "<b>⌛️ Запрос на создание изображения принят. Ожидание ответа...</b>",
         parse_mode=ParseMode.HTML,
     )
 
-    async with ChatActionSender.typing(message.from_user.id, message.bot):
-        logger.debug("Создаём запрос к нейросети")
-        ai_text_answer = await openai.get_answer(
-            api_key=settings.api_key,
-            max_tokens=int(settings.max_tokens),
-            model=settings.model,
-            temperature=float(settings.temperature),
+    async with ChatActionSender.upload_photo(message.from_user.id, message.bot):
+        logger.debug("Создаём изображение с помощью нейросети")
+        image_url = await openai.create_image(
             prompt=prompt,
-            personality=personality,
+            api_key=settings.api_key,
         )
 
-        if ai_text_answer:
-            """выдача успешного запроса"""
-            await message.reply(
-                ai_text_answer, parse_mode=ParseMode.MARKDOWN
+        if image_url:
+            image_url = URLInputFile(image_url)
+            
+            """выдача изображения"""
+            await message.reply_photo(
+                image_url,
+                caption=f"Изображение по запросу: {message.text}",
+                parse_mode=ParseMode.HTML,
             )
             logger.debug("Ответ от нейросети получен")
         else:

@@ -2,12 +2,13 @@ from typing import Any, Awaitable, Callable, Dict
 
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
+from openai import AsyncOpenAI
 
 from tgbot.services.openai import OpenAIService
 
 
 class OpenAIMiddleware(BaseMiddleware):
-    def __init__(self, openai):
+    def __init__(self, openai: AsyncOpenAI):
         self.openai = openai
 
     async def __call__(
