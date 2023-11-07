@@ -83,7 +83,6 @@ async def main():
     )
     dp.message.register(user_start, CommandStart())
     await bot(DeleteWebhook(drop_pending_updates=True))
-    logger.info(config.tg_bot.admin_ids)
     logger.info("Запуск ChimpAI")
     await dp.start_polling(bot)
 

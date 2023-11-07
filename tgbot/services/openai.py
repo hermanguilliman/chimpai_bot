@@ -1,5 +1,5 @@
 from datetime import datetime
-from openai import AsyncOpenAI
+from openai import AsyncOpenAI, BadRequestError, RateLimitError, APIConnectionError
 from loguru import logger
 
 
@@ -83,14 +83,24 @@ class OpenAIService:
     async def create_image(self, prompt: str = None, api_key: str = None) -> str:
         if prompt:
             if api_key:
-                self.openai.api_key = api_key
-                image_url = await self.openai.images.generate(
-                    prompt=prompt,
-                    model='dall-e-3',
-                    n=1,
-                    size="1024x1024",
-                    quality="hd",
-                    response_format="url")
-                return image_url.data[0].url
+                try:
+                    self.openai.api_key = api_key
+                    image_url = await self.openai.images.generate(
+                        prompt=prompt,
+                        model='dall-e-3',
+                        n=1,
+                        size="1024x1024",
+                        quality="hd",
+                        response_format="url")
+                    return image_url.data[0].url
+                except BadRequestError:
+                    return "Измените текст запроса, чтобы не нарушать правила сервиса."
+                except RateLimitError:
+                    return "Превышен лимит изображений в минуту. Попробуйте позднее."
+                except APIConnectionError:
+                    return "Ошибка соединения с нейросетью"
+                except Exception as e:
+                    return f"{e}"
+
         else:
             return "Не указано текстовое описание"

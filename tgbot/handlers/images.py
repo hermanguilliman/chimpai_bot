@@ -46,15 +46,21 @@ async def image_creator_handler(
         )
 
         if image_url:
-            image_url = URLInputFile(image_url)
-            
-            """выдача изображения"""
-            await message.reply_photo(
-                image_url,
-                caption=f"Изображение по запросу: {message.text}",
-                parse_mode=ParseMode.HTML,
-            )
-            logger.debug("Ответ от нейросети получен")
+            if image_url.startswith("https://"):
+                image_url = URLInputFile(image_url)
+                
+                """выдача изображения"""
+                await message.reply_photo(
+                    image_url,
+                    caption=f"Изображение по запросу: {message.text}",
+                    parse_mode=ParseMode.HTML,
+                )
+                logger.debug("Изображение от нейросети получено")
+            else:
+                await message.reply(
+                    f"<b>Ответ нейросети:</b> {image_url}",
+                    parse_mode=ParseMode.HTML)
+                logger.debug(image_url)
         else:
             await message.answer(
                 "<b>Что-то пошло не так, ответ от OpenAI не получен</b>",
