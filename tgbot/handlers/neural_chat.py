@@ -45,7 +45,7 @@ async def neural_handler(
 
     async with ChatActionSender.typing(message.from_user.id, message.bot):
         logger.debug("Создаём запрос к нейросети")
-        ai_text_answer = await openai.get_answer(
+        answer = await openai.get_answer(
             api_key=settings.api_key,
             max_tokens=int(settings.max_tokens),
             model=settings.model,
@@ -54,12 +54,19 @@ async def neural_handler(
             personality=personality,
         )
 
-        if ai_text_answer:
+        if answer:
             """выдача успешного запроса"""
-            await message.reply(
-                ai_text_answer, parse_mode=ParseMode.HTML
-            )
-            logger.debug("Ответ от нейросети получен")
+            
+            try:
+                await message.reply(
+                    answer, parse_mode=ParseMode.MARKDOWN
+                )
+                logger.debug("Ответ от нейросети получен")
+            except Exception:
+                await message.reply(
+                    answer, parse_mode=ParseMode.HTML
+                )
+                logger.debug("Ответ от нейросети получен")
         else:
             await message.answer(
                 "<b>Что-то пошло не так, ответ от OpenAI не получен</b>",
