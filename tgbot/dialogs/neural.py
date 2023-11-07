@@ -5,9 +5,10 @@ from aiogram_dialog.widgets.kbd import Cancel, Row, Start
 from aiogram_dialog.widgets.text import Const, Format
 
 from tgbot.getters.base_data import get_base_data
-from tgbot.handlers.neural_chat import neural_handler
-from tgbot.handlers.voice_transcribe import voice_handler
 from tgbot.handlers.images import image_creator_handler
+from tgbot.handlers.neural_chat import neural_handler
+from tgbot.handlers.tts import tts_handler
+from tgbot.handlers.voice_transcribe import voice_handler
 from tgbot.misc.states import Neural, Settings
 
 neural_chat = Dialog(
@@ -31,12 +32,18 @@ neural_chat = Dialog(
         state=Neural.transcribe,
         parse_mode=ParseMode.HTML,
     ),
-
     Window(
         MessageInput(image_creator_handler, content_types=[ContentType.TEXT]),
         Const("<b>🖌 Напишите описание несуществующего изображения...</b>"),
         Cancel(Const("👈 Назад")),
         state=Neural.image_create,
+        parse_mode=ParseMode.HTML,
+    ),
+    Window(
+        MessageInput(tts_handler, content_types=[ContentType.TEXT]),
+        Const("<b>🦜 Напишите текст и я озвучу его...</b>"),
+        Cancel(Const("👈 Назад")),
+        state=Neural.tts,
         parse_mode=ParseMode.HTML,
     ),
 )

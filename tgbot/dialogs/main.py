@@ -18,12 +18,13 @@ main_dialog = Dialog(
         Format("🎭 Личность: <b>{personality}</b>", when="personality"),
         Row(
             Start(Const("🤖 Чат"), id="neural_chat", state=Neural.chat),
-            Start(Const("🎧 Транскрибация"), id="voice_transcribe", state=Neural.transcribe),
+            Start(Const("🎨 Художник"), id="dalle", state=Neural.image_create),
         ),
         Row(
-            Start(Const("🎨 Художник"), id="dalle", state=Neural.image_create),
-            Start(Const("📝 Настройки"), id="settings", state=Settings.select),
+            Start(Const("🎧 Транскрибация"), id="voice_transcribe", state=Neural.transcribe),
+            Start(Const("🎙 Озвучка"), id="tts", state=Neural.tts),
         ),
+        Start(Const("📝 Настройки"), id="settings", state=Settings.select),
         # Короткий путь к текстовому запросу или расшифровке войса
         MessageInput(neural_handler, content_types=[ContentType.TEXT]),
         MessageInput(voice_handler, content_types=[ContentType.VOICE]),

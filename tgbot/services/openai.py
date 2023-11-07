@@ -1,6 +1,7 @@
 from datetime import datetime
 from openai import AsyncOpenAI, BadRequestError, RateLimitError, APIConnectionError
 from loguru import logger
+import io
 
 
 class OpenAIService:
@@ -104,3 +105,20 @@ class OpenAIService:
 
         else:
             return "Не указано текстовое описание"
+
+
+    async def create_speech(self, prompt: str = None, api_key: str = None):
+        if prompt:
+            if api_key:
+                try:
+                    self.openai.api_key = api_key
+                    response = await self.openai.audio.speech.create(
+                        model="tts-1",
+                        voice="alloy",
+                        speed=0.8,
+                        input=prompt,
+                        response_format='opus',
+                        )
+                    return io.BytesIO(response.read()).getvalue()
+                except Exception as e:
+                    print(e)

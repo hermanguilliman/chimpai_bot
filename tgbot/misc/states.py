@@ -9,6 +9,7 @@ class Neural(StatesGroup):
     chat = State()
     transcribe = State()
     image_create = State()
+    tts = State()
 
 
 class Settings(StatesGroup):
