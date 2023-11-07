@@ -1,7 +1,8 @@
-from datetime import datetime
-from openai import AsyncOpenAI, BadRequestError, RateLimitError, APIConnectionError
-from loguru import logger
 import io
+from datetime import datetime
+
+from loguru import logger
+from openai import APIConnectionError, AsyncOpenAI, BadRequestError, RateLimitError
 
 
 class OpenAIService:
@@ -15,12 +16,11 @@ class OpenAIService:
         prompt: str = None,
         max_tokens: int = None,
         temperature: float = None,
-        personality: str = None,
+        personality: str | None = None,
     ) -> str:
         """
         Функция использует OpenAI для ответа на вопросы
         """
-        # Применяем индвидуальный ключ для конкретного экземпляра
         if not api_key:
             logger.debug("Не указан ключ API")
             return "Не указан ключ API"
@@ -39,20 +39,21 @@ class OpenAIService:
 
         self.openai.api_key = api_key
 
-        # Используем полученные настройки для генерации ответа с помощью OpenAI
+        messages = [
+            {"role": "user", "content": f"{prompt}"},
+        ]
+        if isinstance(personality, str):
+            today = datetime.now().strftime("%d.%m.%Y")
+            time = datetime.now().strftime("%H:%M")
 
-        today = datetime.now().strftime("%d.%m.%Y")
-        time = datetime.now().strftime("%H:%M")
-
-        try:
-            messages = [
+            messages.insert(
+                0,
                 {
                     "role": "system",
-                    "content": f"{personality} Дата: {today}. Время: {time}",
+                    "content": f"{personality}. Дата: {today}. Время: {time}",
                 },
-                {"role": "user", "content": f"{prompt}"},
-            ]
-
+            )
+        try:
             completions = await self.openai.chat.completions.create(
                 messages=messages,
                 model=model,
@@ -78,7 +79,9 @@ class OpenAIService:
         if api_key:
             self.openai.api_key = api_key
             with open(audio_path, "rb") as file:
-                transcript = await self.openai.audio.transcriptions.create(file=file, model="whisper-1")
+                transcript = await self.openai.audio.transcriptions.create(
+                    file=file, model="whisper-1"
+                )
                 return transcript.text
 
     async def create_image(self, prompt: str = None, api_key: str = None) -> str:
@@ -88,11 +91,12 @@ class OpenAIService:
                     self.openai.api_key = api_key
                     image_url = await self.openai.images.generate(
                         prompt=prompt,
-                        model='dall-e-3',
+                        model="dall-e-3",
                         n=1,
                         size="1024x1024",
                         quality="hd",
-                        response_format="url")
+                        response_format="url",
+                    )
                     return image_url.data[0].url
                 except BadRequestError:
                     return "Измените текст запроса, чтобы не нарушать правила сервиса."
@@ -106,7 +110,6 @@ class OpenAIService:
         else:
             return "Не указано текстовое описание"
 
-
     async def create_speech(self, prompt: str = None, api_key: str = None):
         if prompt:
             if api_key:
@@ -117,8 +120,8 @@ class OpenAIService:
                         voice="alloy",
                         speed=0.8,
                         input=prompt,
-                        response_format='opus',
-                        )
+                        response_format="opus",
+                    )
                     return io.BytesIO(response.read()).getvalue()
                 except Exception as e:
                     print(e)

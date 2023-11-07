@@ -9,7 +9,7 @@ from tgbot.services.repository import Repo
 async def reset_personality(
     callback: CallbackQuery, button: Button, manager: DialogManager
 ):
-    repo: Repo = manager.data.get("repo")
+    repo: Repo = manager.middleware_data.get("repo")
     user_id = manager.bg().user.id
     await repo.delete_personality(user_id)
     await callback.answer("Личность удалена!")

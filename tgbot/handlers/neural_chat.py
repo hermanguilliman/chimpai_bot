@@ -34,10 +34,6 @@ async def neural_handler(
             parse_mode=ParseMode.HTML,
         )
         return
-    if personality:
-        personality = personality.text
-    else:
-        personality = " "
 
     if message.reply_to_message:
         prompt = f"{message.text}:\n{message.reply_to_message.text}"
