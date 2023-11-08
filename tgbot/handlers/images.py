@@ -45,7 +45,7 @@ async def image_creator_handler(
             api_key=settings.api_key,
         )
 
-        if image_url:
+        if isinstance(image_url, str):
             if image_url.startswith("https://"):
                 image_url = URLInputFile(image_url)
                 

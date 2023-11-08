@@ -58,6 +58,6 @@ async def tts_handler(
             logger.debug("Голосовое сообщение от нейросети получено")
         else:
             await message.answer(
-                "<b>Что-то пошло не так!\n{response}</b>",
+                f"<b>Что-то пошло не так!\n{response}</b>",
                 parse_mode=ParseMode.HTML,
             )
