@@ -32,12 +32,18 @@ async def voice_handler(
             file = await message.bot.get_file(message.voice.file_id)
             file_path = file.file_path
             local_path = f"voices/{message.from_user.id}.oga"
+            
+            if os.path.exists(local_path):
+                os.remove(local_path)
+
             await message.bot.download_file(file_path, local_path)
             text = await openai.audio_to_text(
                 audio_path=local_path, api_key=settings.api_key
             )
             await message.reply(text)
-            os.remove(local_path)
+
+            if os.path.exists(local_path):
+                os.remove(local_path)
     else:
         await message.answer(
             "<b>⚠️ Сначала нужно установить api ключ!</b>",
