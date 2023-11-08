@@ -82,6 +82,18 @@ class Repo:
         await self.session.execute(stmt)
         await self.session.commit()
 
+    async def update_tts_voice(self, user_id: int, tts_voice: str) -> None:
+        # Обновляет настройки
+        stmt = update(Settings).where(Settings.user_id == user_id).values(tts_voice=tts_voice)
+        await self.session.execute(stmt)
+        await self.session.commit()
+    
+    async def update_tts_speed(self, user_id: int, tts_speed: str) -> None:
+        # Обновляет настройки
+        stmt = update(Settings).where(Settings.user_id == user_id).values(tts_speed=tts_speed)
+        await self.session.execute(stmt)
+        await self.session.commit()
+
     async def update_temperature(self, user_id: int, temperature: str) -> None:
         # Обновляет температуру
         stmt = (

@@ -15,15 +15,17 @@ async def get_base_data(dialog_manager: DialogManager, **kwargs) -> dict:
     base_view = {
         "user_id": user_id,
         "full_name": full_name,
-        "api_key": "🛡 сохранён" if settings.api_key else "🤷‍♂️ отсутствует",
-        "model": settings.model if settings.model else "🤷‍♂️ отсутствует",
-        "max_length": settings.max_tokens if settings.max_tokens else "🤷‍♂️ отсутствует",
+        "api_key": "✅ установлен" if settings.api_key else "⭕️ отсутствует",
+        "model": settings.model if settings.model else "⭕️ отсутствует",
+        "max_length": settings.max_tokens if settings.max_tokens else "⭕️ отсутствует",
         "temperature": settings.temperature
         if settings.temperature
-        else "🤷‍♂️ отсутствует",
+        else "⭕️ отсутствует",
+        "tts_voice": settings.tts_voice if settings.tts_voice else "alloy",
+        "tts_speed": settings.tts_speed if settings.tts_speed else "1.0",
+        "tts_model": settings.tts_model if settings.tts_model else "tts-1-hd",
         "personality": personality.name if personality else "💻 не используется",
     }
 
-    # обновляем текущий контекст
     dialog_manager.dialog_data.update(base_view)
     return base_view

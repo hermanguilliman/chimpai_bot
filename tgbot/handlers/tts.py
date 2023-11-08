@@ -42,8 +42,11 @@ async def tts_handler(
     async with ChatActionSender.record_voice(message.from_user.id, message.bot):
         logger.debug("Запрос для TTS")
         response = await openai.create_speech(
-            api_key=settings.api_key,
+            model=settings.tts_model,
+            voice=settings.tts_voice,
+            speed=float(settings.tts_speed),
             prompt=prompt,
+            api_key=settings.api_key,
         )
 
         if isinstance(response, bytes):

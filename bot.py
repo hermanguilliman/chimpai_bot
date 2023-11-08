@@ -1,24 +1,24 @@
 import asyncio
 
-from openai import AsyncOpenAI
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart, ExceptionTypeFilter
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.fsm.storage.redis import RedisStorage, DefaultKeyBuilder
+from aiogram.fsm.storage.redis import DefaultKeyBuilder, RedisStorage
 from aiogram.methods import DeleteWebhook
 from aiogram_dialog import setup_dialogs
 from aiogram_dialog.api.exceptions import UnknownIntent, UnknownState
 from loguru import logger
+from openai import AsyncOpenAI
 from redis.asyncio.client import Redis
-from sqlalchemy.ext.asyncio import (
-    AsyncSession, async_sessionmaker, create_async_engine
-)
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from tgbot.config import load_config, setup_logger
+from tgbot.dialogs.chat_settings import chat_settings_dialog
 from tgbot.dialogs.main import main_dialog
 from tgbot.dialogs.neural import neural_chat
-from tgbot.dialogs.personality import person
-from tgbot.dialogs.settings import settings_dialog
+from tgbot.dialogs.personality import person_settings_dialog
+from tgbot.dialogs.root_settings import root_settings_dialog
+from tgbot.dialogs.tts_settings import tts_settings_dialog
 from tgbot.filters.is_admin import AdminFilter
 from tgbot.handlers.admin_start import admin_start
 from tgbot.handlers.unknown_errors import on_unknown_intent, on_unknown_state
@@ -70,9 +70,11 @@ async def main():
     )
 
     dp.include_router(main_dialog)
-    dp.include_router(settings_dialog)
     dp.include_router(neural_chat)
-    dp.include_router(person)
+    dp.include_router(root_settings_dialog)
+    dp.include_router(person_settings_dialog)
+    dp.include_router(chat_settings_dialog)
+    dp.include_router(tts_settings_dialog)
 
     setup_dialogs(dp)
 

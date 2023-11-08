@@ -9,7 +9,7 @@ from tgbot.handlers.images import image_creator_handler
 from tgbot.handlers.neural_chat import neural_handler
 from tgbot.handlers.tts import tts_handler
 from tgbot.handlers.voice_transcribe import voice_handler
-from tgbot.misc.states import Neural, Settings
+from tgbot.misc.states import Neural, ChatSettings, TTSSettings
 
 neural_chat = Dialog(
     Window(
@@ -19,7 +19,7 @@ neural_chat = Dialog(
         Const("<b>Задай мне любой вопрос...</b>"),
         Row(
             Cancel(Const("👈 Назад")),
-            Start(Const("📝 Настройки"), id="settings", state=Settings.select),
+            Start(Const("📝 Настройки чата"), id="settings", state=ChatSettings.select),
         ),
         state=Neural.chat,
         parse_mode=ParseMode.HTML,
@@ -42,7 +42,13 @@ neural_chat = Dialog(
     Window(
         MessageInput(tts_handler, content_types=[ContentType.TEXT]),
         Const("<b>🦜 Напишите текст и я озвучу его...</b>"),
-        Cancel(Const("👈 Назад")),
+        Format("<b>Голос: {tts_voice}</b>"),
+        Format("<b>Скорость произношения: {tts_speed}</b>"),
+        Row(
+            Cancel(Const("👈 Назад")),
+            Start(Const("📝Настройки голоса"), id="voice_settings", state=TTSSettings.select),
+        ),
+        getter=get_base_data,
         state=Neural.tts,
         parse_mode=ParseMode.HTML,
     ),

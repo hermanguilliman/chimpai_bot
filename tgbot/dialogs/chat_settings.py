@@ -1,6 +1,5 @@
-from aiogram.enums import ContentType, ParseMode
+from aiogram.enums import ParseMode
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import (
     Button,
     Cancel,
@@ -27,53 +26,36 @@ from tgbot.getters.settings import (
     get_person_selector,
     get_temperature,
 )
-from tgbot.handlers.api_key import api_key_handler
-from tgbot.misc.states import Personality, Settings
+from tgbot.misc.states import ChatSettings, Personality
 
-# Диалог настроек
-settings_dialog = Dialog(
+chat_settings_dialog = Dialog(
     Window(
-        # Окно выбора настроек
-        Const("<b>Выберите параметр, который хотели бы изменить:</b>"),
+        Const("<b>💬 Окно настроек чата: 💬</b>"),
         Group(
             SwitchTo(
-                Format("🔐 API ключ: {api_key}"),
-                id="set_api_key",
-                state=Settings.api_key,
+                Format("🤖 Модель: {model}"), id="set_model", state=ChatSettings.model
             ),
             SwitchTo(
-                Format("🤖 Модель: {model}"), id="set_model", state=Settings.model
-            ),
-            SwitchTo(
-                Format("🔋 Длина ответа: {max_length} токенов"),
+                Format("🔋 Максимум токенов: {max_length}"),
                 id="set_max_length",
-                state=Settings.max_length,
+                state=ChatSettings.max_length,
             ),
             SwitchTo(
-                Format("🌡️ Оригинальность ответа {temperature}"),
+                Format("🌡️ Температура {temperature}"),
                 id="set_temperature",
-                state=Settings.temperature,
+                state=ChatSettings.temperature,
             ),
-            width=1,
-        ),
-        SwitchTo(
-            Format("Личность: {personality}"),
-            id="personality",
-            state=Settings.personality,
+            SwitchTo(
+                Format("Личность: {personality}"),
+                id="personality",
+                state=ChatSettings.personality,
+            ),
+            width=2,
         ),
         Cancel(Const("🤚 Отмена")),
-        state=Settings.select,
+        state=ChatSettings.select,
         parse_mode=ParseMode.HTML,
         getter=get_base_data,
-    ),
-    Window(
-        # Установка нового ключа апи
-        MessageInput(api_key_handler, content_types=[ContentType.TEXT]),
-        Const("<b>Укажите новый API ключ:</b>"),
-        Const("<b>Подсказка:</b> Ключ OpenAI API выглядит как <b>sk-...</b>"),
-        Cancel(Const("🤚 Отмена")),
-        state=Settings.api_key,
-        parse_mode=ParseMode.HTML,
     ),
     Window(
         # Список доступных моделей
@@ -82,7 +64,6 @@ settings_dialog = Dialog(
         Group(
             Select(
                 Format("🤖 {item}"),
-                # нужно кинуть сюда список моделей
                 items="models",
                 item_id_getter=lambda x: x,
                 id="select_max_new_model",
@@ -91,12 +72,11 @@ settings_dialog = Dialog(
             width=2,
         ),
         Cancel(Const("🤚 Отмена")),
-        state=Settings.model,
+        state=ChatSettings.model,
         parse_mode=ParseMode.HTML,
         getter=get_data_model_selector,
     ),
     Window(
-
         Const("<b>Укажите максимальную длину ответа</b>"),
         Const(
             "\n<b>Подсказка:</b> стандартное значение <b>256</b> токенов, но лучше использовать около <b>1000</b> токенов"
@@ -112,18 +92,16 @@ settings_dialog = Dialog(
             width=5,
         ),
         Cancel(Const("🤚 Отмена")),
-        state=Settings.max_length,
+        state=ChatSettings.max_length,
         parse_mode=ParseMode.HTML,
     ),
     Window(
         # окно выбора температуры
         # от 0.00 до 1.00 с двумя знаками после запятой
-        Const(
-            "<b>Оригинальность ответа задаётся в диапазоне от 0 до 1</b>\n\nНастройте новое значение с помощью стрелок и нажмите на градусник для подтверждения."
-        ),
+        Const("<b>🌡 Температура отвечает за оригинальность ответа"),
         Group(
             Button(
-                Format("🌡 Установить значение: {temperature}"),
+                Format("✅ Установить значение: {temperature}"),
                 id="new_temperature",
                 when="temperature",
                 on_click=on_temperature_selected,
@@ -140,7 +118,7 @@ settings_dialog = Dialog(
             Cancel(Const("🤚 Отмена")),
             width=2,
         ),
-        state=Settings.temperature,
+        state=ChatSettings.temperature,
         parse_mode=ParseMode.HTML,
         getter=get_temperature,
     ),
@@ -167,7 +145,7 @@ settings_dialog = Dialog(
             Start(Const("♻️ Сбросить"), id="reset_person", state=Personality.reset),
             Cancel(Const("🤚 Отмена")),
         ),
-        state=Settings.personality,
+        state=ChatSettings.personality,
         parse_mode="HTML",
         getter=get_person_selector,
     ),

@@ -22,8 +22,7 @@ async def get_data_model_selector(dialog_manager: DialogManager, **kwargs):
     }
 
 
-async def get_person_selector(dialog_manager: DialogManager, **kwargs
-):
+async def get_person_selector(dialog_manager: DialogManager, **kwargs):
     # Получаем список личностей
     return {
         "persons": [person["person"] for person in personality_base],
@@ -34,7 +33,5 @@ async def get_person_selector(dialog_manager: DialogManager, **kwargs
 async def get_temperature(dialog_manager: DialogManager, **kwargs):
     # При первом запуске получаем значение из предыдущего диалога?
     if len(dialog_manager.dialog_data) == 0:
-        dialog_manager.dialog_data.update(
-            dialog_manager.start_data
-        )
+        dialog_manager.dialog_data.update(dialog_manager.start_data)
     return dialog_manager.dialog_data

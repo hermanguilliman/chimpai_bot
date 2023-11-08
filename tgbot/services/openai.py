@@ -84,6 +84,8 @@ class OpenAIService:
                     file=file, model="whisper-1"
                 )
                 return transcript.text
+        else:
+            pass
 
     async def create_image(self, prompt: str = None, api_key: str = None) -> str:
         if prompt:
@@ -111,15 +113,22 @@ class OpenAIService:
         else:
             return "Не указано текстовое описание"
 
-    async def create_speech(self, prompt: str = None, api_key: str = None):
+    async def create_speech(
+        self,
+        model: str = None,
+        voice: str = None,
+        speed: str = None,
+        prompt: str = None,
+        api_key: str = None,
+    ):
         if prompt:
             if api_key:
                 try:
                     self.openai.api_key = api_key
                     response = await self.openai.audio.speech.create(
-                        model="tts-1",
-                        voice="alloy",
-                        speed=0.8,
+                        model=model,
+                        voice=voice,
+                        speed=speed,
                         input=prompt,
                         response_format="opus",
                     )

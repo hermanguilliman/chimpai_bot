@@ -12,13 +12,23 @@ class Neural(StatesGroup):
     tts = State()
 
 
-class Settings(StatesGroup):
+class RootSettings(StatesGroup):
     select = State()
     api_key = State()
+
+
+class ChatSettings(StatesGroup):
+    select = State()
     model = State()
     max_length = State()
     temperature = State()
     personality = State()
+
+class TTSSettings(StatesGroup):
+    select = State()
+    tts_model = State()
+    tts_speed = State()
+    tts_voice = State()
 
 
 class Personality(StatesGroup):

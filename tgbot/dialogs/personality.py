@@ -8,7 +8,7 @@ from tgbot.callbacks.personality import reset_personality
 from tgbot.handlers.personality import new_personality_name, new_personality_text
 from tgbot.misc.states import Personality
 
-person = Dialog(
+person_settings_dialog = Dialog(
     Window(
         MessageInput(new_personality_name, content_types=[ContentType.TEXT]),
         Const("🎭 <b>Введите имя личности, но не более 20 знаков:</b>"),
