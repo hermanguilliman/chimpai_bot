@@ -4,6 +4,8 @@ from datetime import datetime
 from loguru import logger
 from openai import APIConnectionError, AsyncOpenAI, BadRequestError, RateLimitError
 
+from tgbot.models.personality import Personality
+
 
 class OpenAIService:
     def __init__(self, openai: AsyncOpenAI):
@@ -16,7 +18,7 @@ class OpenAIService:
         prompt: str = None,
         max_tokens: int = None,
         temperature: float = None,
-        personality: str | None = None,
+        personality: Personality | None = None,
     ) -> str:
         """
         Функция использует OpenAI для ответа на вопросы
@@ -42,7 +44,7 @@ class OpenAIService:
         messages = [
             {"role": "user", "content": f"{prompt}"},
         ]
-        if isinstance(personality, str):
+        if isinstance(personality, Personality):
             today = datetime.now().strftime("%d.%m.%Y")
             time = datetime.now().strftime("%H:%M")
 
@@ -50,7 +52,7 @@ class OpenAIService:
                 0,
                 {
                     "role": "system",
-                    "content": f"{personality}. Дата: {today}. Время: {time}",
+                    "content": f"{personality.text}. Дата: {today}. Время: {time}",
                 },
             )
         try:
