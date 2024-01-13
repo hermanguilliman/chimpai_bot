@@ -13,7 +13,7 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
             ${{ github.actor }} создал коммит:
-            Сообщение: ${{ github.event.commits[0].message }}
+            Сообщение коммита: ${{ github.event.commits[0].message }}
             
             Репозиторий: ${{ github.repository }}
             
