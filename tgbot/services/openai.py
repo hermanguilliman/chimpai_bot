@@ -103,11 +103,14 @@ class OpenAIService:
                         response_format="url",
                     )
                     return image_url.data[0].url
-                except BadRequestError:
+                except BadRequestError as e:
+                    logger.debug(e)
                     return "Измените текст запроса, чтобы не нарушать правила сервиса."
-                except RateLimitError:
+                except RateLimitError as e:
+                    logger.debug(e)
                     return "Превышен лимит изображений в минуту. Попробуйте позднее."
-                except APIConnectionError:
+                except APIConnectionError as e:
+                    logger.debug(e)
                     return "Ошибка соединения с нейросетью"
                 except Exception as e:
                     return f"{e}"
