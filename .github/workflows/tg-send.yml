@@ -12,9 +12,7 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            ${{ github.actor }} создал коммит:
-            Сообщение коммита: ${{ github.event.commits[0].message }}
-            
+            ${{ github.actor }} закоммитил:
+            Сообщение: ${{ github.event.commits[0].message }}
             Репозиторий: ${{ github.repository }}
-            
-            Смотреть изменения: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+            Изменения: https://github.com/${{ github.repository }}/commit/${{github.sha}}
