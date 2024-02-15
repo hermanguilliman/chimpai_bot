@@ -1,3 +1,4 @@
+from asyncio import sleep
 from aiogram.enums import ParseMode
 from aiogram.types import Message
 from aiogram.utils.chat_action import ChatActionSender
@@ -5,6 +6,7 @@ from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import MessageInput
 from loguru import logger
 
+from tgbot.misc.text_tools import split_text
 from tgbot.models.personality import Personality
 from tgbot.models.settings import Settings
 from tgbot.services.repository import Repo
@@ -56,17 +58,22 @@ async def neural_handler(
 
         if answer:
             """выдача успешного запроса"""
-            
-            try:
-                await message.reply(
-                    answer, parse_mode=ParseMode.MARKDOWN
-                )
-                logger.debug("Ответ от нейросети получен")
-            except Exception:
-                await message.reply(
-                    answer, parse_mode=ParseMode.HTML
-                )
-                logger.debug("Ответ от нейросети получен")
+            text_chunks = split_text(answer, 4000)
+            for chunk in text_chunks:
+                try:
+                    await message.reply(
+                        chunk, parse_mode=ParseMode.MARKDOWN
+                    )
+                    await sleep(1)
+                    
+                    logger.debug("Ответ от нейросети получен")
+                except Exception:
+                    await message.reply(
+                        chunk, parse_mode=ParseMode.HTML
+                    )
+
+                    await sleep(1)
+                    logger.debug("Ответ от нейросети получен")
         else:
             await message.answer(
                 "<b>Что-то пошло не так, ответ от OpenAI не получен</b>",

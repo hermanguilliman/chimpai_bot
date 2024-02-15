@@ -84,7 +84,7 @@ chat_settings_dialog = Dialog(
         Group(
             Select(
                 Format("🔋 {item}"),
-                items=list(range(256, 4000, 256)),
+                items=list(range(1000, 17000, 1000)),
                 item_id_getter=lambda x: x,
                 id="select_max_length",
                 on_click=on_max_length_selected,
@@ -98,7 +98,7 @@ chat_settings_dialog = Dialog(
     Window(
         # окно выбора температуры
         # от 0.00 до 1.00 с двумя знаками после запятой
-        Const("<b>🌡 Температура отвечает за оригинальность ответа"),
+        Const("<b>🌡 Температура отвечает за оригинальность ответа</b>"),
         Group(
             Button(
                 Format("✅ Установить значение: {temperature}"),

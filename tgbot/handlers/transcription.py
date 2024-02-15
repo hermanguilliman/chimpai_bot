@@ -1,4 +1,5 @@
 import os
+from asyncio import sleep
 
 from aiogram.enums import ParseMode
 from aiogram.types import Message
@@ -7,11 +8,13 @@ from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import MessageInput
 from loguru import logger
 
+from tgbot.misc.text_tools import split_text
 from tgbot.models.settings import Settings
 from tgbot.services.openai import OpenAIService
 from tgbot.services.repository import Repo
 
 
+# Voice to Text
 async def voice_handler(
     message: Message,
     message_input: MessageInput,
@@ -40,7 +43,12 @@ async def voice_handler(
             text = await openai.audio_to_text(
                 audio_path=local_path, api_key=settings.api_key
             )
-            await message.reply(text)
+            text_chunks = split_text(text, 4000)
+
+            for chunk in text_chunks:
+                await message.reply(chunk)
+                await sleep(1)
+            
 
             if os.path.exists(local_path):
                 os.remove(local_path)
