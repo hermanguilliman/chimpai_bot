@@ -18,7 +18,7 @@ async def api_key_handler(
 
     if not is_valid_key:
         await message.answer(
-            "⛔️ <b>Ошибка API ключа!</b>\n Подсказка: Ключ должен выглядеть как sk-...",
+            "⛔️ <b>Ошибка API ключа!</b>\nКлюч должен выглядеть как sk-...",
             parse_mode=ParseMode.HTML,
         )
         await manager.done()
@@ -27,6 +27,7 @@ async def api_key_handler(
     manager.dialog_data["api_key"] = new_api_key
     await repo.update_api_key(user_id, new_api_key)
     await message.answer(
-        "<b>✅ Новый API ключ успешно установлен!</b>", parse_mode=ParseMode.HTML
+        "<b>✅ Новый API ключ успешно установлен!</b>",
+        parse_mode=ParseMode.HTML
     )
     await manager.done()

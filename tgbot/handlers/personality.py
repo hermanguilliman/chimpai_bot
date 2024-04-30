@@ -1,5 +1,5 @@
-from aiogram.types import Message
 from aiogram.enums import ParseMode
+from aiogram.types import Message
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import MessageInput
 
@@ -16,7 +16,8 @@ async def new_personality_name(
         await manager.switch_to(Personality.text)
     else:
         await message.answer(
-            "❗️ Ошибка! Максимальная длина имени 20 знаков!", parse_mode=ParseMode.HTML
+            "❗️ Ошибка! Максимальная длина имени 20 знаков!",
+            parse_mode=ParseMode.HTML
         )
         return
 

@@ -1,4 +1,5 @@
 from asyncio import sleep
+
 from aiogram.enums import ParseMode
 from aiogram.types import Message
 from aiogram.utils.chat_action import ChatActionSender
@@ -9,8 +10,8 @@ from loguru import logger
 from tgbot.misc.text_tools import split_text
 from tgbot.models.personality import Personality
 from tgbot.models.settings import Settings
-from tgbot.services.repository import Repo
 from tgbot.services.openai import OpenAIService
+from tgbot.services.repository import Repo
 
 
 async def neural_handler(
@@ -61,16 +62,12 @@ async def neural_handler(
             text_chunks = split_text(answer, 4000)
             for chunk in text_chunks:
                 try:
-                    await message.reply(
-                        chunk, parse_mode=ParseMode.MARKDOWN
-                    )
+                    await message.reply(chunk, parse_mode=ParseMode.MARKDOWN)
                     await sleep(1)
-                    
+
                     logger.debug("Ответ от нейросети получен")
                 except Exception:
-                    await message.reply(
-                        chunk, parse_mode=ParseMode.HTML
-                    )
+                    await message.reply(chunk, parse_mode=ParseMode.HTML)
 
                     await sleep(1)
                     logger.debug("Ответ от нейросети получен")

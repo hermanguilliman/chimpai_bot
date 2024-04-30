@@ -35,7 +35,6 @@ async def voice_handler(
             file = await message.bot.get_file(message.voice.file_id)
             file_path = file.file_path
             local_path = f"voices/{message.from_user.id}.oga"
-            
             if os.path.exists(local_path):
                 os.remove(local_path)
 
@@ -48,7 +47,6 @@ async def voice_handler(
             for chunk in text_chunks:
                 await message.reply(chunk)
                 await sleep(1)
-            
 
             if os.path.exists(local_path):
                 os.remove(local_path)
