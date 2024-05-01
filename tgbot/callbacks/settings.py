@@ -5,7 +5,6 @@ from aiogram.types import CallbackQuery
 from aiogram_dialog import ChatEvent, DialogManager
 from aiogram_dialog.widgets.kbd import Button
 
-from tgbot.misc.personality import personality_base
 from tgbot.services.repository import Repo
 
 
@@ -20,24 +19,36 @@ async def on_new_model_selected(
     await manager.done()
 
 
-async def on_new_personality_selected(
+async def on_basic_personality_selected(
     callback: ChatEvent, select: Any, manager: DialogManager, item_id: str
 ):
     """Обновляет значение личности в бд по нажатию кнопки"""
     repo: Repo = manager.middleware_data.get("repo")
     user_id = manager.bg().user.id
-    personality = await repo.get_personality(user_id=user_id)
-
-    for person in personality_base:
-        if person["person"] == item_id:
-            text = person["message"]
-
-            if not personality:
-                await repo.add_new_personality(user_id=user_id, name=item_id, text=text)
-            else:
-                await repo.update_personality(user_id=user_id, name=item_id, text=text)
-
+    await repo.select_basic_personality(user_id=user_id, name=item_id)
     await callback.answer(f"Выбрана личность: {item_id}!")
+    await manager.done()
+
+
+async def on_custom_personality_selected(
+    callback: ChatEvent, select: Any, manager: DialogManager, item_id: str
+):
+    """Обновляет значение кастомной личности в бд по нажатию кнопки"""
+    repo: Repo = manager.middleware_data.get("repo")
+    user_id = manager.bg().user.id
+    await repo.set_custom_personality(user_id=user_id, name=item_id)
+    await callback.answer(f"Выбрана личность: {item_id}!")
+    await manager.done()
+
+
+async def on_delete_custom_personality(
+    callback: ChatEvent, select: Any, manager: DialogManager, item_id: str
+):
+    """Обновляет значение кастомной личности в бд по нажатию кнопки"""
+    repo: Repo = manager.middleware_data.get("repo")
+    user_id = manager.bg().user.id
+    await repo.delete_custom_personality(user_id=user_id, name=item_id)
+    await callback.answer(f"Личность {item_id} удалена!")
     await manager.done()
 
 
@@ -94,6 +105,9 @@ async def on_temperature_selected(
     repo: Repo = manager.middleware_data.get("repo")
     user_id = manager.bg().user.id
     temperature = manager.dialog_data.get("temperature")
-    await repo.update_temperature(user_id=user_id, temperature=str(temperature))
+    await repo.update_temperature(
+        user_id=user_id,
+        temperature=str(temperature)
+    )
     await callback.answer(f"Задана температура: {temperature}")
     await manager.done()

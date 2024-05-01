@@ -1,6 +1,5 @@
 from aiogram_dialog import DialogManager
 
-from tgbot.misc.personality import personality_base
 from tgbot.models.settings import Settings
 from tgbot.services.openai import OpenAIService
 from tgbot.services.repository import Repo
@@ -22,10 +21,23 @@ async def get_data_model_selector(dialog_manager: DialogManager, **kwargs):
     }
 
 
-async def get_person_selector(dialog_manager: DialogManager, **kwargs):
+async def basic_person_getter(dialog_manager: DialogManager, **kwargs):
     # Получаем список личностей
+    repo: Repo = dialog_manager.middleware_data.get("repo")
+    pb_list = await repo.get_basic_personality_list()
     return {
-        "persons": [person["person"] for person in personality_base],
+        "persons": pb_list,
+    }
+
+
+async def custom_person_getter(dialog_manager: DialogManager, **kwargs):
+    # Получаем список личностей
+    repo: Repo = dialog_manager.middleware_data.get("repo")
+    user_id = dialog_manager.bg().user.id
+    cp_list = await repo.get_custom_personality_list(user_id=user_id)
+
+    return {
+        "persons": cp_list,
     }
 
 

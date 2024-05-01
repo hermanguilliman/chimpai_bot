@@ -16,14 +16,16 @@ from tgbot.callbacks.settings import (
     on_increase_temp,
     on_max_length_selected,
     on_new_model_selected,
-    on_new_personality_selected,
+    on_basic_personality_selected,
+    on_custom_personality_selected,
     on_reset_temp,
     on_temperature_selected,
 )
 from tgbot.getters.base_data import get_base_data
 from tgbot.getters.settings import (
     get_data_model_selector,
-    get_person_selector,
+    basic_person_getter,
+    custom_person_getter,
     get_temperature,
 )
 from tgbot.misc.states import ChatSettings, Personality
@@ -33,7 +35,9 @@ chat_settings_dialog = Dialog(
         Const("<b>💬 Окно настроек чата: 💬</b>"),
         Group(
             SwitchTo(
-                Format("🤖 Модель: {model}"), id="set_model", state=ChatSettings.model
+                Format("🤖 Модель: {model}"),
+                id="set_model",
+                state=ChatSettings.model
             ),
             SwitchTo(
                 Format("🔋 Максимум токенов: {max_length}"),
@@ -48,7 +52,7 @@ chat_settings_dialog = Dialog(
             SwitchTo(
                 Format("Личность: {personality}"),
                 id="personality",
-                state=ChatSettings.personality,
+                state=ChatSettings.basic_personality,
             ),
             width=2,
         ),
@@ -78,9 +82,7 @@ chat_settings_dialog = Dialog(
     ),
     Window(
         Const("<b>Укажите максимальную длину ответа</b>"),
-        Const(
-            "\n<b>Подсказка:</b> стандартное значение <b>256</b> токенов, но лучше использовать около <b>1000</b> токенов"
-        ),
+        Const("\n<b>Подсказка:</b> стандартное значение <b>1000</b> токенов"),
         Group(
             Select(
                 Format("🔋 {item}"),
@@ -114,7 +116,9 @@ chat_settings_dialog = Dialog(
             width=2,
         ),
         Group(
-            Button(Const("🌚 Как было"), id="reset_temp", on_click=on_reset_temp),
+            Button(Const("🌚 Как было"),
+                   id="reset_temp",
+                   on_click=on_reset_temp),
             Cancel(Const("🤚 Отмена")),
             width=2,
         ),
@@ -123,12 +127,9 @@ chat_settings_dialog = Dialog(
         getter=get_temperature,
     ),
     Window(
-        # Это окно с выбором характера бота.
-        # Здесь будет выбор между готовыми характерами, а так же кнопка добавления своего
+        # Это окно с выбором личности бота.
         Const(
-            "<b>Перед Вами список возможных 🎭личностей бота.</b>"
-            "\nУстановка личности позволяет боту менять образ и стиль общения."
-            "\n\nВыберите любую из доступных личностей, либо добавьте описание вручную:"
+            "<b>Выберите одну из стандартных 🎭личностей бота.</b>"
         ),
         Group(
             Select(
@@ -136,17 +137,50 @@ chat_settings_dialog = Dialog(
                 items="persons",
                 item_id_getter=lambda x: x,
                 id="select_person",
-                on_click=on_new_personality_selected,
+                on_click=on_basic_personality_selected,
             ),
             width=2,
         ),
         Row(
-            Start(Const("✏️ Создать"), id="custom_person", state=Personality.name),
-            Start(Const("♻️ Сбросить"), id="reset_person", state=Personality.reset),
+            SwitchTo(
+                Const("🏗 Выбрать свою"),
+                id="custom_personality",
+                state=ChatSettings.custom_personality,
+            ),
             Cancel(Const("🤚 Отмена")),
         ),
-        state=ChatSettings.personality,
+        state=ChatSettings.basic_personality,
         parse_mode="HTML",
-        getter=get_person_selector,
+        getter=basic_person_getter,
+    ),
+    Window(
+        Const("<b>Список созданных вами личностей:</b>\n"),
+        Group(
+            Select(
+                Format("{item}"),
+                items="persons",
+                item_id_getter=lambda x: x,
+                id="select_person",
+                on_click=on_custom_personality_selected,
+                when="persons",
+            ),
+            width=2,
+        ),
+        Row(
+            Start(
+                Const("✏️ Создать"),
+                id="custom_person",
+                state=Personality.name,
+            ),
+            Start(
+                Const("♻️ Удалить"),
+                id="reset_person",
+                state=Personality.reset,
+            ),
+        ),
+        Cancel(Const("🤚 Отмена")),
+        state=ChatSettings.custom_personality,
+        parse_mode="HTML",
+        getter=custom_person_getter,
     ),
 )

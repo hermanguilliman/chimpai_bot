@@ -9,7 +9,12 @@ class Settings(Base):
 
     id = Column(Integer, primary_key=True, unique=True)
     api_key = Column(String(51), nullable=True)
-    max_tokens = Column(Integer(), default=256)
+    personality_name = Column(Text(), nullable=True, default="🤵 Ассистент")
+    personality_text = Column(
+        Text(),
+        nullable=True,
+        default="Действуй как личный ассистент пользователя")
+    max_tokens = Column(Integer(), default=1000)
     model = Column(Text(), default="gpt-3.5-turbo")
     temperature = Column(Text(), default="0.7")
     tts_model = Column(String(), nullable=True, default="tts-1-hd")

@@ -8,7 +8,6 @@ from aiogram_dialog.widgets.input import MessageInput
 from loguru import logger
 
 from tgbot.misc.text_tools import split_text
-from tgbot.models.personality import Personality
 from tgbot.models.settings import Settings
 from tgbot.services.openai import OpenAIService
 from tgbot.services.repository import Repo
@@ -22,7 +21,6 @@ async def neural_handler(
     repo: Repo = manager.middleware_data.get("repo")
     openai: OpenAIService = manager.middleware_data.get("openai")
     settings: Settings = await repo.get_settings(message.from_user.id)
-    personality: Personality = await repo.get_personality(message.from_user.id)
     prompt: str = message.text
 
     if settings is None:
@@ -54,7 +52,7 @@ async def neural_handler(
             model=settings.model,
             temperature=float(settings.temperature),
             prompt=prompt,
-            personality=personality,
+            personality_text=settings.personality_text,
         )
 
         if answer:

@@ -10,7 +10,8 @@ from aiogram_dialog.api.exceptions import UnknownIntent, UnknownState
 from loguru import logger
 from openai import AsyncOpenAI
 from redis.asyncio.client import Redis
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import (
+    AsyncSession, async_sessionmaker, create_async_engine)
 
 from tgbot.config import load_config, setup_logger
 from tgbot.dialogs.chat_settings import chat_settings_dialog
@@ -26,6 +27,8 @@ from tgbot.handlers.user_start import user_start
 from tgbot.middlewares.openai_api import OpenAIMiddleware
 from tgbot.middlewares.repo import RepoMiddleware
 from tgbot.models.base import Base
+from tgbot.models.personality import BasicPersonality
+from tgbot.misc.personality import personality_base
 
 
 async def create_sessionmaker(echo) -> AsyncSession:
@@ -34,6 +37,14 @@ async def create_sessionmaker(echo) -> AsyncSession:
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    try:
+        # Пытаемся добавить стандартные значения
+        async with engine.begin() as conn:
+            for person in personality_base:
+                await conn.execute(BasicPersonality.__table__.insert(), person)
+        logger.success("Стандартные настройки личностей добавлены")
+    except Exception:
+        logger.info("Стандартные настройки личностей уже добавлены")
 
     sessionmaker = async_sessionmaker(
         engine,

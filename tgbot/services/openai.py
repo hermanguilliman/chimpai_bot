@@ -2,9 +2,13 @@ import io
 from datetime import datetime
 
 from loguru import logger
-from openai import APIConnectionError, AsyncOpenAI, BadRequestError, RateLimitError
-
-from tgbot.models.personality import Personality
+from openai import (
+    APIConnectionError,
+    AsyncOpenAI,
+    BadRequestError,
+    RateLimitError,
+    PermissionDeniedError,
+    )
 
 
 class OpenAIService:
@@ -18,8 +22,8 @@ class OpenAIService:
         prompt: str = None,
         max_tokens: int = None,
         temperature: float = None,
-        personality: Personality | None = None,
-    ) -> str:
+        personality_text: str = None,
+    ) -> str | None:
         """
         Функция использует OpenAI для ответа на вопросы
         """
@@ -44,7 +48,7 @@ class OpenAIService:
         messages = [
             {"role": "user", "content": f"{prompt}"},
         ]
-        if isinstance(personality, Personality):
+        if isinstance(personality_text, str):
             today = datetime.now().strftime("%d.%m.%Y")
             time = datetime.now().strftime("%H:%M")
 
@@ -52,7 +56,7 @@ class OpenAIService:
                 0,
                 {
                     "role": "system",
-                    "content": f"{personality.text}. Дата: {today}. Время: {time}",
+                    "content": f"{personality_text}. Дата: {today}. Время: {time}",
                 },
             )
         try:
@@ -64,8 +68,12 @@ class OpenAIService:
                 stop=None,
                 temperature=temperature,
             )
+        except PermissionDeniedError as e:
+            logger.error(e)
+            return "Ошибка 403. Отказано в доступе!"
         except Exception as e:
-            return f"{e}"
+            logger.error(e)
+            return None
 
         message = completions.choices[0].message.content
         return str(message)
@@ -89,7 +97,11 @@ class OpenAIService:
         else:
             pass
 
-    async def create_image(self, prompt: str = None, api_key: str = None) -> str:
+    async def create_image(
+            self,
+            prompt: str = None,
+            api_key: str = None
+    ) -> str:
         if prompt:
             if api_key:
                 try:
@@ -105,10 +117,10 @@ class OpenAIService:
                     return image_url.data[0].url
                 except BadRequestError as e:
                     logger.debug(e)
-                    return "Измените текст запроса, чтобы не нарушать правила сервиса."
+                    return "Нарушение правил сервиса."
                 except RateLimitError as e:
                     logger.debug(e)
-                    return "Превышен лимит изображений в минуту. Попробуйте позднее."
+                    return "Превышен лимит изображений в минуту."
                 except APIConnectionError as e:
                     logger.debug(e)
                     return "Ошибка соединения с нейросетью"

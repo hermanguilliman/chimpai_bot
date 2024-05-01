@@ -1,11 +1,13 @@
 from aiogram.enums import ContentType, ParseMode
+from aiogram import F
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import MessageInput
-from aiogram_dialog.widgets.kbd import Back, Button, Cancel, Row
-from aiogram_dialog.widgets.text import Const
-
-from tgbot.callbacks.personality import reset_personality
-from tgbot.handlers.personality import new_personality_name, new_personality_text
+from aiogram_dialog.widgets.kbd import Back, Cancel, Row, Select, Group
+from aiogram_dialog.widgets.text import Const, Format
+from tgbot.getters.settings import custom_person_getter
+from tgbot.callbacks.settings import on_delete_custom_personality
+from tgbot.handlers.personality import (
+    new_personality_name, new_personality_text)
 from tgbot.misc.states import Personality
 
 person_settings_dialog = Dialog(
@@ -32,12 +34,23 @@ person_settings_dialog = Dialog(
         parse_mode="HTML",
     ),
     Window(
-        Const("🤔 <b>Хотите сбросить личность?</b>\nЭто действие необратимо"),
-        Row(
-            Button(Const("♻️ Сбросить!"), id="reset_button", on_click=reset_personality),
-            Cancel(Const("🤚 Отмена")),
+        Const("<b>♻️ Выберите личность, которую хотите удалить:</b>\n",
+              when="persons"),
+        Const("<b>🤷‍♀️ Вы еще не создали личности</b>", when=~F["persons"]),
+        Group(
+            Select(
+                Format("{item}"),
+                items="persons",
+                item_id_getter=lambda x: x,
+                id="select_person",
+                on_click=on_delete_custom_personality,
+                when="persons",
+            ),
+            width=2,
         ),
+        Cancel(Const("🤚 Отмена")),
         state=Personality.reset,
         parse_mode="HTML",
+        getter=custom_person_getter
     ),
 )

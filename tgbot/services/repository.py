@@ -1,11 +1,11 @@
 from typing import List
 
 from loguru import logger
-from sqlalchemy import delete, text, update
+from sqlalchemy import delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from tgbot.models.personality import Personality
+from tgbot.models.personality import CustomPersonality, BasicPersonality
 from tgbot.models.settings import Settings
 from tgbot.models.user import Users
 
@@ -14,19 +14,13 @@ class Repo:
     def __init__(self, session: AsyncSession):
         self.session: AsyncSession = session
 
-    async def add_user(self,
-                       user_id: int,
-                       fullname: str,
-                       language_code: str) -> None:
+    async def add_user(
+            self,
+            user_id: int,
+    ) -> None:
         """создаём пользователя с базовыми настройками"""
-        user = Users(id=user_id,
-                     full_name=fullname,
-                     language_code=language_code,)
-        settings = Settings(
-            max_tokens=256,
-            model="gpt-3.5-turbo",
-            temperature="0.7",
-            user=user,)
+        user = Users(id=user_id)
+        settings = Settings(user=user)
         self.session.add(user)
         self.session.add(settings)
         await self.session.commit()
@@ -35,13 +29,6 @@ class Repo:
     async def get_user(self, user_id: int) -> Users | None:
         """получить все данные о пользователе по id"""
         return await self.session.get(Users, user_id)
-
-    async def update_full_name(self, user_id: int, fullname: str) -> None:
-        """обновляет пользователя по id"""
-        stmt = update(Users).where(Users.id == user_id).values(full_name=fullname)
-        await self.session.execute(stmt)
-        await self.session.commit()
-        logger.info(f"Пользователь {user_id} сменил имя на {fullname}")
 
     async def delete_user(self, user_id):
         """удаляем пользователя по id"""
@@ -73,24 +60,34 @@ class Repo:
         await self.session.execute(stmt)
         await self.session.commit()
         logger.info(
-            f"Пользователь {user_id} установил длину ответа {max_tokens} токенов"
+            f"""
+            Пользователь {user_id} установил ответ {max_tokens} токенов"""
         )
 
     async def update_settings(self, user_id: int, model: str) -> None:
         # Обновляет настройки
-        stmt = update(Settings).where(Settings.user_id == user_id).values(model=model)
+        stmt = update(Settings).where(Settings.user_id == user_id).values(
+            model=model)
         await self.session.execute(stmt)
         await self.session.commit()
 
     async def update_tts_voice(self, user_id: int, tts_voice: str) -> None:
         # Обновляет настройки
-        stmt = update(Settings).where(Settings.user_id == user_id).values(tts_voice=tts_voice)
+        stmt = (
+            update(Settings)
+            .where(Settings.user_id == user_id)
+            .values(tts_voice=tts_voice)
+        )
         await self.session.execute(stmt)
         await self.session.commit()
-    
+
     async def update_tts_speed(self, user_id: int, tts_speed: str) -> None:
         # Обновляет настройки
-        stmt = update(Settings).where(Settings.user_id == user_id).values(tts_speed=tts_speed)
+        stmt = (
+            update(Settings)
+            .where(Settings.user_id == user_id)
+            .values(tts_speed=tts_speed)
+        )
         await self.session.execute(stmt)
         await self.session.commit()
 
@@ -107,7 +104,8 @@ class Repo:
     async def update_api_key(self, user_id: int, api_key: str) -> None:
         # обновляет api ключ
         stmt = (
-            update(Settings).where(Settings.user_id == user_id).values(api_key=api_key)
+            update(Settings).where(Settings.user_id == user_id).values(
+                api_key=api_key)
         )
         await self.session.execute(stmt)
         await self.session.commit()
@@ -121,26 +119,84 @@ class Repo:
         text: str,
     ) -> None:
         stmt = (
-            update(Personality)
-            .where(Personality.user_id == user_id)
-            .values(name=name, text=text)
-        )
+            update(CustomPersonality).where(
+                CustomPersonality.user_id == user_id).values(
+                    name=name, text=text))
         await self.session.execute(stmt)
         await self.session.commit()
 
-    async def get_personality(self, user_id: int) -> Personality | None:
-        # Возвращает личность по user_id
-        stmt = select(Personality).where(Personality.user_id == user_id)
-        personality = await self.session.scalar(stmt)
-        return personality
+    async def get_custom_personality_list(
+            self,
+            user_id: int
+    ) -> list[CustomPersonality] | None:
+        # Возвращает все кастомные личности по user_id
+        stmt = select(
+            CustomPersonality).where(CustomPersonality.user_id == user_id)
+        result = await self.session.execute(stmt)
+        return result.scalars().all()
 
-    async def delete_personality(self, user_id: int) -> None:
-        stmt = text(f"DELETE FROM personality WHERE user_id = {user_id}")
+    async def get_basic_personality_list(
+            self,
+    ) -> list[BasicPersonality] | None:
+        """Возвращает список стандартных личностей"""
+        rows = select(BasicPersonality)
+        result = await self.session.execute(rows)
+        return result.scalars().all()
+
+    async def delete_custom_personality(self, user_id: int, name: str) -> None:
+        stmt = delete(
+            CustomPersonality).where(
+                CustomPersonality.user_id == user_id).where(
+                    CustomPersonality.name == name)
         await self.session.execute(stmt)
         await self.session.commit()
         logger.info(f"Пользователь {user_id} удалил личность")
 
-    async def add_new_personality(self, user_id: int, name: str, text: str) -> None:
-        personality = Personality(name=name, text=text, user_id=user_id)
+    async def add_custom_personality(
+        self,
+        user_id: int,
+        name: str,
+        text: str
+    ) -> None:
+        personality = CustomPersonality(name=name, text=text, user_id=user_id)
         self.session.add(personality)
         await self.session.commit()
+
+    async def select_basic_personality(self, user_id: int, name: str) -> None:
+        """установка стандартной личности бота"""
+        stmt = select(
+            BasicPersonality).where(
+                BasicPersonality.name == name)
+        bp = await self.session.scalar(stmt)
+        settings = update(
+            Settings).where(
+                Settings.user_id == user_id).values(
+                    personality_name=bp.name,
+                    personality_text=bp.text)
+        await self.session.execute(settings)
+        await self.session.commit()
+
+    async def set_custom_personality(self, user_id: int, name: str) -> None:
+        """установка кастомной личности бота"""
+        stmt = select(
+            CustomPersonality).where(
+                CustomPersonality.user_id == user_id).where(
+                    CustomPersonality.name == name)
+        cp = await self.session.scalar(stmt)
+        settings = update(
+            Settings).where(
+                Settings.user_id == user_id).values(
+                    personality_name=cp.name,
+                    personality_text=cp.text)
+        await self.session.execute(settings)
+        await self.session.commit()
+
+    async def is_custom_personality_exists(
+            self, user_id: int, name: str) -> bool:
+        """Проверяет существует ли кастомная личность"""
+        stmt = select(
+            CustomPersonality).where(
+                CustomPersonality.user_id == user_id).where(
+                    CustomPersonality.name == name)
+        cp = await self.session.scalar(stmt)
+        return bool(cp)

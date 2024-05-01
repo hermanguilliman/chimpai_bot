@@ -1,3 +1,4 @@
+from aiogram import F
 from aiogram.enums import ParseMode, ContentType
 from tgbot.handlers.api_key import api_key_handler
 from aiogram_dialog.widgets.input import MessageInput
@@ -18,7 +19,12 @@ root_settings_dialog = Dialog(
         # Окно выбора настроек
         Const("<b>🛠 Главное окно настроек 🛠</b>"),
         SwitchTo(
-            Format("🔑API ключ: {api_key}"),
+            Format("🔑API ключ установлен ✅ ", when="api_key"),
+            id="set_api_key",
+            state=RootSettings.api_key,
+        ),
+        SwitchTo(
+            Const("🔑 API ключ отсутствует ⛔️", when=~F["api_key"]),
             id="set_api_key",
             state=RootSettings.api_key,
         ),
