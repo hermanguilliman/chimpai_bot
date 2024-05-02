@@ -86,16 +86,22 @@ class OpenAIService:
         else:
             return "error"
 
-    async def audio_to_text(self, audio_path: str, api_key: str = None) -> str:
+    async def audio_to_text(
+            self,
+            audio_path: str,
+            api_key: str = None) -> str | None:
         if api_key:
             self.openai.api_key = api_key
-            with open(audio_path, "rb") as file:
-                transcript = await self.openai.audio.transcriptions.create(
-                    file=file, model="whisper-1"
-                )
-                return transcript.text
-        else:
-            pass
+
+            try:
+                with open(audio_path, "rb") as file:
+                    transcript = await self.openai.audio.transcriptions.create(
+                        file=file, model="whisper-1"
+                    )
+                    return transcript.text
+            except Exception as e:
+                logger.error(e)
+                return None
 
     async def create_image(
             self,

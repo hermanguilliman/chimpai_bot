@@ -1,13 +1,10 @@
 from aiogram import F
-from aiogram.enums import ContentType, ParseMode
+from aiogram.enums import ParseMode
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Row, Start
 from aiogram_dialog.widgets.text import Const, Format
 
 from tgbot.getters.base_data import get_base_data
-from tgbot.handlers.neural_chat import neural_handler
-from tgbot.handlers.transcription import voice_handler
 from tgbot.misc.states import Main, Neural, RootSettings
 
 main_dialog = Dialog(
@@ -32,14 +29,6 @@ main_dialog = Dialog(
         Start(Const("📝 Настройки"),
               id="settings",
               state=RootSettings.select),
-        # Короткий путь к текстовому запросу или расшифровке войса
-        MessageInput(
-            neural_handler,
-            content_types=[ContentType.TEXT]
-            ),
-        MessageInput(
-            voice_handler,
-            content_types=[ContentType.VOICE]),
         state=Main.main,
         getter=get_base_data,
         parse_mode=ParseMode.HTML,

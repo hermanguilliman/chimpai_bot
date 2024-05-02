@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import (
 from tgbot.config import load_config, setup_logger
 from tgbot.dialogs.chat_settings import chat_settings_dialog
 from tgbot.dialogs.main import main_dialog
-from tgbot.dialogs.neural import neural_chat
+from tgbot.dialogs.chatgpt import neural_chat
 from tgbot.dialogs.personality import person_settings_dialog
 from tgbot.dialogs.root_settings import root_settings_dialog
 from tgbot.dialogs.tts_settings import tts_settings_dialog

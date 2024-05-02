@@ -9,6 +9,7 @@ from tgbot.handlers.images import image_creator_handler
 from tgbot.handlers.neural_chat import neural_handler
 from tgbot.handlers.tts import tts_handler
 from tgbot.handlers.transcription import voice_handler
+from tgbot.handlers.voice_chatgpt import voice_to_chatgpt_handler
 from tgbot.misc.states import Neural, ChatSettings, TTSSettings
 
 neural_chat = Dialog(
@@ -37,7 +38,15 @@ neural_chat = Dialog(
 
         Const("\n<b>Задай мне любой вопрос... 🤔</b>"),
 
-        MessageInput(neural_handler, content_types=[ContentType.TEXT]),
+        # Инпут для голосового ввода запроса
+        MessageInput(
+            voice_to_chatgpt_handler,
+            content_types=[ContentType.VOICE]),
+
+        # Инпут для текстового ввода запроса
+        MessageInput(
+            neural_handler,
+            content_types=[ContentType.TEXT]),
 
         Row(
             Cancel(
