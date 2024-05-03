@@ -45,6 +45,10 @@ async def voice_to_chatgpt_handler(
                 audio_path=local_path, api_key=settings.api_key
             )
             if text:
+                await message.reply(
+                    f"<b>🎧 Вот, что я услышал:</b>\n\n{text[:4000]}",
+                    parse_mode=ParseMode.HTML
+                )
                 answer = await openai.get_answer(
                     api_key=settings.api_key,
                     model=settings.model,
