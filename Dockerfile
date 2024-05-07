@@ -4,7 +4,7 @@ COPY poetry.lock pyproject.toml bot.py /app/
 COPY tgbot /app/tgbot
 
 RUN pip install --upgrade pip
-RUN pip install --user --no-cache-dir poetry && \
+RUN pip install --no-cache-dir poetry && \
     poetry config virtualenvs.create false && \
     poetry install --only main --no-interaction --no-ansi
 

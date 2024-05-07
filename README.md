@@ -1,10 +1,5 @@
 # chimpai bot 🐵
 
-[![Screenshot 1](screenshots/1.jpg)](screenshots/1.jpg)
-[![Screenshot 1](screenshots/2.jpg)](screenshots/2.jpg)
-[![Screenshot 1](screenshots/3.jpg)](screenshots/3.jpg)
-[![Screenshot 1](screenshots/4.jpg)](screenshots/4.jpg)
-
 **ChimpAI - это Telegram бот для OpenAI API.**
 
 1. Для работы использует ключ OpenAI API
@@ -37,3 +32,8 @@ nano .env
 ```bash
 docker-compose up -d --build
 ```
+
+[![Screenshot 1](screenshots/1.jpg)](screenshots/1.jpg)
+[![Screenshot 1](screenshots/2.jpg)](screenshots/2.jpg)
+[![Screenshot 1](screenshots/3.jpg)](screenshots/3.jpg)
+[![Screenshot 1](screenshots/4.jpg)](screenshots/4.jpg)
