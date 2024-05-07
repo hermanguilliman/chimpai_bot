@@ -1,4 +1,4 @@
-# Chimpai bot 🐵
+# ChimpAI bot 🐵
 
 **ChimpAI - это Telegram бот для OpenAI API.**
 
