@@ -34,10 +34,18 @@ async def on_custom_personality_selected(
     callback: ChatEvent, select: Any, manager: DialogManager, item_id: str
 ):
     """Обновляет значение кастомной личности в бд по нажатию кнопки"""
+    manager.dialog_data["custom_name"] = item_id
+    await manager.next()
+
+
+async def on_custom_personality_activate(
+    callback: CallbackQuery, button: Button, manager: DialogManager
+):
     repo: Repo = manager.middleware_data.get("repo")
     user_id = manager.bg().user.id
-    await repo.set_custom_personality(user_id=user_id, name=item_id)
-    await callback.answer(f"Выбрана личность: {item_id}!")
+    name = manager.dialog_data.get("custom_name")
+    await repo.set_custom_personality(user_id=user_id, name=name)
+    await callback.answer(f"Выбрана личность:  {name}!")
     await manager.done()
 
 

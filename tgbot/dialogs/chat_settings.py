@@ -2,6 +2,7 @@ from aiogram.enums import ParseMode
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.kbd import (
     Button,
+    Back,
     Cancel,
     Group,
     Row,
@@ -12,6 +13,7 @@ from aiogram_dialog.widgets.kbd import (
 from aiogram_dialog.widgets.text import Const, Format
 
 from tgbot.callbacks.settings import (
+    on_custom_personality_activate,
     on_decrease_temp,
     on_increase_temp,
     on_max_length_selected,
@@ -23,6 +25,7 @@ from tgbot.callbacks.settings import (
 )
 from tgbot.getters.base_data import get_base_data
 from tgbot.getters.settings import (
+    activate_custom_personality_getter,
     get_data_model_selector,
     basic_person_getter,
     custom_person_getter,
@@ -52,7 +55,7 @@ chat_settings_dialog = Dialog(
             SwitchTo(
                 Format("Личность: {personality}"),
                 id="personality",
-                state=ChatSettings.basic_personality,
+                state=ChatSettings.basic_personality_list,
             ),
             width=2,
         ),
@@ -145,12 +148,12 @@ chat_settings_dialog = Dialog(
             SwitchTo(
                 Const("🏗 Выбрать свою"),
                 id="custom_personality",
-                state=ChatSettings.custom_personality,
+                state=ChatSettings.custom_personality_list,
             ),
             Cancel(Const("🤚 Отмена")),
         ),
-        state=ChatSettings.basic_personality,
-        parse_mode="HTML",
+        state=ChatSettings.basic_personality_list,
+        parse_mode=ParseMode.HTML,
         getter=basic_person_getter,
     ),
     Window(
@@ -179,8 +182,24 @@ chat_settings_dialog = Dialog(
             ),
         ),
         Cancel(Const("🤚 Отмена")),
-        state=ChatSettings.custom_personality,
-        parse_mode="HTML",
+        state=ChatSettings.custom_personality_list,
+        parse_mode=ParseMode.HTML,
         getter=custom_person_getter,
+    ),
+    Window(
+        Const("<b>Активировать данную личность?</b>\n"),
+        Format("<b>Имя личности:\n{custom_name}</b>\n", when="custom_name"),
+        Format("<b>Описание личности:</b>\n{custom_desc}", when="custom_desc"),
+        Row(
+            Button(
+                Const("Активировать"),
+                id="activate_custom_personality",
+                on_click=on_custom_personality_activate
+            ),
+            Back(Const("Назад")),
+        ),
+        getter=activate_custom_personality_getter,
+        state=ChatSettings.select_custom_personality,
+        parse_mode=ParseMode.HTML,
     ),
 )

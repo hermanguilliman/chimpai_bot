@@ -135,6 +135,19 @@ class Repo:
         result = await self.session.execute(stmt)
         return result.scalars().all()
 
+    async def get_custom_personality(
+            self,
+            user_id: int,
+            personality_name: str,
+    ) -> CustomPersonality | None:
+        stmt = select(
+            CustomPersonality).where(
+                CustomPersonality.user_id == user_id).where(
+                    CustomPersonality.name == personality_name)
+        result = await self.session.execute(stmt)
+        result = result.scalars().first()
+        return result.text
+
     async def get_basic_personality_list(
             self,
     ) -> list[BasicPersonality] | None:

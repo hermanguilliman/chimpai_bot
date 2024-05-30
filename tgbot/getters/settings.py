@@ -41,6 +41,22 @@ async def custom_person_getter(dialog_manager: DialogManager, **kwargs):
     }
 
 
+async def activate_custom_personality_getter(
+        dialog_manager: DialogManager, **kwargs):
+    # Показываем название и описание кастомной личности
+    repo: Repo = dialog_manager.middleware_data.get("repo")
+    user_id = dialog_manager.bg().user.id
+    custom_name = dialog_manager.dialog_data.get("custom_name")
+    custom_desc = await repo.get_custom_personality(
+        user_id=user_id,
+        personality_name=custom_name)
+
+    return {
+        "custom_name": custom_name,
+        "custom_desc": custom_desc,
+    }
+
+
 # Геттер температуры
 async def get_temperature(dialog_manager: DialogManager, **kwargs):
     # При первом запуске получаем значение из предыдущего диалога?

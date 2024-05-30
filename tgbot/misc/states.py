@@ -22,8 +22,10 @@ class ChatSettings(StatesGroup):
     model = State()
     max_length = State()
     temperature = State()
-    basic_personality = State()
-    custom_personality = State()
+    basic_personality_list = State()
+    custom_personality_list = State()
+    select_custom_personality = State()
+
 
 
 class TTSSettings(StatesGroup):
