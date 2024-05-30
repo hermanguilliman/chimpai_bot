@@ -187,7 +187,7 @@ chat_settings_dialog = Dialog(
         getter=custom_person_getter,
     ),
     Window(
-        Const("<b>Активировать данную личность?</b>\n"),
+        Const("<b>🤔 Активировать данную личность?</b>\n"),
         Format("<b>Имя личности:\n{custom_name}</b>\n", when="custom_name"),
         Format("<b>Описание личности:</b>\n{custom_desc}", when="custom_desc"),
         Row(
