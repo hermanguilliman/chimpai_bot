@@ -192,11 +192,11 @@ chat_settings_dialog = Dialog(
         Format("<b>Описание личности:</b>\n{custom_desc}", when="custom_desc"),
         Row(
             Button(
-                Const("Активировать"),
+                Const("✅ Активировать"),
                 id="activate_custom_personality",
                 on_click=on_custom_personality_activate
             ),
-            Back(Const("Назад")),
+            Back(Const("👈 Назад")),
         ),
         getter=activate_custom_personality_getter,
         state=ChatSettings.select_custom_personality,
