@@ -2,36 +2,28 @@ from aiogram.enums import ParseMode
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.kbd import (
     Button,
-    Back,
     Cancel,
     Group,
-    Row,
     Select,
-    Start,
     SwitchTo,
+    Start,
 )
 from aiogram_dialog.widgets.text import Const, Format
 
 from tgbot.callbacks.settings import (
-    on_custom_personality_activate,
     on_decrease_temp,
     on_increase_temp,
     on_max_length_selected,
     on_new_model_selected,
-    on_basic_personality_selected,
-    on_custom_personality_selected,
     on_reset_temp,
     on_temperature_selected,
 )
 from tgbot.getters.base_data import get_base_data
 from tgbot.getters.settings import (
-    activate_custom_personality_getter,
     get_data_model_selector,
-    basic_person_getter,
-    custom_person_getter,
     get_temperature,
 )
-from tgbot.misc.states import ChatSettings, Personality
+from tgbot.misc.states import ChatSettings, PersonalitySettings
 
 chat_settings_dialog = Dialog(
     Window(
@@ -52,14 +44,14 @@ chat_settings_dialog = Dialog(
                 id="set_temperature",
                 state=ChatSettings.temperature,
             ),
-            SwitchTo(
+            Start(
                 Format("Личность: {personality}"),
                 id="personality",
-                state=ChatSettings.basic_personality_list,
+                state=PersonalitySettings.basic_list,
             ),
             width=2,
         ),
-        Cancel(Const("🤚 Отмена")),
+        Cancel(Const("👈 Назад")),
         state=ChatSettings.select,
         parse_mode=ParseMode.HTML,
         getter=get_base_data,
@@ -78,7 +70,7 @@ chat_settings_dialog = Dialog(
             ),
             width=2,
         ),
-        Cancel(Const("🤚 Отмена")),
+        Cancel(Const("👈 Назад")),
         state=ChatSettings.model,
         parse_mode=ParseMode.HTML,
         getter=get_data_model_selector,
@@ -96,7 +88,7 @@ chat_settings_dialog = Dialog(
             ),
             width=5,
         ),
-        Cancel(Const("🤚 Отмена")),
+        Cancel(Const("👈 Назад")),
         state=ChatSettings.max_length,
         parse_mode=ParseMode.HTML,
     ),
@@ -122,84 +114,11 @@ chat_settings_dialog = Dialog(
             Button(Const("🌚 Как было"),
                    id="reset_temp",
                    on_click=on_reset_temp),
-            Cancel(Const("🤚 Отмена")),
+            Cancel(Const("👈 Назад")),
             width=2,
         ),
         state=ChatSettings.temperature,
         parse_mode=ParseMode.HTML,
         getter=get_temperature,
-    ),
-    Window(
-        # Это окно с выбором личности бота.
-        Const(
-            "<b>Выберите одну из стандартных 🎭личностей бота.</b>"
-        ),
-        Group(
-            Select(
-                Format("{item}"),
-                items="persons",
-                item_id_getter=lambda x: x,
-                id="select_person",
-                on_click=on_basic_personality_selected,
-            ),
-            width=2,
-        ),
-        Row(
-            SwitchTo(
-                Const("🏗 Выбрать свою"),
-                id="custom_personality",
-                state=ChatSettings.custom_personality_list,
-            ),
-            Cancel(Const("🤚 Отмена")),
-        ),
-        state=ChatSettings.basic_personality_list,
-        parse_mode=ParseMode.HTML,
-        getter=basic_person_getter,
-    ),
-    Window(
-        Const("<b>Список созданных вами личностей:</b>\n"),
-        Group(
-            Select(
-                Format("{item}"),
-                items="persons",
-                item_id_getter=lambda x: x,
-                id="select_person",
-                on_click=on_custom_personality_selected,
-                when="persons",
-            ),
-            width=2,
-        ),
-        Row(
-            Start(
-                Const("✏️ Создать"),
-                id="custom_person",
-                state=Personality.name,
-            ),
-            Start(
-                Const("♻️ Удалить"),
-                id="reset_person",
-                state=Personality.reset,
-            ),
-        ),
-        Cancel(Const("🤚 Отмена")),
-        state=ChatSettings.custom_personality_list,
-        parse_mode=ParseMode.HTML,
-        getter=custom_person_getter,
-    ),
-    Window(
-        Const("<b>🤔 Активировать данную личность?</b>\n"),
-        Format("<b>Имя личности:\n{custom_name}</b>\n", when="custom_name"),
-        Format("<b>Описание личности:</b>\n{custom_desc}", when="custom_desc"),
-        Row(
-            Button(
-                Const("✅ Активировать"),
-                id="activate_custom_personality",
-                on_click=on_custom_personality_activate
-            ),
-            Back(Const("👈 Назад")),
-        ),
-        getter=activate_custom_personality_getter,
-        state=ChatSettings.select_custom_personality,
-        parse_mode=ParseMode.HTML,
     ),
 )

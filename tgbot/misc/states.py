@@ -1,14 +1,23 @@
 from aiogram.filters.state import State, StatesGroup
 
 
-class Main(StatesGroup):
-    main = State()
+class MainMenu(StatesGroup):
+    select = State()
 
 
-class Neural(StatesGroup):
+class ChatGPT(StatesGroup):
     chat = State()
+
+
+class SpeechToText(StatesGroup):
     transcribe = State()
-    image_create = State()
+
+
+class Dalle(StatesGroup):
+    create_image = State()
+
+
+class TextToSpeech(StatesGroup):
     tts = State()
 
 
@@ -22,10 +31,12 @@ class ChatSettings(StatesGroup):
     model = State()
     max_length = State()
     temperature = State()
-    basic_personality_list = State()
-    custom_personality_list = State()
-    select_custom_personality = State()
 
+
+class PersonalitySettings(StatesGroup):
+    basic_list = State()
+    custom_list = State()
+    custom_person_select = State()
 
 
 class TTSSettings(StatesGroup):
@@ -35,8 +46,6 @@ class TTSSettings(StatesGroup):
     tts_voice = State()
 
 
-class Personality(StatesGroup):
-    reset = State()
+class NewPersonality(StatesGroup):
     name = State()
     text = State()
-    finish = State()

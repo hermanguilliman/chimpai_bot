@@ -30,7 +30,7 @@ async def basic_person_getter(dialog_manager: DialogManager, **kwargs):
     }
 
 
-async def custom_person_getter(dialog_manager: DialogManager, **kwargs):
+async def custom_person_list_getter(dialog_manager: DialogManager, **kwargs):
     # Получаем список личностей
     repo: Repo = dialog_manager.middleware_data.get("repo")
     user_id = dialog_manager.bg().user.id
@@ -41,7 +41,7 @@ async def custom_person_getter(dialog_manager: DialogManager, **kwargs):
     }
 
 
-async def activate_custom_personality_getter(
+async def custom_personality_getter(
         dialog_manager: DialogManager, **kwargs):
     # Показываем название и описание кастомной личности
     repo: Repo = dialog_manager.middleware_data.get("repo")

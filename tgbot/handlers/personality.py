@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import MessageInput
 
-from tgbot.misc.states import Personality
+from tgbot.misc.states import NewPersonality
 from tgbot.services.repository import Repo
 
 
@@ -23,7 +23,7 @@ async def new_personality_name(
 
     if len(new_name) <= 20:
         manager.dialog_data["name"] = new_name
-        await manager.switch_to(Personality.text)
+        await manager.switch_to(NewPersonality.text)
     else:
         await message.answer(
             "❗️ Ошибка! Максимальная длина имени 20 знаков!",
@@ -42,9 +42,9 @@ async def new_personality_text(
     text = message.text
 
     await repo.add_custom_personality(user_id=user_id, name=name, text=text)
-
     await message.answer(
-        f"Личность <b>{name}</b> - сохранена", parse_mode=ParseMode.HTML
+        f"👌 Личность \"<b>{name}</b>\" успешно добавлена!",
+        parse_mode=ParseMode.HTML
     )
     await manager.done()
     return

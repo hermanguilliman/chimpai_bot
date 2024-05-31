@@ -49,14 +49,14 @@ async def on_custom_personality_activate(
     await manager.done()
 
 
-async def on_delete_custom_personality(
-    callback: ChatEvent, select: Any, manager: DialogManager, item_id: str
+async def on_custom_personality_delete(
+    callback: CallbackQuery, button: Button, manager: DialogManager
 ):
-    """Обновляет значение кастомной личности в бд по нажатию кнопки"""
     repo: Repo = manager.middleware_data.get("repo")
     user_id = manager.bg().user.id
-    await repo.delete_custom_personality(user_id=user_id, name=item_id)
-    await callback.answer(f"Личность {item_id} удалена!")
+    name = manager.dialog_data.get("custom_name")
+    await repo.delete_custom_personality(user_id=user_id, name=name)
+    await callback.answer(f"Личность {name} удалена!")
     await manager.done()
 
 

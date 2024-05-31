@@ -38,7 +38,7 @@ root_settings_dialog = Dialog(
             id="voice_setup",
             state=TTSSettings.select,
         ),
-        Cancel(Const("🤚 Отмена")),
+        Cancel(Const("👈 Назад")),
         state=RootSettings.select,
         parse_mode=ParseMode.HTML,
         getter=get_base_data,
