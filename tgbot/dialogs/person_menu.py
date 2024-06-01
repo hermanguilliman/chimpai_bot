@@ -55,7 +55,7 @@ personality_menu_dialog = Dialog(
     Window(
         Const("<b>Список созданных вами личностей:</b>\n", when="persons",),
         Const(
-            "<b>Вы еще не создали ни одну личность</b>",
+            "<b>Вы еще не добавили ни одну личность 😩</b>",
             when=~F["persons"],
         ),
         Group(
@@ -70,7 +70,11 @@ personality_menu_dialog = Dialog(
             width=2,
         ),
         Row(
-            Cancel(Const("👈 Назад")),
+            SwitchTo(
+                Const("👈 Назад"),
+                id='back',
+                state=PersonalitySettings.basic_list
+            ),
             Start(
                 Const("📋 Добавить"),
                 id="custom_person",

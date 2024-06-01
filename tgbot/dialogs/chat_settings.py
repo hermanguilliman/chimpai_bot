@@ -30,7 +30,7 @@ chat_settings_dialog = Dialog(
         Const("<b>💬 Окно настроек чата: 💬</b>"),
         Group(
             SwitchTo(
-                Format("🤖 Модель: {model}"),
+                Format("🧠 Модель: {model}"),
                 id="set_model",
                 state=ChatSettings.model
             ),
@@ -62,7 +62,7 @@ chat_settings_dialog = Dialog(
         Const("<b>Подсказка:</b> стандартное значение <b>gpt-3.5-turbo</b>"),
         Group(
             Select(
-                Format("🤖 {item}"),
+                Format("🧠 {item}"),
                 items="models",
                 item_id_getter=lambda x: x,
                 id="select_max_new_model",
@@ -70,7 +70,7 @@ chat_settings_dialog = Dialog(
             ),
             width=2,
         ),
-        Cancel(Const("👈 Назад")),
+        SwitchTo(Const("👈 Назад"), id='back', state=ChatSettings.select),
         state=ChatSettings.model,
         parse_mode=ParseMode.HTML,
         getter=get_data_model_selector,
@@ -88,7 +88,7 @@ chat_settings_dialog = Dialog(
             ),
             width=5,
         ),
-        Cancel(Const("👈 Назад")),
+        SwitchTo(Const("👈 Назад"), id='back', state=ChatSettings.select),
         state=ChatSettings.max_length,
         parse_mode=ParseMode.HTML,
     ),
@@ -111,10 +111,10 @@ chat_settings_dialog = Dialog(
             width=2,
         ),
         Group(
-            Button(Const("🌚 Как было"),
+            SwitchTo(Const("👈 Назад"), id='back', state=ChatSettings.select),
+            Button(Const("🌚 Стандартные"),
                    id="reset_temp",
                    on_click=on_reset_temp),
-            Cancel(Const("👈 Назад")),
             width=2,
         ),
         state=ChatSettings.temperature,

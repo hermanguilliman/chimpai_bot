@@ -48,7 +48,7 @@ root_settings_dialog = Dialog(
         MessageInput(api_key_handler, content_types=[ContentType.TEXT]),
         Const("<b>Укажите новый API ключ:</b>"),
         Const("<b>Подсказка:</b> Ключ OpenAI API выглядит как <b>sk-...</b>"),
-        Cancel(Const("🤚 Отмена")),
+        SwitchTo(Const("👈 Назад"), id='back', state=RootSettings.select),
         state=RootSettings.api_key,
         parse_mode=ParseMode.HTML,
     ),

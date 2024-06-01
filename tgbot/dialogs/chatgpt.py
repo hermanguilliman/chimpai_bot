@@ -12,10 +12,10 @@ from tgbot.misc.states import ChatSettings, ChatGPT
 
 chat_gpt_dialog = Dialog(
     Window(
-        Const("<b>🖥 Конфигурация чата:</b>\n"),
+        Const("<b>🤖 ChatGPT</b>\n"),
 
         Format(
-            "🤖 Модель нейросети: <b>{model}</b>",
+            "🧠 Модель нейросети: <b>{model}</b>",
             when="model"
         ),
 
@@ -25,7 +25,7 @@ chat_gpt_dialog = Dialog(
         ),
 
         Format(
-            "🧠 Оригинальность ответа: <b>{temperature}</b>",
+            "🌡 Оригинальность ответа: <b>{temperature}</b>",
             when="temperature"
         ),
 

@@ -13,9 +13,9 @@ text_to_speech_dialog = Dialog(
     Window(
         MessageInput(tts_handler, content_types=[ContentType.TEXT]),
         Const(
-            "<b>🗣 Text to speech - это озвучивание текста\n</b>"
+            "<b>🎙 Text to speech - это озвучивание текста\n</b>"
         ),
-        Format("<b>🦜 Выбранный голос: {tts_voice}</b>"),
+        Format("<b>🗣 Выбранный голос: {tts_voice}</b>"),
         Format("<b>⏩ Скорость произношения: {tts_speed}</b>\n"),
         Const("<b>Введите текст, который нужно озвучить!\n</b>"),
         Row(
