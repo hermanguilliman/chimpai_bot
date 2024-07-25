@@ -22,7 +22,7 @@ class OpenAIService:
         prompt: str = None,
         max_tokens: int = None,
         temperature: float = None,
-        personality_text: str = None,
+        person_text: str = None,
     ) -> str | None:
         """
         Функция использует OpenAI для ответа на вопросы
@@ -48,7 +48,7 @@ class OpenAIService:
         messages = [
             {"role": "user", "content": f"{prompt}"},
         ]
-        if isinstance(personality_text, str):
+        if isinstance(person_text, str):
             today = datetime.now().strftime("%d.%m.%Y")
             time = datetime.now().strftime("%H:%M")
 
@@ -56,7 +56,7 @@ class OpenAIService:
                 0,
                 {
                     "role": "system",
-                    "content": f"{personality_text}. Дата: {today}. Время: {time}",
+                    "content": f"{person_text}. Дата: {today}. Время: {time}",
                 },
             )
         try:

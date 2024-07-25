@@ -55,7 +55,7 @@ async def voice_to_chatgpt_handler(
                     prompt=text,
                     max_tokens=int(settings.max_tokens),
                     temperature=float(settings.temperature),
-                    personality_text=settings.personality_text)
+                    person_text=settings.personality_text)
 
                 if answer:
                     text_chunks = split_text(answer, 4000)

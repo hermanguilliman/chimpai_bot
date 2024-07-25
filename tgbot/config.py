@@ -6,6 +6,11 @@ from loguru import logger
 
 
 @dataclass
+class AI:
+    base_url: str
+
+
+@dataclass
 class TgBot:
     token: str
     admin_ids: list[int]
@@ -14,6 +19,7 @@ class TgBot:
 
 @dataclass
 class Config:
+    ai: AI
     tg_bot: TgBot
 
 
@@ -27,6 +33,7 @@ def load_config(path: str = None):
             admin_ids=list(map(int, env.list("ADMINS"))),
             use_redis=env.bool("USE_REDIS", False),
         ),
+        ai=AI(base_url=env.str("BASE_URL", None)),
     )
 
 

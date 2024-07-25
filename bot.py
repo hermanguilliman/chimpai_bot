@@ -74,6 +74,8 @@ async def main():
     dp = Dispatcher(storage=storage)
     sessionmaker = await create_sessionmaker(echo=False)
     openai = AsyncOpenAI(api_key="sk-")
+    if config.ai.base_url:
+        openai.base_url = config.ai.base_url
     dp.errors.register(
         on_unknown_intent,
         ExceptionTypeFilter(UnknownIntent),

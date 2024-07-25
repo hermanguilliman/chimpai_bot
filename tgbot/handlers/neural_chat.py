@@ -52,7 +52,7 @@ async def neural_handler(
             model=settings.model,
             temperature=float(settings.temperature),
             prompt=prompt,
-            personality_text=settings.personality_text,
+            person_text=settings.personality_text,
         )
 
         if answer:
