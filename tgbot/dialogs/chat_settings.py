@@ -4,6 +4,7 @@ from aiogram_dialog.widgets.kbd import (
     Button,
     Cancel,
     Group,
+    ScrollingGroup,
     Select,
     SwitchTo,
     Start,
@@ -60,7 +61,7 @@ chat_settings_dialog = Dialog(
         # Список доступных моделей
         Const("<b>Выберите модель из списка:</b>"),
         Const("<b>Подсказка:</b> стандартное значение <b>gpt-4o-mini</b>"),
-        Group(
+        ScrollingGroup(
             Select(
                 Format("🧠 {item}"),
                 items="models",
@@ -68,7 +69,10 @@ chat_settings_dialog = Dialog(
                 id="select_max_new_model",
                 on_click=on_new_model_selected,
             ),
-            width=2,
+            width=1,
+            height=20,
+            id="scrolling_models",
+            when="models"
         ),
         SwitchTo(Const("👈 Назад"), id='back', state=ChatSettings.select),
         state=ChatSettings.model,

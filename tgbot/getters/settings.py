@@ -12,7 +12,7 @@ async def get_data_model_selector(dialog_manager: DialogManager, **kwargs):
     settings: Settings = await repo.get_settings(dialog_manager.bg().user.id)
 
     engines = await openai.get_engines(api_key=settings.api_key)
-    if engines is not list:
+    if isinstance(engines, list):
         engine_ids = [engine.id for engine in engines]
     else:
         engine_ids = ["gpt-4o-mini"]
