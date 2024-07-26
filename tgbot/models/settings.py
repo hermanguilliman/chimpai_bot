@@ -15,7 +15,7 @@ class Settings(Base):
         nullable=True,
         default="Действуй как личный ассистент пользователя")
     max_tokens = Column(Integer(), default=1000)
-    model = Column(Text(), default="gpt-3.5-turbo")
+    model = Column(Text(), default="gpt-4o-mini")
     temperature = Column(Text(), default="0.7")
     tts_model = Column(String(), nullable=True, default="tts-1-hd")
     tts_speed = Column(String(), nullable=True, default="1.0")

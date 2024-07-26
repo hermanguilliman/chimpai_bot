@@ -15,7 +15,7 @@ async def get_data_model_selector(dialog_manager: DialogManager, **kwargs):
     if engines is not list:
         engine_ids = [engine.id for engine in engines]
     else:
-        engine_ids = ["gpt-3.5-turbo"]
+        engine_ids = ["gpt-4o-mini"]
     return {
         "models": engine_ids,
     }
