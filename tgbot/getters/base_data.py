@@ -6,7 +6,7 @@ from tgbot.services.repository import Repo
 
 async def get_base_data(dialog_manager: DialogManager, **kwargs) -> dict:
     repo: Repo = dialog_manager.middleware_data.get("repo")
-    user_id: int = dialog_manager.bg().user.id
+    user_id: int = dialog_manager.bg()._event_context.user.id
     settings: Settings = await repo.get_settings(user_id)
 
     base_view = {
