@@ -21,7 +21,7 @@ async def on_new_model_selected(
     )  # Если не найдено, оставляем как есть
 
     repo: Repo = manager.middleware_data.get("repo")
-    user_id = manager.bg().user.id
+    user_id = manager.bg()._event_context.user.id
     await repo.update_settings(user_id=user_id, model=full_model_name)
 
     await callback.answer(f"Модель {full_model_name} успешно установлена!")
@@ -33,7 +33,7 @@ async def on_basic_personality_selected(
 ):
     """Обновляет значение личности в бд по нажатию кнопки"""
     repo: Repo = manager.middleware_data.get("repo")
-    user_id = manager.bg().user.id
+    user_id = manager.bg()._event_context.user.id
     await repo.select_basic_personality(user_id=user_id, name=item_id)
     await callback.answer(f"Выбрана личность: {item_id}!")
     await manager.done()
@@ -51,7 +51,7 @@ async def on_custom_personality_activate(
     callback: CallbackQuery, button: Button, manager: DialogManager
 ):
     repo: Repo = manager.middleware_data.get("repo")
-    user_id = manager.bg().user.id
+    user_id = manager.bg()._event_context.user.id
     name = manager.dialog_data.get("custom_name")
     await repo.set_custom_personality(user_id=user_id, name=name)
     await callback.answer(f"Выбрана личность:  {name}!")
@@ -62,7 +62,7 @@ async def on_custom_personality_delete(
     callback: CallbackQuery, button: Button, manager: DialogManager
 ):
     repo: Repo = manager.middleware_data.get("repo")
-    user_id = manager.bg().user.id
+    user_id = manager.bg()._event_context.user.id
     name = manager.dialog_data.get("custom_name")
     await repo.delete_custom_personality(user_id=user_id, name=name)
     await callback.answer(f"Личность {name} удалена!")
@@ -74,7 +74,7 @@ async def on_max_length_selected(
 ):
     """Обновляет значение максимальной длины по нажатию кнопки"""
     repo: Repo = manager.middleware_data.get("repo")
-    user_id = manager.bg().user.id
+    user_id = manager.bg()._event_context.user.id
     await repo.update_max_token(user_id=user_id, max_tokens=item_id)
     await callback.answer(f"Новая длина ответа составляет {item_id} токенов")
     await manager.done()
@@ -116,7 +116,7 @@ async def on_temperature_selected(
 ):
     # кнопка выбора температуры
     repo: Repo = manager.middleware_data.get("repo")
-    user_id = manager.bg().user.id
+    user_id = manager.bg()._event_context.user.id
     temperature = manager.dialog_data.get("temperature")
     await repo.update_temperature(
         user_id=user_id, temperature=str(temperature)

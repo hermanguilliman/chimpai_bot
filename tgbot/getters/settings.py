@@ -10,7 +10,9 @@ async def get_data_model_selector(dialog_manager: DialogManager, **kwargs):
     # Получаем список моделей доступных в OpenAI
     repo: Repo = dialog_manager.middleware_data.get("repo")
     openai: OpenAIService = dialog_manager.middleware_data.get("openai")
-    settings: Settings = await repo.get_settings(dialog_manager.bg().user.id)
+    settings: Settings = await repo.get_settings(
+        dialog_manager.bg()._event_context.user.id
+    )
 
     engines = await openai.get_engines(api_key=settings.api_key)
     if isinstance(engines, list):
@@ -50,7 +52,7 @@ async def basic_person_getter(dialog_manager: DialogManager, **kwargs):
 async def custom_person_list_getter(dialog_manager: DialogManager, **kwargs):
     # Получаем список личностей
     repo: Repo = dialog_manager.middleware_data.get("repo")
-    user_id = dialog_manager.bg().user.id
+    user_id = dialog_manager.bg()._event_context.user.id
     cp_list = await repo.get_custom_personality_list(user_id=user_id)
 
     return {
@@ -61,7 +63,7 @@ async def custom_person_list_getter(dialog_manager: DialogManager, **kwargs):
 async def custom_personality_getter(dialog_manager: DialogManager, **kwargs):
     # Показываем название и описание кастомной личности
     repo: Repo = dialog_manager.middleware_data.get("repo")
-    user_id = dialog_manager.bg().user.id
+    user_id = dialog_manager.bg()._event_context.user.id
     custom_name = dialog_manager.dialog_data.get("custom_name")
     custom_desc = await repo.get_custom_personality(
         user_id=user_id, personality_name=custom_name

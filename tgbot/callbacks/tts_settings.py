@@ -13,7 +13,7 @@ async def on_tts_voice_selected(
 ):
     """Обновляет значение модели в бд по нажатию кнопки"""
     repo: Repo = manager.middleware_data.get("repo")
-    user_id = manager.bg().user.id
+    user_id = manager.bg()._event_context.user.id
     await repo.update_tts_voice(user_id=user_id, tts_voice=item_id)
     await callback.answer(f"Выбран голос {item_id}!")
     await manager.done()
@@ -24,7 +24,7 @@ async def on_tts_speed_selected(
 ):
     # кнопка выбора температуры
     repo: Repo = manager.middleware_data.get("repo")
-    user_id = manager.bg().user.id
+    user_id = manager.bg()._event_context.user.id
     tts_speed = manager.dialog_data.get("tts_speed")
     await repo.update_tts_speed(user_id=user_id, tts_speed=str(tts_speed))
     await callback.answer(f"Задана скорость речи: {tts_speed}")

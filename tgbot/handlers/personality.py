@@ -13,7 +13,7 @@ async def new_personality_name(
     repo: Repo = manager.middleware_data.get("repo")
     new_name = message.text
     is_exists = await repo.is_custom_personality_exists(
-        user_id=manager.bg().user.id, name=new_name)
+        user_id=manager.bg()._event_context.user.id, name=new_name)
     if is_exists:
         await message.answer(
             f"⛔️ <b>{new_name}</b> уже существует! Придумайте другое имя! ⛔️",
@@ -35,7 +35,7 @@ async def new_personality_name(
 async def new_personality_text(
     message: Message, message_input: MessageInput, manager: DialogManager
 ):
-    user_id = manager.bg().user.id
+    user_id = manager.bg()._event_context.user.id
     repo: Repo = manager.middleware_data.get("repo")
 
     name = manager.dialog_data.get("name")
