@@ -12,10 +12,19 @@ async def on_new_model_selected(
     callback: ChatEvent, select: Any, manager: DialogManager, item_id: str
 ):
     """Обновляет значение модели в бд по нажатию кнопки"""
+    # Извлекаем сопоставление коротких id с полными названиями
+    model_mapping = manager.dialog_data.get("model_mapping", {})
+
+    # Находим полное название модели по короткому id
+    full_model_name = model_mapping.get(
+        item_id, item_id
+    )  # Если не найдено, оставляем как есть
+
     repo: Repo = manager.middleware_data.get("repo")
     user_id = manager.bg().user.id
-    await repo.update_settings(user_id=user_id, model=item_id)
-    await callback.answer(f"Модель {item_id} успешно установлена!")
+    await repo.update_settings(user_id=user_id, model=full_model_name)
+
+    await callback.answer(f"Модель {full_model_name} успешно установлена!")
     await manager.done()
 
 
@@ -87,9 +96,7 @@ async def on_increase_temp(
     if counter >= maximum:
         await callback.answer("Больше нельзя!")
     else:
-        manager.dialog_data["temperature"] = str(
-            counter + Decimal("0.1")
-        )
+        manager.dialog_data["temperature"] = str(counter + Decimal("0.1"))
 
 
 # кнопка уменьшения значения температуры
@@ -101,9 +108,7 @@ async def on_decrease_temp(
     if counter <= minimal:
         await callback.answer("Меньше нельзя!")
     else:
-        manager.dialog_data["temperature"] = str(
-            counter - Decimal("0.1")
-        )
+        manager.dialog_data["temperature"] = str(counter - Decimal("0.1"))
 
 
 async def on_temperature_selected(
@@ -114,8 +119,7 @@ async def on_temperature_selected(
     user_id = manager.bg().user.id
     temperature = manager.dialog_data.get("temperature")
     await repo.update_temperature(
-        user_id=user_id,
-        temperature=str(temperature)
+        user_id=user_id, temperature=str(temperature)
     )
     await callback.answer(f"Задана температура: {temperature}")
     await manager.done()

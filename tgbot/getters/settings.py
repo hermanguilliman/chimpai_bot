@@ -1,5 +1,6 @@
 from aiogram_dialog import DialogManager
 
+from tgbot.misc.text_tools import get_short_id
 from tgbot.models.settings import Settings
 from tgbot.services.openai import OpenAIService
 from tgbot.services.repository import Repo
@@ -16,8 +17,24 @@ async def get_data_model_selector(dialog_manager: DialogManager, **kwargs):
         engine_ids = [engine.id for engine in engines]
     else:
         engine_ids = ["gpt-4o-mini"]
+
+    # Сортируем модели по названию
+    engine_ids.sort()
+
+    # Генерируем сокращенные id для передачи в кнопки
+    short_model_ids = [get_short_id(engine_id) for engine_id in engine_ids]
+
+    # Сохраняем сопоставление в контексте сессии
+    dialog_manager.dialog_data["model_mapping"] = {
+        short_id: full_id
+        for short_id, full_id in zip(short_model_ids, engine_ids)
+    }
+
+    # Возвращаем сокращенные id для кнопок
     return {
-        "models": engine_ids,
+        "models": zip(
+            short_model_ids, engine_ids
+        )  # Пара (короткий id, полное название)
     }
 
 
@@ -41,15 +58,14 @@ async def custom_person_list_getter(dialog_manager: DialogManager, **kwargs):
     }
 
 
-async def custom_personality_getter(
-        dialog_manager: DialogManager, **kwargs):
+async def custom_personality_getter(dialog_manager: DialogManager, **kwargs):
     # Показываем название и описание кастомной личности
     repo: Repo = dialog_manager.middleware_data.get("repo")
     user_id = dialog_manager.bg().user.id
     custom_name = dialog_manager.dialog_data.get("custom_name")
     custom_desc = await repo.get_custom_personality(
-        user_id=user_id,
-        personality_name=custom_name)
+        user_id=user_id, personality_name=custom_name
+    )
 
     return {
         "custom_name": custom_name,

@@ -33,7 +33,7 @@ chat_settings_dialog = Dialog(
             SwitchTo(
                 Format("🧠 Модель: {model}"),
                 id="set_model",
-                state=ChatSettings.model
+                state=ChatSettings.model,
             ),
             SwitchTo(
                 Format("🔋 Максимум токенов: {max_length}"),
@@ -58,23 +58,26 @@ chat_settings_dialog = Dialog(
         getter=get_base_data,
     ),
     Window(
-        # Список доступных моделей
         Const("<b>Выберите модель из списка:</b>"),
         Const("<b>Подсказка:</b> стандартное значение <b>gpt-4o-mini</b>"),
         ScrollingGroup(
             Select(
-                Format("🧠 {item}"),
+                Format(
+                    "🧠 {item[1]}"
+                ),  # Показываем только сокращённое имя модели
                 items="models",
-                item_id_getter=lambda x: x,
+                item_id_getter=lambda x: x[
+                    0
+                ],  # Полное название модели для идентификатора
                 id="select_max_new_model",
                 on_click=on_new_model_selected,
             ),
             width=1,
             height=20,
             id="scrolling_models",
-            when="models"
+            when="models",
         ),
-        SwitchTo(Const("👈 Назад"), id='back', state=ChatSettings.select),
+        SwitchTo(Const("👈 Назад"), id="back", state=ChatSettings.select),
         state=ChatSettings.model,
         parse_mode=ParseMode.HTML,
         getter=get_data_model_selector,
@@ -92,7 +95,7 @@ chat_settings_dialog = Dialog(
             ),
             width=5,
         ),
-        SwitchTo(Const("👈 Назад"), id='back', state=ChatSettings.select),
+        SwitchTo(Const("👈 Назад"), id="back", state=ChatSettings.select),
         state=ChatSettings.max_length,
         parse_mode=ParseMode.HTML,
     ),
@@ -115,10 +118,12 @@ chat_settings_dialog = Dialog(
             width=2,
         ),
         Group(
-            SwitchTo(Const("👈 Назад"), id='back', state=ChatSettings.select),
-            Button(Const("🌚 Стандартные"),
-                   id="reset_temp",
-                   on_click=on_reset_temp),
+            SwitchTo(Const("👈 Назад"), id="back", state=ChatSettings.select),
+            Button(
+                Const("🌚 Стандартные"),
+                id="reset_temp",
+                on_click=on_reset_temp,
+            ),
             width=2,
         ),
         state=ChatSettings.temperature,
