@@ -85,16 +85,18 @@ async def main():
         ExceptionTypeFilter(UnknownState),
     )
 
-    dp.include_router(main_dialog)
-    dp.include_router(chat_gpt_dialog)
-    dp.include_router(dalle_dialog)
-    dp.include_router(speech_to_text_dialog)
-    dp.include_router(text_to_speech_dialog)
-    dp.include_router(personality_menu_dialog)
-    dp.include_router(root_settings_dialog)
-    dp.include_router(new_person_dialog)
-    dp.include_router(chat_settings_dialog)
-    dp.include_router(tts_settings_dialog)
+    dp.include_routers(
+        main_dialog,
+        chat_gpt_dialog,
+        dalle_dialog,
+        speech_to_text_dialog,
+        text_to_speech_dialog,
+        personality_menu_dialog,
+        root_settings_dialog,
+        new_person_dialog,
+        chat_settings_dialog,
+        tts_settings_dialog
+    )
 
     setup_dialogs(dp)
 
