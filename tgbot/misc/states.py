@@ -37,6 +37,7 @@ class PersonalitySettings(StatesGroup):
     basic_list = State()
     custom_list = State()
     custom_person_select = State()
+    custom_person_edit = State()
 
 
 class TTSSettings(StatesGroup):

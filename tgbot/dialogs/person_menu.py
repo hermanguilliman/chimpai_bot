@@ -1,9 +1,10 @@
 from aiogram import F
-from aiogram.enums import ParseMode
+from aiogram.enums import ContentType, ParseMode
 from aiogram_dialog import Dialog, Window
+from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import (
-    Button,
     Back,
+    Button,
     Cancel,
     Group,
     Row,
@@ -14,18 +15,18 @@ from aiogram_dialog.widgets.kbd import (
 from aiogram_dialog.widgets.text import Const, Format
 
 from tgbot.callbacks.settings import (
-    on_custom_personality_activate,
     on_basic_personality_selected,
+    on_custom_personality_activate,
     on_custom_personality_delete,
     on_custom_personality_selected,
 )
 from tgbot.getters.settings import (
-    custom_personality_getter,
     basic_person_getter,
     custom_person_list_getter,
+    custom_personality_getter,
 )
+from tgbot.handlers.personality import update_personality_text
 from tgbot.misc.states import NewPersonality, PersonalitySettings
-
 
 personality_menu_dialog = Dialog(
     Window(
@@ -90,9 +91,14 @@ personality_menu_dialog = Dialog(
         Format("<b>Описание личности:</b>\n{custom_desc}", when="custom_desc"),
         Row(
             Button(
-                Const("✅ Активировать"),
+                Const("✅ Выбрать"),
                 id="activate_custom_personality",
                 on_click=on_custom_personality_activate,
+            ),
+            SwitchTo(
+                Const("📝 Изменить"),
+                id="edit_custom_personality",
+                state=PersonalitySettings.custom_person_edit,
             ),
             Button(
                 Const("🗑 Удалить"),
@@ -105,4 +111,16 @@ personality_menu_dialog = Dialog(
         state=PersonalitySettings.custom_person_select,
         parse_mode=ParseMode.HTML,
     ),
+    Window(
+        Format("<b>Вы редактируете:\n{custom_name}</b>\n", when="custom_name"),
+        Format("<b>Старое описание:</b>\n{custom_desc}", when="custom_desc"),
+        Const("\n🎭 <b>Введите новое описание личности:</b>"),
+        MessageInput(
+            update_personality_text,
+            content_types=[ContentType.TEXT],
+        ),
+        state=PersonalitySettings.custom_person_edit,
+        getter=custom_personality_getter,
+        parse_mode=ParseMode.HTML,
+    )
 )

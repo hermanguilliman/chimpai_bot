@@ -120,8 +120,9 @@ class Repo:
     ) -> None:
         stmt = (
             update(CustomPersonality).where(
-                CustomPersonality.user_id == user_id).values(
-                    name=name, text=text))
+                CustomPersonality.user_id == user_id).where(
+                    CustomPersonality.name == name).values(
+                        text=text))
         await self.session.execute(stmt)
         await self.session.commit()
 
