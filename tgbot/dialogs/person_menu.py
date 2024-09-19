@@ -119,6 +119,7 @@ personality_menu_dialog = Dialog(
             update_personality_text,
             content_types=[ContentType.TEXT],
         ),
+        Back(Const("👈 Назад")),
         state=PersonalitySettings.custom_person_edit,
         getter=custom_personality_getter,
         parse_mode=ParseMode.HTML,
