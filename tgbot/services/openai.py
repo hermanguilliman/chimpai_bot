@@ -16,7 +16,7 @@ class OpenAIService:
 
     def __prepare_messages(
         self, prompt: str, person_text: str | None = None
-    ) -> str:
+    ) -> list:
         messages = [{"role": "user", "content": f"{prompt}"}]
         if isinstance(person_text, str):
             messages.insert(
