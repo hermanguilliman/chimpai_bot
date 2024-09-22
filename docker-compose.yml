@@ -25,6 +25,7 @@ services:
     environment:
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL,CONFIG
       - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_LOGLEVEL=warning
     volumes:
       - chimai-redis-data:/data
 
