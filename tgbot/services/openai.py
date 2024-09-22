@@ -1,19 +1,41 @@
 import io
-from datetime import datetime
 
 from loguru import logger
 from openai import (
     APIConnectionError,
     AsyncOpenAI,
     BadRequestError,
-    RateLimitError,
     PermissionDeniedError,
-    )
+    RateLimitError,
+)
 
 
 class OpenAIService:
     def __init__(self, openai: AsyncOpenAI):
         self.openai: AsyncOpenAI = openai
+
+    def __prepare_messages(
+        self, prompt: str, person_text: str | None = None
+    ) -> str:
+        messages = [{"role": "user", "content": f"{prompt}"}]
+        if isinstance(person_text, str):
+            messages.insert(
+                0,
+                {
+                    "role": "system",
+                    "content": person_text,
+                },
+            )
+        else:
+            messages.insert(
+                0,
+                {
+                    "role": "system",
+                    "content": "Давай короткие и информативные ответы, не "
+                    "более одного абзаца.",
+                },
+            )
+        return messages
 
     async def get_answer(
         self,
@@ -23,6 +45,7 @@ class OpenAIService:
         max_tokens: int = None,
         temperature: float = None,
         person_text: str = None,
+        max_retries: int = 3,
     ) -> str | None:
         """
         Функция использует OpenAI для ответа на вопросы
@@ -45,38 +68,42 @@ class OpenAIService:
 
         self.openai.api_key = api_key
 
-        messages = [
-            {"role": "user", "content": f"{prompt}"},
-        ]
-        if isinstance(person_text, str):
-            today = datetime.now().strftime("%d.%m.%Y")
-            time = datetime.now().strftime("%H:%M")
+        messages = self.__prepare_messages(prompt, person_text)
 
-            messages.insert(
-                0,
-                {
-                    "role": "system",
-                    "content": f"{person_text}. Дата: {today}. Время: {time}",
-                },
-            )
-        try:
-            completions = await self.openai.chat.completions.create(
-                messages=messages,
-                model=model,
-                max_tokens=max_tokens,
-                n=1,
-                stop=None,
-                temperature=temperature,
-            )
-        except PermissionDeniedError as e:
-            logger.error(e)
-            return "Ошибка 403. Отказано в доступе!"
-        except Exception as e:
-            logger.error(e)
-            return None
-
-        message = completions.choices[0].message.content
-        return str(message)
+        for attempt in range(max_retries):
+            try:
+                completions = await self.openai.chat.completions.create(
+                    messages=messages,
+                    model=model,
+                    max_tokens=max_tokens,
+                    n=1,
+                    stop=None,
+                    temperature=temperature,
+                )
+                # Проверяем, что choices не пустой и content не None
+                if (
+                    completions.choices
+                    and completions.choices[0].message.content is not None
+                ):
+                    message = completions.choices[0].message.content
+                    return str(message)
+                else:
+                    logger.error(
+                        f"Получен пустой ответ от нейросети."
+                        f"Попытка {attempt + 1} из {max_retries}."
+                    )
+            except PermissionDeniedError as e:
+                logger.error(e)
+                return "Ошибка 403. Отказано в доступе!"
+            except Exception as e:
+                logger.error(f"Ошибка нейросети на попытке {attempt + 1}: {e}")
+                if attempt < max_retries - 1:
+                    logger.info("Повторная попытка...")
+                else:
+                    logger.error("Все попытки завершились ошибкой.")
+                    return None
+        logger.error("Не удалось получить перевод после нескольких попыток.")
+        return None
 
     async def get_engines(self, api_key: str = None) -> list:
         if api_key:
@@ -87,9 +114,8 @@ class OpenAIService:
             return "error"
 
     async def audio_to_text(
-            self,
-            audio_path: str,
-            api_key: str = None) -> str | None:
+        self, audio_path: str, api_key: str = None
+    ) -> str | None:
         if api_key:
             self.openai.api_key = api_key
 
@@ -104,9 +130,7 @@ class OpenAIService:
                 return None
 
     async def create_image(
-            self,
-            prompt: str = None,
-            api_key: str = None
+        self, prompt: str = None, api_key: str = None
     ) -> str:
         if prompt:
             if api_key:
