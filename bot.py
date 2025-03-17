@@ -1,4 +1,5 @@
 import asyncio
+
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart, ExceptionTypeFilter
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -10,18 +11,21 @@ from loguru import logger
 from openai import AsyncOpenAI
 from redis.asyncio.client import Redis
 from sqlalchemy.ext.asyncio import (
-    AsyncSession, async_sessionmaker, create_async_engine)
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
 from tgbot.config import load_config, setup_logger
 from tgbot.dialogs.chat_settings import chat_settings_dialog
-from tgbot.dialogs.main import main_dialog
 from tgbot.dialogs.chatgpt import chat_gpt_dialog
-from tgbot.dialogs.dalle import dalle_dialog
-from tgbot.dialogs.tts import text_to_speech_dialog
-from tgbot.dialogs.stt import speech_to_text_dialog
-from tgbot.dialogs.person_menu import personality_menu_dialog
 from tgbot.dialogs.create_person import new_person_dialog
+from tgbot.dialogs.dalle import dalle_dialog
+from tgbot.dialogs.main import main_dialog
+from tgbot.dialogs.person_menu import personality_menu_dialog
 from tgbot.dialogs.settings_menu import root_settings_dialog
+from tgbot.dialogs.stt import speech_to_text_dialog
+from tgbot.dialogs.tts import text_to_speech_dialog
 from tgbot.dialogs.tts_settings import tts_settings_dialog
 from tgbot.filters.is_admin import AdminFilter
 from tgbot.handlers.admin_start import admin_start
@@ -29,9 +33,9 @@ from tgbot.handlers.unknown_errors import on_unknown_intent, on_unknown_state
 from tgbot.handlers.user_start import user_start
 from tgbot.middlewares.openai_api import OpenAIMiddleware
 from tgbot.middlewares.repo import RepoMiddleware
+from tgbot.misc.personality import personality_base
 from tgbot.models.base import Base
 from tgbot.models.personality import BasicPersonality
-from tgbot.misc.personality import personality_base
 
 
 async def create_sessionmaker(echo) -> AsyncSession:
@@ -95,7 +99,7 @@ async def main():
         root_settings_dialog,
         new_person_dialog,
         chat_settings_dialog,
-        tts_settings_dialog
+        tts_settings_dialog,
     )
 
     setup_dialogs(dp)
