@@ -1,7 +1,6 @@
 name: telegram message
 on: [push]
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -11,8 +10,14 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: markdown  # Включаем поддержку Markdown
           message: |
-            ${{ github.actor }} закоммитил:
-            Сообщение: ${{ github.event.commits[0].message }}
-            Репозиторий: ${{ github.repository }}
-            Изменения: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+            **Новый коммит в репозитории!**
+
+            **Актер:** 🚀 ${{ github.actor }}
+
+            **Сообщение:** 📝 ${{ github.event.commits[0].message }}
+
+            **Репозиторий:** 📂 ${{ github.repository }}
+
+            **Изменения:** 🔗 [Посмотреть изменения](https://github.com/${{ github.repository }}/commit/${{github.sha}})
