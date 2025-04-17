@@ -14,8 +14,11 @@ class Users(Base):
     __tablename__ = "users"
 
     id = mapped_column(BigInteger, primary_key=True, unique=True)
-    created_at = mapped_column(DateTime, default=datetime.datetime.now())
+    created_at = mapped_column(DateTime, default=datetime.datetime.now)
     settings = relationship("Settings", back_populates="user")
+    conversation_history = relationship(
+        "ConversationHistory", back_populates="user"
+    )
     custom_personality: Mapped[list["CustomPersonality"]] = relationship(
         back_populates="user"
     )

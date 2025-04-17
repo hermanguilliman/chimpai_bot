@@ -39,6 +39,16 @@ async def neural_handler(
     if message.reply_to_message:
         prompt = f"{message.text}:\n{message.reply_to_message.text}"
 
+    # Получаем последние 10 сообщений из истории
+    history = await repo.get_conversation_history(
+        message.from_user.id, limit=10
+    )
+
+    # Добавляем запрос пользователя в историю
+    await repo.add_message_to_history(
+        user_id=message.from_user.id, role="user", content=prompt
+    )
+
     await message.answer(
         "<b>⌛️ Запрос отправлен. Ожидание ответа...</b>",
         parse_mode=ParseMode.HTML,
@@ -53,20 +63,23 @@ async def neural_handler(
             temperature=float(settings.temperature),
             prompt=prompt,
             person_text=settings.personality_text,
+            history=history,  # Передаем историю
         )
 
         if answer:
-            """выдача успешного запроса"""
+            # Добавляем ответ бота в историю
+            await repo.add_message_to_history(
+                user_id=message.from_user.id, role="assistant", content=answer
+            )
+
             text_chunks = split_text(answer, 4000)
             for chunk in text_chunks:
                 try:
                     await message.reply(chunk, parse_mode=ParseMode.MARKDOWN)
                     await sleep(1)
-
                     logger.debug("Ответ от нейросети получен")
                 except Exception:
                     await message.reply(chunk, parse_mode=ParseMode.HTML)
-
                     await sleep(1)
                     logger.debug("Ответ от нейросети получен")
         else:

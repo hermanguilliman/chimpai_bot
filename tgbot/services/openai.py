@@ -1,4 +1,5 @@
 import io
+from typing import List
 
 from loguru import logger
 from openai import (
@@ -9,32 +10,41 @@ from openai import (
     RateLimitError,
 )
 
+from tgbot.models.history import ConversationHistory
+
 
 class OpenAIService:
     def __init__(self, openai: AsyncOpenAI):
         self.openai: AsyncOpenAI = openai
 
-    def __prepare_messages(
-        self, prompt: str, person_text: str | None = None
+    async def __prepare_messages(
+        self,
+        prompt: str,
+        person_text: str | None = None,
+        history: List[ConversationHistory] | None = None,
     ) -> list:
-        messages = [{"role": "user", "content": f"{prompt}"}]
+        messages = []
+
+        # Добавляем системное сообщение
         if isinstance(person_text, str):
-            messages.insert(
-                0,
-                {
-                    "role": "system",
-                    "content": person_text,
-                },
-            )
+            messages.append({"role": "system", "content": person_text})
         else:
-            messages.insert(
-                0,
+            messages.append(
                 {
                     "role": "system",
-                    "content": "Давай короткие и информативные ответы, не "
-                    "более одного абзаца.",
-                },
+                    "content": "Давай короткие и информативные ответы, не более одного абзаца.",
+                }
             )
+
+        # Добавляем историю сообщений, если она есть
+        if history:
+            # Переворачиваем историю, чтобы сообщения шли в хронологическом порядке
+            for msg in reversed(history):
+                messages.append({"role": msg.role, "content": msg.content})
+
+        # Добавляем текущий запрос пользователя
+        messages.append({"role": "user", "content": prompt})
+
         return messages
 
     async def get_answer(
@@ -45,11 +55,9 @@ class OpenAIService:
         max_tokens: int = None,
         temperature: float = None,
         person_text: str = None,
+        history: List[ConversationHistory] | None = None,
         max_retries: int = 3,
     ) -> str | None:
-        """
-        Функция использует OpenAI для ответа на вопросы
-        """
         if not api_key:
             logger.debug("Не указан ключ API")
             return "Не указан ключ API"
@@ -68,7 +76,7 @@ class OpenAIService:
 
         self.openai.api_key = api_key
 
-        messages = self.__prepare_messages(prompt, person_text)
+        messages = await self.__prepare_messages(prompt, person_text, history)
 
         for attempt in range(max_retries):
             try:
@@ -80,7 +88,6 @@ class OpenAIService:
                     stop=None,
                     temperature=temperature,
                 )
-                # Проверяем, что choices не пустой и content не None
                 if (
                     completions.choices
                     and completions.choices[0].message.content is not None
@@ -89,7 +96,7 @@ class OpenAIService:
                     return str(message)
                 else:
                     logger.error(
-                        f"Получен пустой ответ от нейросети."
+                        f"Получен пустой ответ от нейросети. "
                         f"Попытка {attempt + 1} из {max_retries}."
                     )
             except PermissionDeniedError as e:
@@ -102,7 +109,7 @@ class OpenAIService:
                 else:
                     logger.error("Все попытки завершились ошибкой.")
                     return None
-        logger.error("Не удалось получить перевод после нескольких попыток.")
+        logger.error("Не удалось получить ответ после нескольких попыток.")
         return None
 
     async def get_engines(self, api_key: str = None) -> list:
