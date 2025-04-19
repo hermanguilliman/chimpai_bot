@@ -245,6 +245,18 @@ class Repo:
         result = await self.session.execute(stmt)
         return result.scalars().all()
 
+    async def get_full_conversation_history(
+        self, user_id: int
+    ) -> List[ConversationHistory]:
+        """Получает полную историю беседы для пользователя."""
+        stmt = (
+            select(ConversationHistory)
+            .where(ConversationHistory.user_id == user_id)
+            .order_by(ConversationHistory.created_at.asc())
+        )
+        result = await self.session.execute(stmt)
+        return result.scalars().all()
+
     async def clear_conversation_history(self, user_id: int) -> None:
         """Очищает историю беседы для пользователя."""
         stmt = delete(ConversationHistory).where(

@@ -4,7 +4,7 @@ from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Button, Cancel, Row, Start
 from aiogram_dialog.widgets.text import Const, Format
 
-from tgbot.callbacks.clear_history import clear_context
+from tgbot.callbacks.history import clear_context, download_history
 from tgbot.getters.base_data import get_base_data
 from tgbot.handlers.neural_chat import neural_handler
 from tgbot.handlers.voice_chatgpt import voice_to_chatgpt_handler
@@ -34,6 +34,14 @@ chat_gpt_dialog = Dialog(
                 Const("📝 Начать с чистого листа"),
                 id="clear_context",
                 on_click=clear_context,
+            )
+        ),
+        Row(
+            Button(
+                Const("📝 Скачать историю"),
+                id="download_history",
+                on_click=download_history,
+                when="history_count",
             )
         ),
         Row(
