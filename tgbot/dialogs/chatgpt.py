@@ -12,7 +12,7 @@ from tgbot.misc.states import ChatGPT, ChatSettings
 
 chat_gpt_dialog = Dialog(
     Window(
-        Const("<b>🤖 ChatGPT</b>\n"),
+        Const("<b>🤖 Чат</b>\n"),
         Format("🧠 Модель нейросети: <b>{model}</b>", when="model"),
         Format(
             "🔋 Длина ответа: <b>{max_length}</b> токенов", when="max_length"
@@ -38,7 +38,7 @@ chat_gpt_dialog = Dialog(
         ),
         Row(
             Button(
-                Const("📝 Скачать историю"),
+                Const("📁 Скачать историю в Markdown"),
                 id="download_history",
                 on_click=download_history,
                 when="history_count",

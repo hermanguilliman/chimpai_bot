@@ -6,18 +6,21 @@ from aiogram_dialog.widgets.text import Const, Format
 
 from tgbot.getters.base_data import get_base_data
 from tgbot.misc.states import (
-    ChatGPT, Dalle, MainMenu, RootSettings, SpeechToText, TextToSpeech
-    )
+    ChatGPT,
+    Dalle,
+    MainMenu,
+    RootSettings,
+    SpeechToText,
+    TextToSpeech,
+)
 
 main_dialog = Dialog(
     Window(
         # Главное окно
         Const("<b>Главный экран ChimpAI 🐵</b>\n"),
-        Format("<b>🚨 Ключ OpenAI отстутсвует! 🔑</b>",
-               when=~F["api_key"]
-               ),
+        Format("<b>🚨 Ключ OpenAI отстутсвует! 🔑</b>", when=~F["api_key"]),
         Row(
-            Start(Const("🤖 ChatGPT"), id="neural_chat", state=ChatGPT.chat),
+            Start(Const("🤖 Чат"), id="neural_chat", state=ChatGPT.chat),
             Start(Const("🎨 DALL-E"), id="dalle", state=Dalle.create_image),
         ),
         Row(
@@ -28,9 +31,7 @@ main_dialog = Dialog(
             ),
             Start(Const("🎙 Текст в звук"), id="tts", state=TextToSpeech.tts),
         ),
-        Start(Const("📝 Настройки"),
-              id="settings",
-              state=RootSettings.select),
+        Start(Const("📝 Настройки"), id="settings", state=RootSettings.select),
         state=MainMenu.select,
         getter=get_base_data,
         parse_mode=ParseMode.HTML,
