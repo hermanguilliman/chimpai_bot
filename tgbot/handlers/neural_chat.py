@@ -36,9 +36,6 @@ async def neural_handler(
         )
         return
 
-    if message.reply_to_message:
-        prompt = f"{message.text}:\n{message.reply_to_message.text}"
-
     # Получаем последние 10 сообщений из истории
     history = await repo.get_conversation_history(
         message.from_user.id, limit=10
