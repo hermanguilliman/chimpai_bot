@@ -27,6 +27,8 @@ services:
       - VALKEY_LOGLEVEL=warning
     volumes:
       - chimai-valkey-data:/data
+      - ./valkey.conf:/etc/valkey/valkey.conf
+    command: valkey-server /etc/valkey/valkey.conf
 
 volumes:
   chimai-valkey-data:
