@@ -55,7 +55,7 @@ async def download_history(
     with open(temp_file_path, "rb") as file:
         input_file = types.BufferedInputFile(
             file.read(),
-            filename=f"conversation_history_{user_id}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.md",
+            filename=f"chimpai_history_{user_id}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.md",
         )
         await callback.bot.send_document(user_id, input_file)
 
