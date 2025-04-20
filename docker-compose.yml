@@ -13,23 +13,23 @@ services:
     networks:
       - chimpai-network
     depends_on:
-      - redis
+      - valkey
 
-  redis:
-    container_name: chimpai_redis
-    image: redis:7-alpine
+  valkey:
+    container_name: chimpai_valkey
+    image: valkey/valkey:7-alpine
     restart: always
     networks:
       - chimpai-network
     environment:
-      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL,CONFIG
+      - VALKEY_DISABLE_COMMANDS=FLUSHDB,FLUSHALL,CONFIG
       - ALLOW_EMPTY_PASSWORD=yes
-      - REDIS_LOGLEVEL=warning
+      - VALKEY_LOGLEVEL=warning
     volumes:
-      - chimai-redis-data:/data
+      - chimai-valkey-data:/data
 
 volumes:
-  chimai-redis-data:
+  chimai-valkey-data:
 
 networks:
   chimpai-network:
