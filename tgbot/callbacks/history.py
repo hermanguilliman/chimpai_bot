@@ -41,7 +41,7 @@ async def download_history(
     markdown_content += f"Описание личности: {settings.personality_text}\n\n"
     for entry in history:
         timestamp = entry.created_at.strftime("%Y-%m-%d %H:%M:%S")
-        role = "User" if entry.role == "user" else "Assistant"
+        role = "Пользователь" if entry.role == "user" else "ChimpAI"
         markdown_content += f"## {role} ({timestamp})\n\n{entry.content}\n\n"
 
     # Создаём временный файл
