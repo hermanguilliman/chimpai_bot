@@ -17,7 +17,7 @@ services:
 
   valkey:
     container_name: chimpai_valkey
-    image: valkey/valkey:7-alpine
+    image: valkey/valkey:latest
     restart: always
     networks:
       - chimpai-network
