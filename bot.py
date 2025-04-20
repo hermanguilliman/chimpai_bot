@@ -68,7 +68,7 @@ async def main():
 
     storage = (
         RedisStorage(
-            Redis(host="redis", port=6379, db=5),
+            Redis(host="valkey", port=6379, db=5),
             key_builder=DefaultKeyBuilder(with_destiny=True),
         )
         if config.tg_bot.use_redis
