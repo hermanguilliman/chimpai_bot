@@ -40,6 +40,7 @@ chat_dialog = Dialog(
                 Const("♻️ Начать заново"),
                 id="clear_context",
                 on_click=clear_context,
+                when="history_count",
             ),
         ),
         Row(
