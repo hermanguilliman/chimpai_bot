@@ -1,8 +1,7 @@
 from aiogram import F
-from aiogram.enums import ParseMode, ContentType
-from tgbot.handlers.api_key import api_key_handler
-from aiogram_dialog.widgets.input import MessageInput
+from aiogram.enums import ContentType, ParseMode
 from aiogram_dialog import Dialog, Window
+from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import (
     Cancel,
     Start,
@@ -11,6 +10,7 @@ from aiogram_dialog.widgets.kbd import (
 from aiogram_dialog.widgets.text import Const, Format
 
 from tgbot.getters.base_data import get_base_data
+from tgbot.handlers.api_key import api_key_handler
 from tgbot.misc.states import ChatSettings, RootSettings, TTSSettings
 
 # Диалог настроек
@@ -48,7 +48,7 @@ root_settings_dialog = Dialog(
         MessageInput(api_key_handler, content_types=[ContentType.TEXT]),
         Const("<b>Укажите новый API ключ:</b>"),
         Const("<b>Подсказка:</b> Ключ OpenAI API выглядит как <b>sk-...</b>"),
-        SwitchTo(Const("👈 Назад"), id='back', state=RootSettings.select),
+        SwitchTo(Const("👈 Назад"), id="back", state=RootSettings.select),
         state=RootSettings.api_key,
         parse_mode=ParseMode.HTML,
     ),

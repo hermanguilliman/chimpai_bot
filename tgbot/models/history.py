@@ -11,7 +11,7 @@ class ConversationHistory(Base):
 
     id = mapped_column(Integer, primary_key=True)
     user_id = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
-    role = mapped_column(String, nullable=False)  # "user" или "assistant"
+    role = mapped_column(String, nullable=False)
     content = mapped_column(String, nullable=False)
     created_at = mapped_column(DateTime, default=datetime.datetime.now)
 

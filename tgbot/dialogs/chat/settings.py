@@ -6,8 +6,8 @@ from aiogram_dialog.widgets.kbd import (
     Group,
     ScrollingGroup,
     Select,
-    SwitchTo,
     Start,
+    SwitchTo,
 )
 from aiogram_dialog.widgets.text import Const, Format
 

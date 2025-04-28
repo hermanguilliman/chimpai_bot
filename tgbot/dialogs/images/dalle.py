@@ -7,7 +7,6 @@ from aiogram_dialog.widgets.text import Const
 from tgbot.handlers.images import image_creator_handler
 from tgbot.misc.states import Dalle
 
-
 dalle_dialog = Dialog(
     Window(
         MessageInput(image_creator_handler, content_types=[ContentType.TEXT]),

@@ -17,16 +17,16 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from tgbot.config import load_config, setup_logger
-from tgbot.dialogs.chat_settings import chat_settings_dialog
-from tgbot.dialogs.chatgpt import chat_gpt_dialog
-from tgbot.dialogs.create_person import new_person_dialog
-from tgbot.dialogs.dalle import dalle_dialog
-from tgbot.dialogs.main import main_dialog
-from tgbot.dialogs.person_menu import personality_menu_dialog
-from tgbot.dialogs.settings_menu import root_settings_dialog
-from tgbot.dialogs.stt import speech_to_text_dialog
-from tgbot.dialogs.tts import text_to_speech_dialog
-from tgbot.dialogs.tts_settings import tts_settings_dialog
+from tgbot.dialogs.chat.chat import chat_dialog
+from tgbot.dialogs.chat.settings import chat_settings_dialog
+from tgbot.dialogs.images.dalle import dalle_dialog
+from tgbot.dialogs.personality.create import new_person_dialog
+from tgbot.dialogs.personality.menu import personality_menu_dialog
+from tgbot.dialogs.root.menu import main_dialog
+from tgbot.dialogs.settings.menu import root_settings_dialog
+from tgbot.dialogs.speech_to_text.stt import speech_to_text_dialog
+from tgbot.dialogs.text_to_speech.settings import tts_settings_dialog
+from tgbot.dialogs.text_to_speech.tts import text_to_speech_dialog
 from tgbot.filters.is_admin import AdminFilter
 from tgbot.handlers.admin_start import admin_start
 from tgbot.handlers.unknown_errors import on_unknown_intent, on_unknown_state
@@ -91,7 +91,7 @@ async def main():
 
     dp.include_routers(
         main_dialog,
-        chat_gpt_dialog,
+        chat_dialog,
         dalle_dialog,
         speech_to_text_dialog,
         text_to_speech_dialog,

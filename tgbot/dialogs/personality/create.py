@@ -5,7 +5,9 @@ from aiogram_dialog.widgets.kbd import Back, Cancel, Row
 from aiogram_dialog.widgets.text import Const
 
 from tgbot.handlers.personality import (
-    new_personality_name, new_personality_text)
+    new_personality_name,
+    new_personality_text,
+)
 from tgbot.misc.states import NewPersonality
 
 new_person_dialog = Dialog(

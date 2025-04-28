@@ -3,9 +3,9 @@ from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Cancel
 from aiogram_dialog.widgets.text import Const
+
 from tgbot.handlers.transcription import voice_handler
 from tgbot.misc.states import SpeechToText
-
 
 speech_to_text_dialog = Dialog(
     Window(

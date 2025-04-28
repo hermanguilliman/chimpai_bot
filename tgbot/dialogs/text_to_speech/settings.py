@@ -72,28 +72,32 @@ tts_settings_dialog = Dialog(
             width=1,
         ),
         Group(
-            Button(Const("🔻 0.1"),
-                   id="decrease",
-                   on_click=on_decrease_tts_speed),
-            Button(Const("0.1 🔺"),
-                   id="increase",
-                   on_click=on_increase_tts_speed),
+            Button(
+                Const("🔻 0.1"), id="decrease", on_click=on_decrease_tts_speed
+            ),
+            Button(
+                Const("0.1 🔺"), id="increase", on_click=on_increase_tts_speed
+            ),
             width=2,
         ),
         Group(
-            Button(Const("🔻 0.5"),
-                   id="big_decrease",
-                   on_click=on_big_decrease_tts_speed),
-            Button(Const("0.5 🔺"),
-                   id="big_increase",
-                   on_click=on_big_increase_tts_speed),
+            Button(
+                Const("🔻 0.5"),
+                id="big_decrease",
+                on_click=on_big_decrease_tts_speed,
+            ),
+            Button(
+                Const("0.5 🔺"),
+                id="big_increase",
+                on_click=on_big_increase_tts_speed,
+            ),
             width=2,
         ),
         Group(
             Button(
                 Const("🌚 Как было"),
                 id="reset_tts_speed",
-                on_click=on_reset_tts_speed
+                on_click=on_reset_tts_speed,
             ),
             Cancel(Const("👈 Назад")),
             width=2,

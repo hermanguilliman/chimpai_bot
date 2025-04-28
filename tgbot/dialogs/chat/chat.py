@@ -10,7 +10,7 @@ from tgbot.handlers.neural_chat import neural_handler
 from tgbot.handlers.voice_chatgpt import voice_to_chatgpt_handler
 from tgbot.misc.states import ChatGPT, ChatSettings
 
-chat_gpt_dialog = Dialog(
+chat_dialog = Dialog(
     Window(
         Const("<b>🤖 Чат</b>\n"),
         Format("🧠 Модель нейросети: <b>{model}</b>", when="model"),
@@ -31,18 +31,16 @@ chat_gpt_dialog = Dialog(
         MessageInput(neural_handler, content_types=[ContentType.TEXT]),
         Row(
             Button(
-                Const("📝 Начать с чистого листа"),
-                id="clear_context",
-                on_click=clear_context,
-            )
-        ),
-        Row(
-            Button(
-                Const("📁 Скачать историю в Markdown"),
+                Const("📩 Экспорт в .md"),
                 id="download_history",
                 on_click=download_history,
                 when="history_count",
-            )
+            ),
+            Button(
+                Const("♻️ Начать заново"),
+                id="clear_context",
+                on_click=clear_context,
+            ),
         ),
         Row(
             Cancel(Const("👈 Назад")),
