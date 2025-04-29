@@ -12,7 +12,7 @@ from tgbot.misc.states import ChatGPT, ChatSettings
 
 chat_dialog = Dialog(
     Window(
-        Const("<b>🤖 Чат</b>\n"),
+        Const("<b>🤖 Нейро чат</b>\n"),
         Format("🧠 Модель нейросети: <b>{model}</b>", when="model"),
         Format(
             "🔋 Длина ответа: <b>{max_length}</b> токенов", when="max_length"
