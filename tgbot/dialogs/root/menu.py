@@ -20,7 +20,7 @@ main_dialog = Dialog(
         Const("<b>Главный экран ChimpAI 🐵</b>\n"),
         Format("<b>🚨 Ключ OpenAI отстутсвует! 🔑</b>", when=~F["api_key"]),
         Row(
-            Start(Const("🤖 Чат"), id="neural_chat", state=ChatGPT.chat),
+            Start(Const("🤖 НейроЧат"), id="neural_chat", state=ChatGPT.chat),
             Start(Const("🎨 DALL-E"), id="dalle", state=Dalle.create_image),
         ),
         Row(
