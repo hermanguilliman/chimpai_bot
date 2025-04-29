@@ -16,7 +16,9 @@ from tgbot.models.history import ConversationHistory
 class OpenAIService:
     def __init__(self, openai: AsyncOpenAI):
         self.openai = openai
-        self.default_system_message = "Provide short and informative responses, limited to one paragraph."
+        self.default_system_message = (
+            "Давай короткие и информативные ответы, не более одного абзаца."
+        )
 
     class ValidationError(Exception):
         pass
