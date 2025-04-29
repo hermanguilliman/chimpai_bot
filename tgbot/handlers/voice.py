@@ -10,12 +10,12 @@ from loguru import logger
 
 from tgbot.misc.text_tools import split_text
 from tgbot.models.settings import Settings
-from tgbot.services.openai import OpenAIService
+from tgbot.services.neural import OpenAIService
 from tgbot.services.repository import Repo
 
 
 # Voice to ChatGPT
-async def voice_to_chatgpt_handler(
+async def voice_handler(
     message: Message,
     message_input: MessageInput,
     manager: DialogManager,
@@ -47,7 +47,7 @@ async def voice_to_chatgpt_handler(
             if text:
                 await message.reply(
                     f"<b>🎧 Вот, что я услышал:</b>\n\n{text[:4000]}",
-                    parse_mode=ParseMode.HTML
+                    parse_mode=ParseMode.HTML,
                 )
                 answer = await openai.get_answer(
                     api_key=settings.api_key,
@@ -55,7 +55,8 @@ async def voice_to_chatgpt_handler(
                     prompt=text,
                     max_tokens=int(settings.max_tokens),
                     temperature=float(settings.temperature),
-                    person_text=settings.personality_text)
+                    person_text=settings.personality_text,
+                )
 
                 if answer:
                     text_chunks = split_text(answer, 4000)
@@ -63,15 +64,15 @@ async def voice_to_chatgpt_handler(
                     for chunk in text_chunks:
                         try:
                             await message.reply(
-                                chunk,
-                                parse_mode=ParseMode.MARKDOWN)
+                                chunk, parse_mode=ParseMode.MARKDOWN
+                            )
                             await sleep(1)
 
                             logger.debug("Ответ от нейросети получен")
                         except Exception:
                             await message.reply(
-                                chunk,
-                                parse_mode=ParseMode.HTML)
+                                chunk, parse_mode=ParseMode.HTML
+                            )
                             await sleep(1)
 
                     await sleep(1)
@@ -79,11 +80,13 @@ async def voice_to_chatgpt_handler(
                 else:
                     await message.reply(
                         "<b>К сожалению ответ от нейросети не получен</b>",
-                        parse_mode=ParseMode.HTML)
+                        parse_mode=ParseMode.HTML,
+                    )
             else:
                 await message.reply(
                     "<b>К сожалению не получилось расшифровать сообщение</b>",
-                    parse_mode=ParseMode.HTML)
+                    parse_mode=ParseMode.HTML,
+                )
 
             if os.path.exists(local_path):
                 os.remove(local_path)

@@ -7,7 +7,7 @@ from aiogram_dialog.widgets.text import Const, Format
 from tgbot.callbacks.history import clear_context, download_history
 from tgbot.getters.base_data import get_base_data
 from tgbot.handlers.neural_chat import neural_handler
-from tgbot.handlers.voice_chatgpt import voice_to_chatgpt_handler
+from tgbot.handlers.voice import voice_handler
 from tgbot.misc.states import ChatGPT, ChatSettings
 
 chat_dialog = Dialog(
@@ -23,11 +23,7 @@ chat_dialog = Dialog(
         Format("🎭 Личность: <b>{personality}</b>", when="personality"),
         Format("💬 Сообщений в памяти: {history_count}", when="history_count"),
         Const("\n<b>Задай мне любой вопрос текстом или голосом 😎</b>"),
-        # Инпут для голосового ввода запроса
-        MessageInput(
-            voice_to_chatgpt_handler, content_types=[ContentType.VOICE]
-        ),
-        # Инпут для текстового ввода запроса
+        MessageInput(voice_handler, content_types=[ContentType.VOICE]),
         MessageInput(neural_handler, content_types=[ContentType.TEXT]),
         Row(
             Button(

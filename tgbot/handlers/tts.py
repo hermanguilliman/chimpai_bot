@@ -1,13 +1,13 @@
 from aiogram.enums import ParseMode
-from aiogram.types import Message, BufferedInputFile
+from aiogram.types import BufferedInputFile, Message
 from aiogram.utils.chat_action import ChatActionSender
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import MessageInput
 from loguru import logger
 
 from tgbot.models.settings import Settings
+from tgbot.services.neural import OpenAIService
 from tgbot.services.repository import Repo
-from tgbot.services.openai import OpenAIService
 
 
 async def tts_handler(
@@ -39,8 +39,7 @@ async def tts_handler(
     )
 
     async with ChatActionSender.record_voice(
-        message.from_user.id,
-        message.bot
+        message.from_user.id, message.bot
     ):
         logger.debug("Запрос для TTS")
         response = await openai.create_speech(
@@ -54,12 +53,12 @@ async def tts_handler(
         if isinstance(response, bytes):
             """выдача успешного запроса"""
             await message.reply_voice(
-                voice=BufferedInputFile(response, filename='voice.ogg'),
-                parse_mode=ParseMode.HTML
+                voice=BufferedInputFile(response, filename="voice.ogg"),
+                parse_mode=ParseMode.HTML,
             )
             logger.debug("Голосовое сообщение от нейросети получено")
         else:
             await message.answer(
-                f"<b>Что-то пошло не так!\n{response}</b>",
+                "<b>Произошла ошибка генерации речи</b>",
                 parse_mode=ParseMode.HTML,
             )

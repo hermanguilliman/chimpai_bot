@@ -2,7 +2,7 @@ from aiogram_dialog import DialogManager
 
 from tgbot.misc.text_tools import get_short_id
 from tgbot.models.settings import Settings
-from tgbot.services.openai import OpenAIService
+from tgbot.services.neural import OpenAIService
 from tgbot.services.repository import Repo
 
 

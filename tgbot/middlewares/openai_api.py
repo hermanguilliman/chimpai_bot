@@ -4,7 +4,7 @@ from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 from openai import AsyncOpenAI
 
-from tgbot.services.openai import OpenAIService
+from tgbot.services.neural import OpenAIService
 
 
 class OpenAIMiddleware(BaseMiddleware):

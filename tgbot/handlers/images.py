@@ -6,7 +6,7 @@ from aiogram_dialog.widgets.input import MessageInput
 from loguru import logger
 
 from tgbot.models.settings import Settings
-from tgbot.services.openai import OpenAIService
+from tgbot.services.neural import OpenAIService
 from tgbot.services.repository import Repo
 
 
@@ -39,8 +39,7 @@ async def image_creator_handler(
     )
 
     async with ChatActionSender.upload_photo(
-        message.from_user.id,
-        message.bot
+        message.from_user.id, message.bot
     ):
         logger.debug("Создаём изображение с помощью нейросети")
         image_url = await openai.create_image(
@@ -62,7 +61,7 @@ async def image_creator_handler(
             else:
                 await message.reply(
                     f"<b>Ответ нейросети:</b> {image_url}",
-                    parse_mode=ParseMode.HTML
+                    parse_mode=ParseMode.HTML,
                 )
                 logger.debug(image_url)
         else:
