@@ -13,7 +13,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd secrets.VPS_PROJECT_PATH
+            cd ${{ secrets.VPS_PROJECT_PATH }}
             git pull
             docker compose down
             docker compose up -d --build
