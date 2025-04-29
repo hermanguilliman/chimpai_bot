@@ -10,11 +10,13 @@ class Settings(Base):
     id = mapped_column(Integer, primary_key=True, unique=True)
     api_key = mapped_column(String(51), nullable=True)
     personality_name = mapped_column(
-        Text, nullable=True, default="🤵 Ассистент")
+        Text, nullable=True, default="🤵 Ассистент"
+    )
     personality_text = mapped_column(
         Text,
         nullable=True,
-        default="Действуй как личный ассистент пользователя")
+        default="Действуй как личный ассистент пользователя",
+    )
     max_tokens = mapped_column(Integer, default=1000)
     model = mapped_column(Text, default="gpt-4o-mini")
     temperature = mapped_column(Text, default="0.7")

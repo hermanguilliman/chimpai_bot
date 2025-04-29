@@ -1,7 +1,8 @@
+import os
 from dataclasses import dataclass
 from sys import stdout
 
-from environs import Env
+from dotenv import load_dotenv
 from loguru import logger
 
 
@@ -24,16 +25,21 @@ class Config:
 
 
 def load_config(path: str = None):
-    env = Env()
-    env.read_env(path)
+    # Load environment variables from .env file if path is provided
+    if path:
+        load_dotenv(path)
+    else:
+        load_dotenv()
 
     return Config(
         tg_bot=TgBot(
-            token=env.str("BOT_TOKEN"),
-            admin_ids=list(map(int, env.list("ADMINS"))),
-            use_redis=env.bool("USE_REDIS", False),
+            token=os.getenv("BOT_TOKEN"),
+            admin_ids=list(map(int, os.getenv("ADMINS", "").split(",")))
+            if os.getenv("ADMINS")
+            else [],
+            use_redis=os.getenv("USE_REDIS", "False").lower() == "true",
         ),
-        ai=AI(base_url=env.str("BASE_URL", None)),
+        ai=AI(base_url=os.getenv("BASE_URL")),
     )
 
 
