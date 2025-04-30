@@ -41,7 +41,7 @@ chat_dialog = Dialog(
         Row(
             Cancel(Const("👈 Назад")),
             Start(
-                Const("⚙️ Настройки чата"),
+                Const("⚙️ Настройки"),
                 id="settings",
                 state=ChatSettings.select,
             ),
