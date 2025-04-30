@@ -18,10 +18,6 @@ chat_dialog = Dialog(
             "<b>🤖 Нейро чат с {personality}</b>\n",
             when="personality",
         ),
-        # Format("🧠 Модель: <b>{model}</b>", when="model"),
-        # Format("🔋 Токены: <b>{max_length}</b>", when="max_length"),
-        # Format("🌡 Температура: <b>{temperature}</b>", when="temperature"),
-        # Format("🤡 Личность: <b>{personality}</b>", when="personality"),
         Format(
             "💬 Сообщений в памяти: {history_count}\n", when="history_count"
         ),
