@@ -36,7 +36,7 @@ chat_settings_dialog = Dialog(
                 state=ChatSettings.model,
             ),
             SwitchTo(
-                Format("🔋 Максимум токенов: {max_length}"),
+                Format("🔋 Токены: {max_length}"),
                 id="set_max_length",
                 state=ChatSettings.max_length,
             ),

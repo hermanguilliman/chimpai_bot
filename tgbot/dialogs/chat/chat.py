@@ -13,15 +13,11 @@ from tgbot.misc.states import ChatGPT, ChatSettings
 chat_dialog = Dialog(
     Window(
         Const("<b>🤖 Нейро чат</b>\n"),
-        Format("🧠 Модель нейросети: <b>{model}</b>", when="model"),
-        Format(
-            "🔋 Длина ответа: <b>{max_length}</b> токенов", when="max_length"
-        ),
-        Format(
-            "🌡 Оригинальность ответа: <b>{temperature}</b>", when="temperature"
-        ),
+        Format("🧠 Модель: <b>{model}</b>", when="model"),
+        Format("🔋 Токены: <b>{max_length}</b>", when="max_length"),
+        Format("🌡 Температура: <b>{temperature}</b>", when="temperature"),
         Format("🎭 Личность: <b>{personality}</b>", when="personality"),
-        Format("💬 Сообщений в памяти: {history_count}", when="history_count"),
+        Format("💬 Контекст: {history_count}", when="history_count"),
         Const("\n<b>Задай мне любой вопрос текстом или голосом 😎</b>"),
         MessageInput(voice_handler, content_types=[ContentType.VOICE]),
         MessageInput(neural_handler, content_types=[ContentType.TEXT]),
