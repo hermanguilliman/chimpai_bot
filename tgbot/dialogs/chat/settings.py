@@ -28,25 +28,31 @@ from tgbot.misc.states import ChatSettings, PersonalitySettings
 
 chat_settings_dialog = Dialog(
     Window(
-        Const("<b>💬 Окно настроек чата: 💬</b>"),
+        Const("<b>💬 Текущие настройки чата: 💬</b>\n"),
+        Format("🧠 Модель: <b>{model}</b>", when="model"),
+        Format("🔋 Токены: <b>{max_length}</b>", when="max_length"),
+        Format("🌡 Температура: <b>{temperature}</b>", when="temperature"),
+        Format("🤡 Личность: <b>{personality}</b>", when="personality"),
+        Format("💬 Контекст: {history_count}", when="history_count"),
+        Const("<b>\nВыберите пункт который хотели бы изменить 👇🏻</b>\n"),
         Group(
             SwitchTo(
-                Format("🧠 Модель: {model}"),
+                Format("🧠 Модель"),
                 id="set_model",
                 state=ChatSettings.model,
             ),
             SwitchTo(
-                Format("🔋 Токены: {max_length}"),
+                Format("🔋 Токены"),
                 id="set_max_length",
                 state=ChatSettings.max_length,
             ),
             SwitchTo(
-                Format("🌡️ Температура {temperature}"),
+                Format("🌡️ Температура"),
                 id="set_temperature",
                 state=ChatSettings.temperature,
             ),
             Start(
-                Format("Личность: {personality}"),
+                Format("🤡 Личность"),
                 id="personality",
                 state=PersonalitySettings.basic_list,
             ),

@@ -1,3 +1,4 @@
+from aiogram import F
 from aiogram.enums import ContentType, ParseMode
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import MessageInput
@@ -12,13 +13,19 @@ from tgbot.misc.states import ChatGPT, ChatSettings
 
 chat_dialog = Dialog(
     Window(
-        Const("<b>🤖 Нейро чат</b>\n"),
-        Format("🧠 Модель: <b>{model}</b>", when="model"),
-        Format("🔋 Токены: <b>{max_length}</b>", when="max_length"),
-        Format("🌡 Температура: <b>{temperature}</b>", when="temperature"),
-        Format("🎭 Личность: <b>{personality}</b>", when="personality"),
-        Format("💬 Контекст: {history_count}", when="history_count"),
-        Const("\n<b>Задай мне любой вопрос текстом или голосом 😎</b>"),
+        Const("<b>🤖 Нейро чат</b>\n", when=~F["personality"]),
+        Format(
+            "<b>🤖 Нейро чат с {personality}</b>\n",
+            when="personality",
+        ),
+        # Format("🧠 Модель: <b>{model}</b>", when="model"),
+        # Format("🔋 Токены: <b>{max_length}</b>", when="max_length"),
+        # Format("🌡 Температура: <b>{temperature}</b>", when="temperature"),
+        # Format("🤡 Личность: <b>{personality}</b>", when="personality"),
+        Format(
+            "💬 Сообщений в памяти: {history_count}\n", when="history_count"
+        ),
+        Const("<b>Отправь сообщение или голос 🤙🏻</b>"),
         MessageInput(voice_handler, content_types=[ContentType.VOICE]),
         MessageInput(neural_handler, content_types=[ContentType.TEXT]),
         Row(
