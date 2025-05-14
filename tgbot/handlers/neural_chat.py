@@ -18,10 +18,10 @@ async def neural_handler(
     message_input: MessageInput,
     manager: DialogManager,
 ):
+    prompt: str = message.text
     repo: Repo = manager.middleware_data.get("repo")
     openai: OpenAIService = manager.middleware_data.get("openai")
     settings: Settings = await repo.get_settings(message.from_user.id)
-    prompt: str = message.text
 
     if settings is None:
         await message.answer(
@@ -29,6 +29,7 @@ async def neural_handler(
             parse_mode=ParseMode.HTML,
         )
         return
+
     if not settings.api_key:
         await message.answer(
             "<b>⚠️ Сначала нужно установить api ключ! </b>",
@@ -52,7 +53,7 @@ async def neural_handler(
     )
 
     async with ChatActionSender.typing(message.from_user.id, message.bot):
-        logger.debug("Создаём запрос к нейросети")
+        logger.debug(f"Пользователь {message.from_user.id} отправил запрос")
         answer = await openai.get_answer(
             api_key=settings.api_key,
             max_tokens=int(settings.max_tokens),
@@ -60,7 +61,7 @@ async def neural_handler(
             temperature=float(settings.temperature),
             prompt=prompt,
             person_text=settings.personality_text,
-            history=history,  # Передаем историю
+            history=history,
         )
 
         if answer:

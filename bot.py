@@ -33,6 +33,7 @@ from tgbot.handlers.unknown_errors import on_unknown_intent, on_unknown_state
 from tgbot.handlers.user_start import user_start
 from tgbot.middlewares.openai_api import OpenAIMiddleware
 from tgbot.middlewares.repo import RepoMiddleware
+from tgbot.middlewares.trottling import ThrottlingMiddleware
 from tgbot.misc.personality import personality_base
 from tgbot.models.base import Base
 from tgbot.models.personality import BasicPersonality
@@ -104,6 +105,8 @@ async def main():
 
     setup_dialogs(dp)
 
+    dp.update.middleware(ThrottlingMiddleware(rate_limit=0.5))
+    dp.callback_query.middleware(ThrottlingMiddleware(rate_limit=0.5))
     dp.update.middleware(RepoMiddleware(sessionmaker))
     dp.update.middleware(OpenAIMiddleware(openai))
     dp.message.register(
