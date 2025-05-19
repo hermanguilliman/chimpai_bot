@@ -55,9 +55,9 @@ class OpenAIService:
         ]
         for param in required_params:
             if kwargs.get(param) is None:
-                logger.debug(f"Missing required parameter: {param}")
+                logger.debug(f"Отсутствует требуемый параметр: {param}")
                 raise self.ValidationError(
-                    f"Missing required parameter: {param}"
+                    f"Отсутствует требуемый параметр: {param}"
                 )
 
     async def get_answer(
@@ -98,36 +98,36 @@ class OpenAIService:
                 if response.choices and response.choices[0].message.content:
                     return response.choices[0].message.content
                 logger.error(
-                    f"Empty response received. Attempt {attempt + 1}/{max_retries}"
+                    f"Получен пустой ответ. Попытка {attempt + 1}/{max_retries}"
                 )
             except PermissionDeniedError:
-                logger.error("Permission denied")
-                return "Access denied (403)"
+                logger.error("Доступ запрещен")
+                return "Доступ запрещен (403)"
             except Exception as e:
-                logger.error(f"Error on attempt {attempt + 1}: {e}")
+                logger.error(f"Ошибка на попытке {attempt + 1}: {e}")
                 if attempt == max_retries - 1:
-                    logger.error("All retry attempts failed")
+                    logger.error("Все попытки закончились неудачей")
                     return None
-                logger.info("Retrying...")
+            logger.info("Повторная попытка...")
         return None
 
     async def get_engines(self, api_key: Optional[str]) -> list | str:
         if not api_key:
-            return "Missing API key"
+            return "Отсутствует API ключ"
 
         self.openai.api_key = api_key
         try:
             engines = await self.openai.models.list()
             return engines.data
         except Exception as e:
-            logger.error(f"Error fetching engines: {e}")
-            return "Error fetching models"
+            logger.error(f"Ошибка получения моделей: {e}")
+            return "Ошибка получения моделей"
 
     async def audio_to_text(
         self, audio_path: str, api_key: Optional[str]
     ) -> Optional[str]:
         if not api_key:
-            return "Missing API key"
+            return "Отсутствует API ключ"
 
         self.openai.api_key = api_key
         try:
@@ -137,16 +137,16 @@ class OpenAIService:
                 )
                 return transcript.text
         except Exception as e:
-            logger.error(f"Audio transcription error: {e}")
+            logger.error(f"Ошибка расшифровки аудио: {e}")
             return None
 
     async def create_image(
         self, prompt: Optional[str], api_key: Optional[str]
     ) -> str:
         if not prompt:
-            return "Missing prompt"
+            return "Отсутствует запрос"
         if not api_key:
-            return "Missing API key"
+            return "Отсутствует API ключ"
 
         self.openai.api_key = api_key
         try:
@@ -160,16 +160,16 @@ class OpenAIService:
             )
             return response.data[0].url
         except BadRequestError:
-            logger.debug("Invalid request")
-            return "Service rules violation"
+            logger.debug("Ошибка запроса")
+            return "Ошибка запроса"
         except RateLimitError:
-            logger.debug("Rate limit exceeded")
-            return "Image generation rate limit exceeded"
+            logger.debug("Превышен лимит генерации изображений")
+            return "Превышен лимит генерации изображений"
         except APIConnectionError:
-            logger.debug("Connection error")
-            return "Network connection error"
+            logger.debug("Ошибка соединения")
+            return "Ошибка соединения"
         except Exception as e:
-            logger.error(f"Image generation error: {e}")
+            logger.error(f"Ошибка генерации изображения: {e}")
             return str(e)
 
     async def create_speech(
@@ -196,5 +196,5 @@ class OpenAIService:
             )
             return io.BytesIO(response.read()).getvalue()
         except Exception as e:
-            logger.error(f"Speech generation error: {e}")
+            logger.error(f"Ошибка генерации голоса: {e}")
             return None
