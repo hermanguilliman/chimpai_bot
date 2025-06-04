@@ -9,17 +9,15 @@ jobs:
     steps:
     - name: Send Telegram Message
       run: |
-        repo_name="${{ github.repository }}"
-        escaped_repo_name="${repo_name//_/\_}"
-        msg_text="*Новый коммит в репозитории* ${escaped_repo_name}
-        *Автор*: ${{ github.actor }}
-        *Сообщение*: ${{ github.event.head_commit.message }}
-        *SHA*: ${{ github.sha }}
-        *Изменения*: https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+        msg_text="<b>Новый коммит в репозитории</b> ${{ github.repository }}
+        <b>Автор</b>: ${{ github.actor }}
+        <b>Сообщение</b>: ${{ github.event.head_commit.message }}
+        <b>SHA</b>: ${{ github.sha }}
+        <b>Изменения</b>: https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
 
         curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
           -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
           -d "message_thread_id=${{ secrets.TELEGRAM_TOPIC_ID }}" \
           -d "text=${msg_text}" \
-          -d "parse_mode=Markdown" \
+          -d "parse_mode=HTML" \
           -d "disable_web_page_preview=true"
