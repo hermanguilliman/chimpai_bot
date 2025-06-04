@@ -9,7 +9,9 @@ jobs:
     steps:
     - name: Send Telegram Message
       run: |
-        msg_text="*Новый коммит в репозитории* ${{ github.repository }}
+        repo_name="${{ github.repository }}"
+        escaped_repo_name="${repo_name//_/\_}"
+        msg_text="*Новый коммит в репозитории* ${escaped_repo_name}
         *Автор*: ${{ github.actor }}
         *Сообщение*: ${{ github.event.head_commit.message }}
         *SHA*: ${{ github.sha }}
