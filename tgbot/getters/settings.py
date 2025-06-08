@@ -1,3 +1,5 @@
+import html
+
 from aiogram_dialog import DialogManager
 
 from tgbot.misc.text_tools import get_short_id
@@ -28,8 +30,7 @@ async def get_data_model_selector(dialog_manager: DialogManager, **kwargs):
 
     # Сохраняем сопоставление в контексте сессии
     dialog_manager.dialog_data["model_mapping"] = {
-        short_id: full_id
-        for short_id, full_id in zip(short_model_ids, engine_ids)
+        short_id: full_id for short_id, full_id in zip(short_model_ids, engine_ids)
     }
 
     # Возвращаем сокращенные id для кнопок
@@ -70,8 +71,8 @@ async def custom_personality_getter(dialog_manager: DialogManager, **kwargs):
     )
 
     return {
-        "custom_name": custom_name,
-        "custom_desc": custom_desc,
+        "custom_name": html.escape(custom_name),
+        "custom_desc": html.escape(custom_desc),
     }
 
 
