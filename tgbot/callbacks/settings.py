@@ -66,7 +66,7 @@ async def on_custom_personality_delete(
     name = manager.dialog_data.get("custom_name")
     await repo.delete_custom_personality(user_id=user_id, name=name)
     await callback.answer(f"Личность {name} удалена!")
-    await manager.done()
+    await manager.back()
 
 
 async def on_max_length_selected(
@@ -118,8 +118,6 @@ async def on_temperature_selected(
     repo: Repo = manager.middleware_data.get("repo")
     user_id = manager.bg()._event_context.user.id
     temperature = manager.dialog_data.get("temperature")
-    await repo.update_temperature(
-        user_id=user_id, temperature=str(temperature)
-    )
+    await repo.update_temperature(user_id=user_id, temperature=str(temperature))
     await callback.answer(f"Задана температура: {temperature}")
     await manager.done()
