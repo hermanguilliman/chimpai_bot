@@ -2,7 +2,7 @@ from aiogram.types import Message
 from aiogram_dialog import DialogManager, StartMode
 
 from tgbot.misc.states import MainMenu
-from tgbot.models.user import Users
+from tgbot.models.models import Users
 from tgbot.services.repository import Repo
 
 

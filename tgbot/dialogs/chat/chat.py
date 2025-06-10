@@ -18,9 +18,7 @@ chat_dialog = Dialog(
             "<b>🤖 Нейро чат с {personality}</b>\n",
             when="personality",
         ),
-        Format(
-            "💬 Сообщений в памяти: {history_count}\n", when="history_count"
-        ),
+        Format("💬 Сообщений в памяти: {history_count}\n", when="history_count"),
         Const("<b>Отправь сообщение или голос 🤙🏻</b>"),
         MessageInput(voice_handler, content_types=[ContentType.VOICE]),
         MessageInput(neural_handler, content_types=[ContentType.TEXT]),

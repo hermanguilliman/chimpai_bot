@@ -5,7 +5,7 @@ from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import MessageInput
 from loguru import logger
 
-from tgbot.models.settings import Settings
+from tgbot.models.models import Settings
 from tgbot.services.neural import OpenAIService
 from tgbot.services.repository import Repo
 
@@ -38,9 +38,7 @@ async def tts_handler(
         parse_mode=ParseMode.HTML,
     )
 
-    async with ChatActionSender.record_voice(
-        message.from_user.id, message.bot
-    ):
+    async with ChatActionSender.record_voice(message.from_user.id, message.bot):
         logger.debug("Запрос для TTS")
         response = await openai.create_speech(
             model=settings.tts_model,

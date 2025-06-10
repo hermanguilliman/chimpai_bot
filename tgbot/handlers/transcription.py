@@ -9,7 +9,7 @@ from aiogram_dialog.widgets.input import MessageInput
 from loguru import logger
 
 from tgbot.misc.text_tools import split_text
-from tgbot.models.settings import Settings
+from tgbot.models.models import Settings
 from tgbot.services.neural import OpenAIService
 from tgbot.services.repository import Repo
 

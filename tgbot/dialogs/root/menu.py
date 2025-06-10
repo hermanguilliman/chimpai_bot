@@ -2,7 +2,7 @@ from aiogram import F
 from aiogram.enums import ParseMode
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.kbd import Row, Start
-from aiogram_dialog.widgets.text import Const, Format
+from aiogram_dialog.widgets.text import Const
 
 from tgbot.getters.base_data import get_base_data
 from tgbot.misc.states import (
@@ -18,7 +18,12 @@ main_dialog = Dialog(
     Window(
         # Главное окно
         Const("<b>Главный экран ChimpAI 🐵</b>\n"),
-        Format("<b>🚨 Ключ OpenAI отстутсвует! 🔑</b>", when=~F["api_key"]),
+        Start(
+            Const("🚨 Ключ OpenAI отстутсвует! 🔑"),
+            id="setup_api_key",
+            state=RootSettings.api_key,
+            when=~F["api_key"],
+        ),
         Row(
             Start(Const("🤖 Нейро чат"), id="neural_chat", state=ChatGPT.chat),
             Start(Const("🎨 DALL-E"), id="dalle", state=Dalle.create_image),

@@ -1,12 +1,11 @@
 import asyncio
 
 from aiogram import Bot, Dispatcher
-from aiogram.filters import CommandStart, ExceptionTypeFilter
+from aiogram.filters import CommandStart
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.storage.redis import DefaultKeyBuilder, RedisStorage
 from aiogram.methods import DeleteWebhook
 from aiogram_dialog import setup_dialogs
-from aiogram_dialog.api.exceptions import UnknownIntent, UnknownState
 from loguru import logger
 from openai import AsyncOpenAI
 from redis.asyncio.client import Redis
@@ -29,22 +28,18 @@ from tgbot.dialogs.text_to_speech.settings import tts_settings_dialog
 from tgbot.dialogs.text_to_speech.tts import text_to_speech_dialog
 from tgbot.filters.is_admin import AdminFilter
 from tgbot.handlers.admin_start import admin_start
-from tgbot.handlers.unknown_errors import on_unknown_intent, on_unknown_state
 from tgbot.handlers.user_start import user_start
 from tgbot.middlewares.openai_api import OpenAIMiddleware
 from tgbot.middlewares.repo import RepoMiddleware
 from tgbot.middlewares.trottling import ThrottlingMiddleware
 from tgbot.misc.personality import personality_base
-from tgbot.models.base import Base
-from tgbot.models.personality import BasicPersonality
+from tgbot.models.models import BasicPersonality
 
 
 async def create_sessionmaker(echo) -> AsyncSession:
     url = "sqlite+aiosqlite:///database/settings.db"
     engine = create_async_engine(url, echo=echo, future=True)
 
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
     try:
         # Пытаемся добавить стандартные значения
         async with engine.begin() as conn:
@@ -81,14 +76,6 @@ async def main():
     openai = AsyncOpenAI(api_key="sk-")
     if config.ai.base_url:
         openai.base_url = config.ai.base_url
-    dp.errors.register(
-        on_unknown_intent,
-        ExceptionTypeFilter(UnknownIntent),
-    )
-    dp.errors.register(
-        on_unknown_state,
-        ExceptionTypeFilter(UnknownState),
-    )
 
     dp.include_routers(
         main_dialog,

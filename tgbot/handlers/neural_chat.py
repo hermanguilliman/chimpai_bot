@@ -8,7 +8,7 @@ from aiogram_dialog.widgets.input import MessageInput
 from loguru import logger
 
 from tgbot.misc.text_tools import split_text
-from tgbot.models.settings import Settings
+from tgbot.models.models import Settings
 from tgbot.services.neural import OpenAIService
 from tgbot.services.repository import Repo
 
@@ -38,9 +38,7 @@ async def neural_handler(
         return
 
     # Получаем последние 10 сообщений из истории
-    history = await repo.get_conversation_history(
-        message.from_user.id, limit=10
-    )
+    history = await repo.get_conversation_history(message.from_user.id, limit=10)
 
     # Добавляем запрос пользователя в историю
     await repo.add_message_to_history(

@@ -10,7 +10,7 @@ from openai import (
     RateLimitError,
 )
 
-from tgbot.models.history import ConversationHistory
+from tgbot.models.models import ConversationHistory
 
 
 class OpenAIService:
@@ -38,8 +38,7 @@ class OpenAIService:
 
         if history:
             messages.extend(
-                {"role": msg.role, "content": msg.content}
-                for msg in reversed(history)
+                {"role": msg.role, "content": msg.content} for msg in reversed(history)
             )
 
         messages.append({"role": "user", "content": prompt})
@@ -56,9 +55,7 @@ class OpenAIService:
         for param in required_params:
             if kwargs.get(param) is None:
                 logger.debug(f"Отсутствует требуемый параметр: {param}")
-                raise self.ValidationError(
-                    f"Отсутствует требуемый параметр: {param}"
-                )
+                raise self.ValidationError(f"Отсутствует требуемый параметр: {param}")
 
     async def get_answer(
         self,
@@ -140,9 +137,7 @@ class OpenAIService:
             logger.error(f"Ошибка расшифровки аудио: {e}")
             return None
 
-    async def create_image(
-        self, prompt: Optional[str], api_key: Optional[str]
-    ) -> str:
+    async def create_image(self, prompt: Optional[str], api_key: Optional[str]) -> str:
         if not prompt:
             return "Отсутствует запрос"
         if not api_key:

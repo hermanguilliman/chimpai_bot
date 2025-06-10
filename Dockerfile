@@ -9,7 +9,8 @@ RUN pip install --upgrade pip --root-user-action=ignore && \
     poetry config virtualenvs.create false && \
     poetry install --only main --no-interaction --no-ansi
 
-COPY bot.py /app/
-COPY tgbot /app/tgbot
+COPY . /app/
 
-ENTRYPOINT ["python", "bot.py"]
+RUN chmod +x entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]

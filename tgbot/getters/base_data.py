@@ -1,6 +1,6 @@
 from aiogram_dialog import DialogManager
 
-from tgbot.models.settings import Settings
+from tgbot.models.models import Settings
 from tgbot.services.repository import Repo
 
 

@@ -1,6 +1,6 @@
 services:
-  chimpai:
-    container_name: chimpai
+  bot:
+    container_name: chimpai_bot
     build:
       context: .
     restart: always

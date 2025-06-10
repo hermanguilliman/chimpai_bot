@@ -9,7 +9,7 @@ from aiogram_dialog.widgets.input import MessageInput
 from loguru import logger
 
 from tgbot.misc.text_tools import split_text
-from tgbot.models.settings import Settings
+from tgbot.models.models import Settings
 from tgbot.services.neural import OpenAIService
 from tgbot.services.repository import Repo
 
@@ -63,16 +63,12 @@ async def voice_handler(
                     # разбиваем длинные тексты на части
                     for chunk in text_chunks:
                         try:
-                            await message.reply(
-                                chunk, parse_mode=ParseMode.MARKDOWN
-                            )
+                            await message.reply(chunk, parse_mode=ParseMode.MARKDOWN)
                             await sleep(1)
 
                             logger.debug("Ответ от нейросети получен")
                         except Exception:
-                            await message.reply(
-                                chunk, parse_mode=ParseMode.HTML
-                            )
+                            await message.reply(chunk, parse_mode=ParseMode.HTML)
                             await sleep(1)
 
                     await sleep(1)

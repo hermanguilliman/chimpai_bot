@@ -5,10 +5,13 @@ from sqlalchemy import delete, func, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from tgbot.models.history import ConversationHistory
-from tgbot.models.personality import BasicPersonality, CustomPersonality
-from tgbot.models.settings import Settings
-from tgbot.models.user import Users
+from tgbot.models.models import (
+    BasicPersonality,
+    ConversationHistory,
+    CustomPersonality,
+    Settings,
+    Users,
+)
 
 
 class Repo:
@@ -67,11 +70,7 @@ class Repo:
 
     async def update_settings(self, user_id: int, model: str) -> None:
         # Обновляет настройки
-        stmt = (
-            update(Settings)
-            .where(Settings.user_id == user_id)
-            .values(model=model)
-        )
+        stmt = update(Settings).where(Settings.user_id == user_id).values(model=model)
         await self.session.execute(stmt)
         await self.session.commit()
 
@@ -108,9 +107,7 @@ class Repo:
     async def update_api_key(self, user_id: int, api_key: str) -> None:
         # обновляет api ключ
         stmt = (
-            update(Settings)
-            .where(Settings.user_id == user_id)
-            .values(api_key=api_key)
+            update(Settings).where(Settings.user_id == user_id).values(api_key=api_key)
         )
         await self.session.execute(stmt)
         await self.session.commit()
@@ -136,9 +133,7 @@ class Repo:
         self, user_id: int
     ) -> list[CustomPersonality] | None:
         # Возвращает все кастомные личности по user_id
-        stmt = select(CustomPersonality).where(
-            CustomPersonality.user_id == user_id
-        )
+        stmt = select(CustomPersonality).where(CustomPersonality.user_id == user_id)
         result = await self.session.execute(stmt)
         return result.scalars().all()
 
@@ -174,9 +169,7 @@ class Repo:
         await self.session.commit()
         logger.info(f"Пользователь {user_id} удалил личность")
 
-    async def add_custom_personality(
-        self, user_id: int, name: str, text: str
-    ) -> None:
+    async def add_custom_personality(self, user_id: int, name: str, text: str) -> None:
         personality = CustomPersonality(name=name, text=text, user_id=user_id)
         self.session.add(personality)
         await self.session.commit()
@@ -209,9 +202,7 @@ class Repo:
         await self.session.execute(settings)
         await self.session.commit()
 
-    async def is_custom_personality_exists(
-        self, user_id: int, name: str
-    ) -> bool:
+    async def is_custom_personality_exists(self, user_id: int, name: str) -> bool:
         """Проверяет существует ли кастомная личность"""
         stmt = (
             select(CustomPersonality)
@@ -225,9 +216,7 @@ class Repo:
         self, user_id: int, role: str, content: str
     ) -> None:
         """Добавляет сообщение в историю беседы."""
-        message = ConversationHistory(
-            user_id=user_id, role=role, content=content
-        )
+        message = ConversationHistory(user_id=user_id, role=role, content=content)
         self.session.add(message)
         await self.session.commit()
         logger.info(f"Сообщение добавлено в историю для user_id={user_id}")
@@ -259,9 +248,7 @@ class Repo:
 
     async def clear_conversation_history(self, user_id: int) -> None:
         """Очищает историю беседы для пользователя."""
-        stmt = delete(ConversationHistory).where(
-            ConversationHistory.user_id == user_id
-        )
+        stmt = delete(ConversationHistory).where(ConversationHistory.user_id == user_id)
         await self.session.execute(stmt)
         await self.session.commit()
         logger.info(f"История беседы очищена для user_id={user_id}")

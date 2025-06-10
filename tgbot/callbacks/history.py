@@ -35,9 +35,7 @@ async def download_history(
 
     # Форматирование в Markdown
     markdown_content = f"# История переписки с пользователем {user_id}\n"
-    markdown_content += (
-        f"## Настройки\n Личность: {settings.personality_name}\n"
-    )
+    markdown_content += f"## Настройки\n Личность: {settings.personality_name}\n"
     markdown_content += f"Описание личности: {settings.personality_text}\n\n"
     for entry in history:
         timestamp = entry.created_at.strftime("%Y-%m-%d %H:%M:%S")
