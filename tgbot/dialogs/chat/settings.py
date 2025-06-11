@@ -1,5 +1,7 @@
-from aiogram.enums import ParseMode
+from aiogram import F
+from aiogram.enums import ContentType, ParseMode
 from aiogram_dialog import Dialog, Window
+from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import (
     Button,
     Cancel,
@@ -12,6 +14,7 @@ from aiogram_dialog.widgets.kbd import (
 from aiogram_dialog.widgets.text import Const, Format
 
 from tgbot.callbacks.settings import (
+    on_clear_search_query,
     on_decrease_temp,
     on_increase_temp,
     on_max_length_selected,
@@ -24,6 +27,7 @@ from tgbot.getters.settings import (
     get_data_model_selector,
     get_temperature,
 )
+from tgbot.handlers.engines import search_engines
 from tgbot.misc.states import ChatSettings, PersonalitySettings
 
 chat_settings_dialog = Dialog(
@@ -64,8 +68,37 @@ chat_settings_dialog = Dialog(
         getter=get_base_data,
     ),
     Window(
-        Const("<b>Выберите модель из списка:</b>"),
-        Const("<b>Подсказка:</b> стандартное значение <b>gpt-4o-mini</b>"),
+        # Если не задан поисковый запрос и есть модели
+        Const(
+            "<b>📖 Перед вами все имеющиеся модели</b>\n",
+            when=~F["dialog_data"]["search_query"] & F["models"],
+        ),
+        # Если задан поисковый запрос и есть модели
+        Format(
+            "<b>🔎 Перед вами все модели по запросу: {dialog_data[search_query]}</b>\n",
+            when=F["dialog_data"]["search_query"] & F["models"],
+        ),
+        # Если есть список моделей, но нет поискового запроса
+        Const(
+            "<b>👇 Выберите модель, либо используйте поисковый запрос для фильтрации</b>",
+            when=F["models"] & ~F["dialog_data"]["search_query"],
+        ),
+        # Если есть список результатов по поисковому запросу
+        Const(
+            "<b>👇 Выберите модель, либо используйте другой поисковый запрос</b>",
+            when=F["models"] & F["dialog_data"]["search_query"],
+        ),
+        # Если есть поисковый запрос, но нет результатов
+        Format(
+            "<b>🔎 По запросу '{dialog_data[search_query]}' ничего не найдено</b>",
+            when=~F["models"] & F["dialog_data"]["search_query"],
+        ),
+        # Если нет результатов и нет поискового запроса
+        Const(
+            "<b>🤷 В данный момент нет моделей</b>",
+            when=~F["models"] & ~F["dialog_data"]["search_query"],
+        ),
+        MessageInput(search_engines, content_types=[ContentType.TEXT]),
         ScrollingGroup(
             Select(
                 Format(
@@ -83,7 +116,12 @@ chat_settings_dialog = Dialog(
             id="scrolling_models",
             when="models",
         ),
-        SwitchTo(Const("👈 Назад"), id="back", state=ChatSettings.select),
+        SwitchTo(
+            Const("👈 Назад"),
+            id="back",
+            state=ChatSettings.select,
+            on_click=on_clear_search_query,
+        ),
         state=ChatSettings.model,
         parse_mode=ParseMode.HTML,
         getter=get_data_model_selector,

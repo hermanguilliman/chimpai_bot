@@ -127,3 +127,9 @@ async def on_temperature_selected(
     )
     await callback.answer(f"Задана температура: {temperature}")
     await manager.switch_to(state=ChatSettings.select)
+
+
+async def on_clear_search_query(
+    callback: CallbackQuery, button: Button, manager: DialogManager
+):
+    manager.dialog_data.pop("search_query", None)

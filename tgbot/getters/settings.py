@@ -9,12 +9,12 @@ from tgbot.services.repository import Repo
 
 
 async def get_data_model_selector(dialog_manager: DialogManager, **kwargs):
-    # Получаем список моделей доступных в OpenAI
     repo: Repo = dialog_manager.middleware_data.get("repo")
     openai: OpenAIService = dialog_manager.middleware_data.get("openai")
     settings: Settings = await repo.get_settings(
         dialog_manager.bg()._event_context.user.id
     )
+    search_query = dialog_manager.dialog_data.get("search_query", "").lower()
 
     engines = await openai.get_engines(api_key=settings.api_key)
     if isinstance(engines, list):
@@ -22,24 +22,24 @@ async def get_data_model_selector(dialog_manager: DialogManager, **kwargs):
     else:
         engine_ids = ["gpt-4o-mini"]
 
-    # Сортируем модели по названию
     engine_ids.sort()
-
-    # Генерируем сокращенные id для передачи в кнопки
     short_model_ids = [get_short_id(engine_id) for engine_id in engine_ids]
 
-    # Сохраняем сопоставление в контексте сессии
+    if search_query:
+        filtered_pairs = [
+            (short_id, full_id)
+            for short_id, full_id in zip(short_model_ids, engine_ids)
+            if search_query in short_id.lower()
+            or search_query in full_id.lower()
+        ]
+    else:
+        filtered_pairs = list(zip(short_model_ids, engine_ids))
+
     dialog_manager.dialog_data["model_mapping"] = {
-        short_id: full_id
-        for short_id, full_id in zip(short_model_ids, engine_ids)
+        short_id: full_id for short_id, full_id in filtered_pairs
     }
 
-    # Возвращаем сокращенные id для кнопок
-    return {
-        "models": zip(
-            short_model_ids, engine_ids
-        )  # Пара (короткий id, полное название)
-    }
+    return {"models": filtered_pairs}
 
 
 async def basic_person_getter(dialog_manager: DialogManager, **kwargs):
