@@ -8,6 +8,7 @@ from aiogram_dialog.widgets.kbd import (
     Cancel,
     Group,
     Row,
+    ScrollingGroup,
     Select,
     Start,
     SwitchTo,
@@ -67,7 +68,7 @@ personality_menu_dialog = Dialog(
             "<b>Вы еще не добавили ни одну личность 😩</b>",
             when=~F["persons"],
         ),
-        Group(
+        ScrollingGroup(
             Select(
                 Format("{item}"),
                 items="persons",
@@ -76,7 +77,10 @@ personality_menu_dialog = Dialog(
                 on_click=on_custom_personality_selected,
                 when="persons",
             ),
+            id="scrolling_persons",
             width=2,
+            height=8,
+            when="persons",
         ),
         Row(
             SwitchTo(
