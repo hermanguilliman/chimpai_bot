@@ -119,18 +119,34 @@ class Repo:
         await self.session.commit()
         logger.info(f"Пользователь {user_id} обновил ключ API")
 
-    async def update_personality(
+    async def update_personality_name(
         self,
         # Обновление значения личности бота
         user_id: int,
         name: str,
-        text: str,
+        new_name: str,
     ) -> None:
         stmt = (
             update(CustomPersonality)
             .where(CustomPersonality.user_id == user_id)
             .where(CustomPersonality.name == name)
-            .values(text=text)
+            .values(name=new_name)
+        )
+        await self.session.execute(stmt)
+        await self.session.commit()
+
+    async def update_personality_text(
+        self,
+        # Обновление значения личности бота
+        user_id: int,
+        name: str,
+        new_text: str,
+    ) -> None:
+        stmt = (
+            update(CustomPersonality)
+            .where(CustomPersonality.user_id == user_id)
+            .where(CustomPersonality.name == name)
+            .values(text=new_text)
         )
         await self.session.execute(stmt)
         await self.session.commit()

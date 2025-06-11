@@ -5,7 +5,7 @@ from aiogram.types import CallbackQuery
 from aiogram_dialog import ChatEvent, DialogManager
 from aiogram_dialog.widgets.kbd import Button
 
-from tgbot.misc.states import ChatSettings
+from tgbot.misc.states import ChatSettings, PersonalitySettings
 from tgbot.services.repository import Repo
 
 
@@ -59,15 +59,15 @@ async def on_custom_personality_activate(
     await manager.done()
 
 
-async def on_custom_personality_delete(
+async def on_custom_personality_delete_confirm(
     callback: CallbackQuery, button: Button, manager: DialogManager
 ):
     repo: Repo = manager.middleware_data.get("repo")
     user_id = manager.bg()._event_context.user.id
     name = manager.dialog_data.get("custom_name")
     await repo.delete_custom_personality(user_id=user_id, name=name)
-    await callback.answer(f"Личность {name} удалена!")
-    await manager.back()
+    await callback.message.answer(f'♻️ Личность "<b>{name}</b>" удалена!')
+    await manager.switch_to(PersonalitySettings.custom_list)
 
 
 async def on_max_length_selected(

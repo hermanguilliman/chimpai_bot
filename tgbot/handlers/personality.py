@@ -54,14 +54,35 @@ async def new_personality_text(
 async def update_personality_text(
     message: Message, message_input: MessageInput, manager: DialogManager
 ):
+    """Обновляет описание личности"""
     user_id = manager.bg()._event_context.user.id
     repo: Repo = manager.middleware_data.get("repo")
     name = manager.dialog_data.get("custom_name")
-    text = message.text
-    await repo.update_personality(user_id=user_id, name=name, text=text)
+    new_text = message.text
+    await repo.update_personality_text(
+        user_id=user_id, name=name, new_text=new_text
+    )
     await message.answer(
         f'👌 Личность "<b>{name}</b>" успешно изменена!',
         parse_mode=ParseMode.HTML,
     )
-    await manager.done()
-    return
+    await manager.back()
+
+
+async def update_personality_name(
+    message: Message, message_input: MessageInput, manager: DialogManager
+):
+    """Обновляет имя личности"""
+    user_id = manager.bg()._event_context.user.id
+    repo: Repo = manager.middleware_data.get("repo")
+    name = manager.dialog_data.get("custom_name")
+    new_name = message.text
+    await repo.update_personality_name(
+        user_id=user_id, name=name, new_name=new_name
+    )
+    await message.answer(
+        f'👌 Личность "<b>{name}</b>" переименована на "<b>{new_name}</b>"!',
+        parse_mode=ParseMode.HTML,
+    )
+    manager.dialog_data["custom_name"] = new_name
+    await manager.back()
