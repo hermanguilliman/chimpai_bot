@@ -66,7 +66,9 @@ class Settings(Base):
     base_url = mapped_column(
         String(255), nullable=False, server_default="https://api.openai.com/v1"
     )
-    personality_name = mapped_column(Text, nullable=True, default="🤵 Ассистент")
+    personality_name = mapped_column(
+        Text, nullable=True, default="🤵 Ассистент"
+    )
     personality_text = mapped_column(
         Text,
         nullable=True,
@@ -106,7 +108,9 @@ class Users(Base):
     id = mapped_column(BigInteger, primary_key=True, unique=True)
     created_at = mapped_column(DateTime, default=datetime.datetime.now)
     settings = relationship("Settings", back_populates="user")
-    conversation_history = relationship("ConversationHistory", back_populates="user")
+    conversation_history = relationship(
+        "ConversationHistory", back_populates="user"
+    )
     custom_personality: Mapped[list["CustomPersonality"]] = relationship(
         back_populates="user"
     )

@@ -38,7 +38,9 @@ async def image_creator_handler(
         parse_mode=ParseMode.HTML,
     )
 
-    async with ChatActionSender.upload_photo(message.from_user.id, message.bot):
+    async with ChatActionSender.upload_photo(
+        message.from_user.id, message.bot
+    ):
         logger.debug("Создаём изображение с помощью нейросети")
         image_url = await openai.create_image(
             prompt=prompt,

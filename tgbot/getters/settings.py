@@ -30,7 +30,8 @@ async def get_data_model_selector(dialog_manager: DialogManager, **kwargs):
 
     # Сохраняем сопоставление в контексте сессии
     dialog_manager.dialog_data["model_mapping"] = {
-        short_id: full_id for short_id, full_id in zip(short_model_ids, engine_ids)
+        short_id: full_id
+        for short_id, full_id in zip(short_model_ids, engine_ids)
     }
 
     # Возвращаем сокращенные id для кнопок

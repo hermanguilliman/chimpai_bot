@@ -13,7 +13,8 @@ async def new_personality_name(
     repo: Repo = manager.middleware_data.get("repo")
     new_name = message.text
     is_exists = await repo.is_custom_personality_exists(
-        user_id=manager.bg()._event_context.user.id, name=new_name)
+        user_id=manager.bg()._event_context.user.id, name=new_name
+    )
     if is_exists:
         await message.answer(
             f"⛔️ <b>{new_name}</b> уже существует! Придумайте другое имя! ⛔️",
@@ -27,7 +28,7 @@ async def new_personality_name(
     else:
         await message.answer(
             "❗️ Ошибка! Максимальная длина имени 20 знаков!",
-            parse_mode=ParseMode.HTML
+            parse_mode=ParseMode.HTML,
         )
         return
 
@@ -43,8 +44,8 @@ async def new_personality_text(
 
     await repo.add_custom_personality(user_id=user_id, name=name, text=text)
     await message.answer(
-        f"👌 Личность \"<b>{name}</b>\" успешно добавлена!",
-        parse_mode=ParseMode.HTML
+        f'👌 Личность "<b>{name}</b>" успешно добавлена!',
+        parse_mode=ParseMode.HTML,
     )
     await manager.done()
     return
@@ -59,8 +60,8 @@ async def update_personality_text(
     text = message.text
     await repo.update_personality(user_id=user_id, name=name, text=text)
     await message.answer(
-        f"👌 Личность \"<b>{name}</b>\" успешно изменена!",
-        parse_mode=ParseMode.HTML
+        f'👌 Личность "<b>{name}</b>" успешно изменена!',
+        parse_mode=ParseMode.HTML,
     )
     await manager.done()
     return
