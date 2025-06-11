@@ -5,6 +5,7 @@ from aiogram.types import CallbackQuery
 from aiogram_dialog import ChatEvent, DialogManager
 from aiogram_dialog.widgets.kbd import Button
 
+from tgbot.misc.states import TTSSettings
 from tgbot.services.repository import Repo
 
 
@@ -16,7 +17,7 @@ async def on_tts_voice_selected(
     user_id = manager.bg()._event_context.user.id
     await repo.update_tts_voice(user_id=user_id, tts_voice=item_id)
     await callback.answer(f"Выбран голос {item_id}!")
-    await manager.done()
+    await manager.switch_to(state=TTSSettings.select)
 
 
 async def on_tts_speed_selected(
@@ -28,7 +29,7 @@ async def on_tts_speed_selected(
     tts_speed = manager.dialog_data.get("tts_speed")
     await repo.update_tts_speed(user_id=user_id, tts_speed=str(tts_speed))
     await callback.answer(f"Задана скорость речи: {tts_speed}")
-    await manager.done()
+    await manager.switch_to(state=TTSSettings.select)
 
 
 async def on_increase_tts_speed(
