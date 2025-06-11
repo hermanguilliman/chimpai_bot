@@ -1,6 +1,7 @@
 from decimal import Decimal
 from typing import Any
 
+from aiogram.enums import ParseMode
 from aiogram.types import CallbackQuery
 from aiogram_dialog import ChatEvent, DialogManager
 from aiogram_dialog.widgets.kbd import Button
@@ -66,7 +67,9 @@ async def on_custom_personality_delete_confirm(
     user_id = manager.bg()._event_context.user.id
     name = manager.dialog_data.get("custom_name")
     await repo.delete_custom_personality(user_id=user_id, name=name)
-    await callback.message.answer(f'♻️ Личность "<b>{name}</b>" удалена!')
+    await callback.message.answer(
+        f'♻️ Личность "<b>{name}</b>" удалена!', parse_mode=ParseMode.HTML
+    )
     await manager.switch_to(PersonalitySettings.custom_list)
 
 
