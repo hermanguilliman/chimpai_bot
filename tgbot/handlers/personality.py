@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import MessageInput
 
-from tgbot.misc.states import NewPersonality
+from tgbot.misc.states import NewPersonality, PersonalitySettings
 from tgbot.services.repository import Repo
 
 
@@ -63,10 +63,10 @@ async def update_personality_text(
         user_id=user_id, name=name, new_text=new_text
     )
     await message.answer(
-        f'👌 Личность "<b>{name}</b>" успешно изменена!',
+        f'👌 Описание личности "<b>{name}</b>" успешно изменено!',
         parse_mode=ParseMode.HTML,
     )
-    await manager.back()
+    await manager.switch_to(PersonalitySettings.custom_person_select)
 
 
 async def update_personality_name(
@@ -85,4 +85,4 @@ async def update_personality_name(
         parse_mode=ParseMode.HTML,
     )
     manager.dialog_data["custom_name"] = new_name
-    await manager.back()
+    await manager.switch_to(PersonalitySettings.custom_person_select)
