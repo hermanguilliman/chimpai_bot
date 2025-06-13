@@ -34,7 +34,7 @@ chat_settings_dialog = Dialog(
     Window(
         Const("<b>💬 Текущие настройки чата: 💬</b>\n"),
         Format("🧠 Модель: <b>{model}</b>", when="model"),
-        Format("🗺 API сервер: <b>{base_url}</b>"),
+        Format("🗺 API сервер: <b>{base_url}</b>", when="base_url"),
         Format("🔋 Токены: <b>{max_length}</b>", when="max_length"),
         Format("🌡 Температура: <b>{temperature}</b>", when="temperature"),
         Format("🤡 Личность: <b>{personality}</b>", when="personality"),
