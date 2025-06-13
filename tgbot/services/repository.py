@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from tgbot.models.models import (
+    BaseUrl,
     BasicPersonality,
     ConversationHistory,
     CustomPersonality,
@@ -182,6 +183,27 @@ class Repo:
         rows = select(BasicPersonality)
         result = await self.session.execute(rows)
         return result.scalars().all()
+
+    async def get_base_urls(
+        self,
+    ) -> list[BaseUrl] | None:
+        """Возвращает список базовых адресов апи"""
+        stmt = select(BaseUrl.id, BaseUrl.name)
+        result = await self.session.execute(stmt)
+        base_urls = result.all()
+        return base_urls or None
+
+    async def set_base_url(self, user_id: int, name: str):
+        """Выбирает базовый адрес api который использует пользователь"""
+        stmt = select(BaseUrl).where(BaseUrl.name == name)
+        base_url = await self.session.scalar(stmt)
+        settings = (
+            update(Settings)
+            .where(Settings.user_id == user_id)
+            .values(base_url=base_url.url)
+        )
+        await self.session.execute(settings)
+        await self.session.commit()
 
     async def delete_custom_personality(self, user_id: int, name: str) -> None:
         stmt = (

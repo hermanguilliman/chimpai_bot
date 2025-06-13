@@ -11,7 +11,7 @@ from aiogram_dialog.widgets.text import Const, Format
 
 from tgbot.getters.base_data import get_base_data
 from tgbot.handlers.api_key import api_key_handler
-from tgbot.misc.states import ChatSettings, RootSettings, TTSSettings
+from tgbot.misc.states import BaseUrl, ChatSettings, RootSettings, TTSSettings
 
 # Диалог настроек
 root_settings_dialog = Dialog(
@@ -27,6 +27,9 @@ root_settings_dialog = Dialog(
             Const("🔑 API ключ отсутствует ⛔️", when=~F["api_key"]),
             id="set_api_key",
             state=RootSettings.api_key,
+        ),
+        Start(
+            Const("🗺 Адрес API"), id="select_base_url", state=BaseUrl.select
         ),
         Start(
             Const("💬 Настройки чата"),

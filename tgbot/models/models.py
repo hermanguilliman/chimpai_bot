@@ -58,6 +58,18 @@ class BasicPersonality(Base):
         return f"{self.name}"
 
 
+class BaseUrl(Base):
+    __tablename__ = "base_urls"
+    """Таблица для хранения стандартных адресов API"""
+
+    id = mapped_column(Integer, primary_key=True, unique=True)
+    name = mapped_column(Text, unique=True)
+    url = mapped_column(Text, unique=True, nullable=False)
+
+    def __repr__(self):
+        return f"<BaseUrl(id={self.id}, name='{self.name}', url='{self.url}')>"
+
+
 class Settings(Base):
     __tablename__ = "settings"
 

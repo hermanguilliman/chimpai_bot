@@ -133,3 +133,13 @@ async def on_clear_search_query(
     callback: CallbackQuery, button: Button, manager: DialogManager
 ):
     manager.dialog_data.pop("search_query", None)
+
+
+async def on_base_url_selected(
+    callback: ChatEvent, select: Any, manager: DialogManager, item_id: str
+):
+    repo: Repo = manager.middleware_data.get("repo")
+    user_id = manager.bg()._event_context.user.id
+    await repo.set_base_url(user_id=user_id, name=item_id)
+    await callback.answer(f"Выбран API: {item_id}!")
+    await manager.done()

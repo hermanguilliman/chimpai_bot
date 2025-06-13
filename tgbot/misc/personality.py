@@ -1,3 +1,8 @@
+from loguru import logger
+from sqlalchemy.ext.asyncio import AsyncEngine
+
+from tgbot.models.models import BasicPersonality
+
 personality_base = [
     {
         "name": "🤵 Ассистент",
@@ -40,3 +45,14 @@ personality_base = [
         "text": "Действуй как профессиональный толкователь сновидений. Я предоставлю тебе описание сна, который требуется интерпретировать, а ты предоставь развернутый ответ. Стиль текста разговорный, лёгкий, доверительный, без шутливости.",
     },
 ]
+
+
+async def add_basic_persons(engine: AsyncEngine) -> None:
+    try:
+        # Пытаемся добавить стандартные значения
+        async with engine.begin() as conn:
+            for person in personality_base:
+                await conn.execute(BasicPersonality.__table__.insert(), person)
+        logger.success("Стандартные настройки личностей добавлены")
+    except Exception:
+        logger.info("Стандартные настройки личностей уже добавлены")

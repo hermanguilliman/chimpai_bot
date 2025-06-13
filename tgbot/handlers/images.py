@@ -33,6 +33,13 @@ async def image_creator_handler(
         )
         return
 
+    if not settings.base_url:
+        await message.answer(
+            "<b>⚠️ Сначала нужно выбрать сервер API! </b>",
+            parse_mode=ParseMode.HTML,
+        )
+        return
+
     await message.answer(
         "<b>⌛️ Запрос на создание изображения принят. Ожидание ответа...</b>",
         parse_mode=ParseMode.HTML,
@@ -43,8 +50,9 @@ async def image_creator_handler(
     ):
         logger.debug("Создаём изображение с помощью нейросети")
         image_url = await openai.create_image(
-            prompt=prompt,
+            base_url=settings.base_url,
             api_key=settings.api_key,
+            prompt=prompt,
         )
 
         if isinstance(image_url, str):

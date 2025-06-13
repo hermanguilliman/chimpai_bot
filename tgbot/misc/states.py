@@ -52,3 +52,7 @@ class TTSSettings(StatesGroup):
 class NewPersonality(StatesGroup):
     name = State()
     text = State()
+
+
+class BaseUrl(StatesGroup):
+    select = State()

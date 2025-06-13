@@ -29,7 +29,19 @@ async def voice_handler(
             parse_mode=ParseMode.HTML,
         )
         return
-    if settings.api_key:
+    if not settings.api_key:
+        await message.answer(
+            "<b>⚠️ Сначала нужно установить api ключ!</b>",
+            parse_mode=ParseMode.HTML,
+        )
+        return
+    elif not settings.base_url:
+        await message.answer(
+            "<b>⚠️ Сначала нужно выбрать сервер API!</b>",
+            parse_mode=ParseMode.HTML,
+        )
+        return
+    else:
         async with ChatActionSender.typing(message.from_user.id, message.bot):
             logger.info("Перевод голоса в текст")
             file = await message.bot.get_file(message.voice.file_id)
@@ -40,7 +52,9 @@ async def voice_handler(
 
             await message.bot.download_file(file_path, local_path)
             text = await openai.audio_to_text(
-                audio_path=local_path, api_key=settings.api_key
+                audio_path=local_path,
+                base_url=settings.base_url,
+                api_key=settings.api_key,
             )
 
             if text:
@@ -55,9 +69,3 @@ async def voice_handler(
 
             if os.path.exists(local_path):
                 os.remove(local_path)
-    else:
-        await message.answer(
-            "<b>⚠️ Сначала нужно установить api ключ!</b>",
-            parse_mode=ParseMode.HTML,
-        )
-        return

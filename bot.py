@@ -22,6 +22,7 @@ from tgbot.dialogs.images.dalle import dalle_dialog
 from tgbot.dialogs.personality.create import new_person_dialog
 from tgbot.dialogs.personality.menu import personality_menu_dialog
 from tgbot.dialogs.root.menu import main_dialog
+from tgbot.dialogs.settings.base_url import base_url_dialog
 from tgbot.dialogs.settings.menu import root_settings_dialog
 from tgbot.dialogs.speech_to_text.stt import speech_to_text_dialog
 from tgbot.dialogs.text_to_speech.settings import tts_settings_dialog
@@ -32,22 +33,16 @@ from tgbot.handlers.user_start import user_start
 from tgbot.middlewares.openai_api import OpenAIMiddleware
 from tgbot.middlewares.repo import RepoMiddleware
 from tgbot.middlewares.trottling import ThrottlingMiddleware
-from tgbot.misc.personality import personality_base
-from tgbot.models.models import BasicPersonality
+from tgbot.misc.base_urls import add_base_urls
+from tgbot.misc.personality import add_basic_persons
 
 
 async def create_sessionmaker(echo) -> AsyncSession:
     url = "sqlite+aiosqlite:///database/settings.db"
     engine = create_async_engine(url, echo=echo, future=True)
 
-    try:
-        # Пытаемся добавить стандартные значения
-        async with engine.begin() as conn:
-            for person in personality_base:
-                await conn.execute(BasicPersonality.__table__.insert(), person)
-        logger.success("Стандартные настройки личностей добавлены")
-    except Exception:
-        logger.info("Стандартные настройки личностей уже добавлены")
+    await add_basic_persons(engine)
+    await add_base_urls(engine)
 
     sessionmaker = async_sessionmaker(
         engine,
@@ -74,8 +69,6 @@ async def main():
     dp = Dispatcher(storage=storage)
     sessionmaker = await create_sessionmaker(echo=False)
     openai = AsyncOpenAI(api_key="sk-")
-    if config.ai.base_url:
-        openai.base_url = config.ai.base_url
 
     dp.include_routers(
         main_dialog,
@@ -88,6 +81,7 @@ async def main():
         new_person_dialog,
         chat_settings_dialog,
         tts_settings_dialog,
+        base_url_dialog,
     )
 
     setup_dialogs(dp)

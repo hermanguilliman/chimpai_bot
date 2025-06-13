@@ -47,6 +47,7 @@ class OpenAIService:
 
     def _validate_params(self, **kwargs) -> None:
         required_params = [
+            "base_url",
             "api_key",
             "model",
             "prompt",
@@ -62,6 +63,7 @@ class OpenAIService:
 
     async def get_answer(
         self,
+        base_url: str,
         api_key: str,
         model: str,
         prompt: str,
@@ -73,6 +75,7 @@ class OpenAIService:
     ) -> Optional[str]:
         try:
             self._validate_params(
+                base_url=base_url,
                 api_key=api_key,
                 model=model,
                 prompt=prompt,
@@ -81,7 +84,7 @@ class OpenAIService:
             )
         except self.ValidationError as e:
             return str(e)
-
+        self.openai.base_url = base_url
         self.openai.api_key = api_key
         messages = await self._prepare_messages(prompt, person_text, history)
 
@@ -111,10 +114,14 @@ class OpenAIService:
             logger.info("Повторная попытка...")
         return None
 
-    async def get_engines(self, api_key: Optional[str]) -> list | str:
+    async def get_engines(
+        self, base_url: str, api_key: Optional[str]
+    ) -> list | str:
+        if not base_url:
+            return "Отсутствует адрес API"
         if not api_key:
             return "Отсутствует API ключ"
-
+        self.openai.base_url = base_url
         self.openai.api_key = api_key
         try:
             engines = await self.openai.models.list()
@@ -124,11 +131,12 @@ class OpenAIService:
             return "Ошибка получения моделей"
 
     async def audio_to_text(
-        self, audio_path: str, api_key: Optional[str]
+        self,
+        base_url: str,
+        api_key: str,
+        audio_path: str,
     ) -> Optional[str]:
-        if not api_key:
-            return "Отсутствует API ключ"
-
+        self.openai.base_url = base_url
         self.openai.api_key = api_key
         try:
             with open(audio_path, "rb") as file:
@@ -141,13 +149,9 @@ class OpenAIService:
             return None
 
     async def create_image(
-        self, prompt: Optional[str], api_key: Optional[str]
+        self, base_url: str, api_key: str, prompt: str
     ) -> str:
-        if not prompt:
-            return "Отсутствует запрос"
-        if not api_key:
-            return "Отсутствует API ключ"
-
+        self.openai.base_url = base_url
         self.openai.api_key = api_key
         try:
             response = await self.openai.images.generate(
@@ -174,17 +178,14 @@ class OpenAIService:
 
     async def create_speech(
         self,
-        prompt: Optional[str],
-        api_key: Optional[str],
+        prompt: str,
+        base_url: str,
+        api_key: str,
         model: str = "tts-1",
         voice: str = "alloy",
         speed: str = "1.0",
     ) -> Optional[bytes]:
-        if not prompt:
-            return None
-        if not api_key:
-            return None
-
+        self.openai.base_url = base_url
         self.openai.api_key = api_key
         try:
             response = await self.openai.audio.speech.create(

@@ -16,7 +16,9 @@ async def get_data_model_selector(dialog_manager: DialogManager, **kwargs):
     )
     search_query = dialog_manager.dialog_data.get("search_query", "").lower()
 
-    engines = await openai.get_engines(api_key=settings.api_key)
+    engines = await openai.get_engines(
+        base_url=settings.base_url, api_key=settings.api_key
+    )
     if isinstance(engines, list):
         engine_ids = [engine.id for engine in engines]
     else:
@@ -83,3 +85,11 @@ async def get_temperature(dialog_manager: DialogManager, **kwargs):
     if len(dialog_manager.dialog_data) == 0:
         dialog_manager.dialog_data.update(dialog_manager.start_data)
     return dialog_manager.dialog_data
+
+
+async def base_urls_getter(dialog_manager: DialogManager, **kwargs):
+    repo: Repo = dialog_manager.middleware_data.get("repo")
+    url_list = await repo.get_base_urls()
+    return {
+        "base_urls": url_list,
+    }

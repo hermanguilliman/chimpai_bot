@@ -34,6 +34,7 @@ chat_settings_dialog = Dialog(
     Window(
         Const("<b>💬 Текущие настройки чата: 💬</b>\n"),
         Format("🧠 Модель: <b>{model}</b>", when="model"),
+        Format("🗺 API сервер: <b>{base_url}</b>"),
         Format("🔋 Токены: <b>{max_length}</b>", when="max_length"),
         Format("🌡 Температура: <b>{temperature}</b>", when="temperature"),
         Format("🤡 Личность: <b>{personality}</b>", when="personality"),
@@ -66,6 +67,7 @@ chat_settings_dialog = Dialog(
         state=ChatSettings.select,
         parse_mode=ParseMode.HTML,
         getter=get_base_data,
+        disable_web_page_preview=True,
     ),
     Window(
         # Если не задан поисковый запрос и есть модели

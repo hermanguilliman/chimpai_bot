@@ -33,6 +33,13 @@ async def tts_handler(
         )
         return
 
+    if not settings.base_url:
+        await message.answer(
+            "<b>⚠️ Сначала нужно выбрать сервер API! </b>",
+            parse_mode=ParseMode.HTML,
+        )
+        return
+
     await message.answer(
         "<b>⌛️ Запрос отправлен. Ожидание ответа...</b>",
         parse_mode=ParseMode.HTML,
@@ -43,11 +50,12 @@ async def tts_handler(
     ):
         logger.debug("Запрос для TTS")
         response = await openai.create_speech(
+            prompt=prompt,
+            base_url=settings.base_url,
+            api_key=settings.api_key,
             model=settings.tts_model,
             voice=settings.tts_voice,
             speed=float(settings.tts_speed),
-            prompt=prompt,
-            api_key=settings.api_key,
         )
 
         if isinstance(response, bytes):

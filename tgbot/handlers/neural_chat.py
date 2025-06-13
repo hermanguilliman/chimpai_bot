@@ -37,6 +37,13 @@ async def neural_handler(
         )
         return
 
+    if not settings.base_url:
+        await message.answer(
+            "<b>⚠️ Сначала нужно выбрать сервер API! </b>",
+            parse_mode=ParseMode.HTML,
+        )
+        return
+
     # Получаем последние 10 сообщений из истории
     history = await repo.get_conversation_history(
         message.from_user.id, limit=10
@@ -55,6 +62,7 @@ async def neural_handler(
     async with ChatActionSender.typing(message.from_user.id, message.bot):
         logger.debug(f"Пользователь {message.from_user.id} отправил запрос")
         answer = await openai.get_answer(
+            base_url=settings.base_url,
             api_key=settings.api_key,
             max_tokens=int(settings.max_tokens),
             model=settings.model,
