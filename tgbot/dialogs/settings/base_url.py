@@ -1,7 +1,7 @@
 from aiogram.enums import ParseMode
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.kbd import (
-    Back,
+    Cancel,
     ScrollingGroup,
     Select,
 )
@@ -29,7 +29,7 @@ base_url_dialog = Dialog(
             height=8,
             when="base_urls",
         ),
-        Back(Const("👈 Назад")),
+        Cancel(Const("👈 Назад")),
         getter=base_urls_getter,
         parse_mode=ParseMode.HTML,
         state=BaseUrl.select,
