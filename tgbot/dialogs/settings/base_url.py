@@ -42,6 +42,7 @@ base_url_dialog = Dialog(
         getter=base_urls_getter,
         parse_mode=ParseMode.HTML,
         state=BaseUrl.select,
+        disable_web_page_preview=True,
     ),
     Window(
         Const(
