@@ -205,6 +205,17 @@ class Repo:
         await self.session.execute(settings)
         await self.session.commit()
 
+    async def set_custom_base_url_to_user(self, user_id: int, new_url: str):
+        """Устанавливает пользователю собственный адрес API сервера"""
+        stmt = (
+            update(Settings)
+            .where(Settings.user_id == user_id)
+            .values(base_url=new_url)
+        )
+        await self.session.execute(stmt)
+        await self.session.commit()
+        logger.info(f"Пользователь {user_id} установил свой адрес API сервера")
+
     async def delete_custom_personality(self, user_id: int, name: str) -> None:
         stmt = (
             delete(CustomPersonality)

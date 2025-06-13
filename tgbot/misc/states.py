@@ -56,3 +56,4 @@ class NewPersonality(StatesGroup):
 
 class BaseUrl(StatesGroup):
     select = State()
+    input_base_url = State()

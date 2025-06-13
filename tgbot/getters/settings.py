@@ -89,7 +89,10 @@ async def get_temperature(dialog_manager: DialogManager, **kwargs):
 
 async def base_urls_getter(dialog_manager: DialogManager, **kwargs):
     repo: Repo = dialog_manager.middleware_data.get("repo")
+    user_id = dialog_manager.bg()._event_context.user.id
+    current_base_url = await repo.get_settings(user_id=user_id)
     url_list = await repo.get_base_urls()
     return {
+        "current_base_url": current_base_url.base_url,
         "base_urls": url_list,
     }
