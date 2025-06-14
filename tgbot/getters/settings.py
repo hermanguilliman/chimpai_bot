@@ -8,7 +8,7 @@ from tgbot.services.neural import OpenAIService
 from tgbot.services.repository import Repo
 
 
-async def get_data_model_selector(dialog_manager: DialogManager, **kwargs):
+async def models_selector_getter(dialog_manager: DialogManager, **kwargs):
     repo: Repo = dialog_manager.middleware_data.get("repo")
     openai: OpenAIService = dialog_manager.middleware_data.get("openai")
     settings: Settings = await repo.get_settings(
@@ -80,7 +80,7 @@ async def custom_personality_getter(dialog_manager: DialogManager, **kwargs):
 
 
 # Геттер температуры
-async def get_temperature(dialog_manager: DialogManager, **kwargs):
+async def temperature_getter(dialog_manager: DialogManager, **kwargs):
     # При первом запуске получаем значение из предыдущего диалога?
     if len(dialog_manager.dialog_data) == 0:
         dialog_manager.dialog_data.update(dialog_manager.start_data)

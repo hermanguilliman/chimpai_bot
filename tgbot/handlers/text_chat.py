@@ -13,7 +13,7 @@ from tgbot.services.neural import OpenAIService
 from tgbot.services.repository import Repo
 
 
-async def neural_handler(
+async def input_text_chat_handler(
     message: Message,
     message_input: MessageInput,
     manager: DialogManager,
@@ -46,7 +46,7 @@ async def neural_handler(
 
     # Получаем последние 10 сообщений из истории
     history = await repo.get_conversation_history(
-        message.from_user.id, limit=10
+        message.from_user.id, limit=15
     )
 
     # Добавляем запрос пользователя в историю

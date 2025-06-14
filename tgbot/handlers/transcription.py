@@ -14,8 +14,7 @@ from tgbot.services.neural import OpenAIService
 from tgbot.services.repository import Repo
 
 
-# Voice to Text
-async def voice_handler(
+async def speech_to_text_handler(
     message: Message,
     message_input: MessageInput,
     manager: DialogManager,

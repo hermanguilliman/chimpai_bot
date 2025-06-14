@@ -10,7 +10,7 @@ from aiogram_dialog.widgets.kbd import (
 from aiogram_dialog.widgets.text import Const, Format
 
 from tgbot.getters.base_data import get_base_data
-from tgbot.handlers.api_key import api_key_handler
+from tgbot.handlers.api_key import input_api_key_handler
 from tgbot.misc.states import BaseUrl, ChatSettings, RootSettings, TTSSettings
 
 # Диалог настроек
@@ -48,7 +48,7 @@ root_settings_dialog = Dialog(
     ),
     Window(
         # Установка нового ключа апи
-        MessageInput(api_key_handler, content_types=[ContentType.TEXT]),
+        MessageInput(input_api_key_handler, content_types=[ContentType.TEXT]),
         Const("<b>Укажите новый API ключ:</b>"),
         Const("<b>Подсказка:</b> Ключ OpenAI API выглядит как <b>sk-...</b>"),
         SwitchTo(Const("👈 Назад"), id="back", state=RootSettings.select),

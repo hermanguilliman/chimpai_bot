@@ -6,7 +6,9 @@ from tgbot.models.models import Users
 from tgbot.services.repository import Repo
 
 
-async def admin_start(m: Message, repo: Repo, dialog_manager: DialogManager):
+async def admin_start_handler(
+    m: Message, repo: Repo, dialog_manager: DialogManager
+):
     user: Users | None = await repo.get_user(m.from_user.id)
     if not user:
         # регистрация нового пользователя

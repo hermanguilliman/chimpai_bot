@@ -1,7 +1,7 @@
 from aiogram_dialog import DialogManager
 
 
-async def get_tts_models(dialog_manager: DialogManager, **kwargs):
+async def tts_models_getter(dialog_manager: DialogManager, **kwargs):
     return {
         "tts_models": [
             "tts-1",
@@ -10,7 +10,7 @@ async def get_tts_models(dialog_manager: DialogManager, **kwargs):
     }
 
 
-async def get_voice_names(dialog_manager: DialogManager, **kwargs):
+async def voices_names_getter(dialog_manager: DialogManager, **kwargs):
     return {
         "tts_voices": [
             "alloy",

@@ -28,8 +28,8 @@ from tgbot.dialogs.speech_to_text.stt import speech_to_text_dialog
 from tgbot.dialogs.text_to_speech.settings import tts_settings_dialog
 from tgbot.dialogs.text_to_speech.tts import text_to_speech_dialog
 from tgbot.filters.is_admin import AdminFilter
-from tgbot.handlers.admin_start import admin_start
-from tgbot.handlers.user_start import user_start
+from tgbot.handlers.admin_start import admin_start_handler
+from tgbot.handlers.user_start import user_start_handler
 from tgbot.middlewares.openai_api import OpenAIMiddleware
 from tgbot.middlewares.repo import RepoMiddleware
 from tgbot.middlewares.trottling import ThrottlingMiddleware
@@ -91,9 +91,11 @@ async def main():
     dp.update.middleware(RepoMiddleware(sessionmaker))
     dp.update.middleware(OpenAIMiddleware(openai))
     dp.message.register(
-        admin_start, CommandStart(), AdminFilter(config.tg_bot.admin_ids)
+        admin_start_handler,
+        CommandStart(),
+        AdminFilter(config.tg_bot.admin_ids),
     )
-    dp.message.register(user_start, CommandStart())
+    dp.message.register(user_start_handler, CommandStart())
     await bot(DeleteWebhook(drop_pending_updates=True))
     logger.info("Запуск ChimpAI")
     await dp.start_polling(bot)

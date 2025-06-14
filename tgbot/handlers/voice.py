@@ -15,7 +15,7 @@ from tgbot.services.repository import Repo
 
 
 # Voice to ChatGPT
-async def voice_handler(
+async def voice_input_handler(
     message: Message,
     message_input: MessageInput,
     manager: DialogManager,

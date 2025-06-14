@@ -10,7 +10,7 @@ from tgbot.services.neural import OpenAIService
 from tgbot.services.repository import Repo
 
 
-async def tts_handler(
+async def text_to_speech_handler(
     message: Message,
     message_input: MessageInput,
     manager: DialogManager,

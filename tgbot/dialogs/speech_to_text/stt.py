@@ -4,12 +4,14 @@ from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Cancel
 from aiogram_dialog.widgets.text import Const
 
-from tgbot.handlers.transcription import voice_handler
+from tgbot.handlers.transcription import speech_to_text_handler
 from tgbot.misc.states import SpeechToText
 
 speech_to_text_dialog = Dialog(
     Window(
-        MessageInput(voice_handler, content_types=[ContentType.VOICE]),
+        MessageInput(
+            speech_to_text_handler, content_types=[ContentType.VOICE]
+        ),
         Const("<b>🎧 Speech to text - это перевод голоса в текст</b>\n"),
         Const("<b>Запишите или перешлите голосовое сообщение! 😀</b>\n"),
         Cancel(Const("👈 Назад")),

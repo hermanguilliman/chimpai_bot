@@ -4,7 +4,7 @@ from loguru import logger
 from tgbot.services.repository import Repo
 
 
-async def user_start(m: Message, repo: Repo):
+async def user_start_handler(m: Message, repo: Repo):
     logger.debug(
         f"""
         Пользователь {m.from_user.full_name} ({m.from_user.id})

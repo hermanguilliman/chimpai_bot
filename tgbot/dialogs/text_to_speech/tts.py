@@ -5,12 +5,12 @@ from aiogram_dialog.widgets.kbd import Cancel, Row, Start
 from aiogram_dialog.widgets.text import Const, Format
 
 from tgbot.getters.base_data import get_base_data
-from tgbot.handlers.tts import tts_handler
+from tgbot.handlers.tts import text_to_speech_handler
 from tgbot.misc.states import TextToSpeech, TTSSettings
 
 text_to_speech_dialog = Dialog(
     Window(
-        MessageInput(tts_handler, content_types=[ContentType.TEXT]),
+        MessageInput(text_to_speech_handler, content_types=[ContentType.TEXT]),
         Const("<b>🎙 Text to speech - это озвучивание текста\n</b>"),
         Format("<b>🗣 Выбранный голос: {tts_voice}</b>"),
         Format("<b>⏩ Скорость произношения: {tts_speed}</b>\n"),

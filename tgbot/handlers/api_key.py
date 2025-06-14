@@ -6,7 +6,7 @@ from aiogram_dialog.widgets.input import MessageInput
 from tgbot.services.repository import Repo
 
 
-async def api_key_handler(
+async def input_api_key_handler(
     message: Message, message_input: MessageInput, manager: DialogManager
 ):
     user_id = manager.bg()._event_context.user.id

@@ -24,10 +24,10 @@ from tgbot.callbacks.settings import (
 )
 from tgbot.getters.base_data import get_base_data
 from tgbot.getters.settings import (
-    get_data_model_selector,
-    get_temperature,
+    models_selector_getter,
+    temperature_getter,
 )
-from tgbot.handlers.engines import search_engines
+from tgbot.handlers.engines import search_engines_handler
 from tgbot.misc.states import ChatSettings, PersonalitySettings
 
 chat_settings_dialog = Dialog(
@@ -100,7 +100,7 @@ chat_settings_dialog = Dialog(
             "<b>🤷 В данный момент нет моделей</b>",
             when=~F["models"] & ~F["dialog_data"]["search_query"],
         ),
-        MessageInput(search_engines, content_types=[ContentType.TEXT]),
+        MessageInput(search_engines_handler, content_types=[ContentType.TEXT]),
         ScrollingGroup(
             Select(
                 Format(
@@ -126,7 +126,7 @@ chat_settings_dialog = Dialog(
         ),
         state=ChatSettings.model,
         parse_mode=ParseMode.HTML,
-        getter=get_data_model_selector,
+        getter=models_selector_getter,
     ),
     Window(
         Const("<b>Укажите максимальную длину ответа</b>"),
@@ -174,6 +174,6 @@ chat_settings_dialog = Dialog(
         ),
         state=ChatSettings.temperature,
         parse_mode=ParseMode.HTML,
-        getter=get_temperature,
+        getter=temperature_getter,
     ),
 )

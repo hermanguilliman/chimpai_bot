@@ -27,8 +27,8 @@ from tgbot.getters.settings import (
     custom_personality_getter,
 )
 from tgbot.handlers.personality import (
-    update_personality_name,
-    update_personality_text,
+    update_personality_name_handler,
+    update_personality_text_handler,
 )
 from tgbot.misc.states import NewPersonality, PersonalitySettings
 
@@ -139,7 +139,7 @@ personality_menu_dialog = Dialog(
         Format("<b>Вы редактируете: {custom_name}</b>\n", when="custom_name"),
         Const("\n🪪 <b>Отправьте новое имя личности</b>"),
         MessageInput(
-            update_personality_name,
+            update_personality_name_handler,
             content_types=[ContentType.TEXT],
         ),
         SwitchTo(
@@ -156,7 +156,7 @@ personality_menu_dialog = Dialog(
         Format("<b>Вы редактируете: {custom_name}</b>\n", when="custom_name"),
         Const("\n📖 <b>Отправьте новое описание личности</b>"),
         MessageInput(
-            update_personality_text,
+            update_personality_text_handler,
             content_types=[ContentType.TEXT],
         ),
         SwitchTo(

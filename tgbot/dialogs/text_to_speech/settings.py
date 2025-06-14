@@ -19,7 +19,7 @@ from tgbot.callbacks.tts_settings import (
     on_tts_voice_selected,
 )
 from tgbot.getters.base_data import get_base_data
-from tgbot.getters.tts_settings import get_tts_speed, get_voice_names
+from tgbot.getters.tts_settings import get_tts_speed, voices_names_getter
 from tgbot.misc.states import TTSSettings
 
 tts_settings_dialog = Dialog(
@@ -62,7 +62,7 @@ tts_settings_dialog = Dialog(
         ),
         state=TTSSettings.tts_voice,
         parse_mode=ParseMode.HTML,
-        getter=get_voice_names,
+        getter=voices_names_getter,
     ),
     Window(
         Const("<b>⏩ Настройка скорости произношения</b>"),

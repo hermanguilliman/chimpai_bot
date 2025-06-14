@@ -7,7 +7,7 @@ from tgbot.misc.states import NewPersonality, PersonalitySettings
 from tgbot.services.repository import Repo
 
 
-async def new_personality_name(
+async def input_new_personality_name_handler(
     message: Message, message_input: MessageInput, manager: DialogManager
 ):
     user_id = manager.bg()._event_context.user.id
@@ -35,7 +35,7 @@ async def new_personality_name(
     await manager.switch_to(NewPersonality.text)
 
 
-async def new_personality_text(
+async def input_new_personality_text_handler(
     message: Message, message_input: MessageInput, manager: DialogManager
 ):
     user_id = manager.bg()._event_context.user.id
@@ -53,7 +53,7 @@ async def new_personality_text(
     return
 
 
-async def update_personality_text(
+async def update_personality_text_handler(
     message: Message, message_input: MessageInput, manager: DialogManager
 ):
     """Обновляет описание личности"""
@@ -71,7 +71,7 @@ async def update_personality_text(
     await manager.switch_to(PersonalitySettings.custom_person_select)
 
 
-async def update_personality_name(
+async def update_personality_name_handler(
     message: Message, message_input: MessageInput, manager: DialogManager
 ):
     """Обновляет имя личности"""
