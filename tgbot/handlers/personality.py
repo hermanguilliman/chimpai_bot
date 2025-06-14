@@ -10,11 +10,13 @@ from tgbot.services.repository import Repo
 async def new_personality_name(
     message: Message, message_input: MessageInput, manager: DialogManager
 ):
+    user_id = manager.bg()._event_context.user.id
     repo: Repo = manager.middleware_data.get("repo")
     new_name = message.text
     is_exists = await repo.is_custom_personality_exists(
-        user_id=manager.bg()._event_context.user.id, name=new_name
+        user_id=user_id, name=new_name
     )
+
     if is_exists:
         await message.answer(
             f"⛔️ <b>{new_name}</b> уже существует! Придумайте другое имя! ⛔️",
@@ -22,15 +24,15 @@ async def new_personality_name(
         )
         return
 
-    if len(new_name) <= 20:
-        manager.dialog_data["name"] = new_name
-        await manager.switch_to(NewPersonality.text)
-    else:
+    if len(new_name) > 20:
         await message.answer(
             "❗️ Ошибка! Максимальная длина имени 20 знаков!",
             parse_mode=ParseMode.HTML,
         )
         return
+
+    manager.dialog_data["name"] = new_name
+    await manager.switch_to(NewPersonality.text)
 
 
 async def new_personality_text(
@@ -77,6 +79,29 @@ async def update_personality_name(
     repo: Repo = manager.middleware_data.get("repo")
     name = manager.dialog_data.get("custom_name")
     new_name = message.text
+    is_exists = await repo.is_custom_personality_exists(
+        user_id=user_id, name=new_name
+    )
+    if name == new_name:
+        await message.answer(
+            f"⚠️ <b>Хотите переименовать {name} на {new_name}? Это одно и то же имя!</b>",
+            parse_mode=ParseMode.HTML,
+        )
+        return
+    if is_exists:
+        await message.answer(
+            f"⛔️ <b>{new_name}</b> уже существует! Придумайте другое имя! ⛔️",
+            parse_mode=ParseMode.HTML,
+        )
+        return
+
+    if len(new_name) > 20:
+        await message.answer(
+            "❗️ Ошибка! Максимальная длина имени 20 знаков!",
+            parse_mode=ParseMode.HTML,
+        )
+        return
+
     await repo.update_personality_name(
         user_id=user_id, name=name, new_name=new_name
     )
