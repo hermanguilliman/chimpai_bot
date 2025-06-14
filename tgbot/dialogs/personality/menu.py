@@ -137,7 +137,6 @@ personality_menu_dialog = Dialog(
     # Редактирование имени кастомной личности
     Window(
         Format("<b>Вы редактируете: {custom_name}</b>\n", when="custom_name"),
-        Format("<b>Описание личности:</b>\n{custom_desc}", when="custom_desc"),
         Const("\n🪪 <b>Отправьте новое имя личности</b>"),
         MessageInput(
             update_personality_name,
@@ -155,7 +154,6 @@ personality_menu_dialog = Dialog(
     # Редактирование описания кастомной личности
     Window(
         Format("<b>Вы редактируете: {custom_name}</b>\n", when="custom_name"),
-        Format("<b>Описание личности:</b>\n{custom_desc}", when="custom_desc"),
         Const("\n📖 <b>Отправьте новое описание личности</b>"),
         MessageInput(
             update_personality_text,
