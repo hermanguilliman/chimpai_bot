@@ -73,7 +73,6 @@ chat_settings_dialog = Dialog(
                 Const("🔄 Сменить формат экспорта истории"),
                 id="toggle_format",
                 on_click=toggle_export_format,
-                when="history_count",
             ),
             width=2,
         ),
