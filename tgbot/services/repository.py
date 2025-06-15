@@ -79,6 +79,18 @@ class Repo:
         await self.session.execute(stmt)
         await self.session.commit()
 
+    async def update_export_format(
+        self, user_id: int, export_format: str
+    ) -> None:
+        # Обновляет формат экспорта истории
+        stmt = (
+            update(Settings)
+            .where(Settings.user_id == user_id)
+            .values(export_format=export_format)
+        )
+        await self.session.execute(stmt)
+        await self.session.commit()
+
     async def update_tts_voice(self, user_id: int, tts_voice: str) -> None:
         # Обновляет настройки
         stmt = (

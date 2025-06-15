@@ -21,6 +21,7 @@ from tgbot.callbacks.settings import (
     on_new_model_selected,
     on_reset_temp,
     on_temperature_selected,
+    toggle_export_format,
 )
 from tgbot.getters.base_data import get_base_data
 from tgbot.getters.settings import (
@@ -38,7 +39,14 @@ chat_settings_dialog = Dialog(
         Format("🔋 Токены: <b>{max_length}</b>", when="max_length"),
         Format("🌡 Температура: <b>{temperature}</b>", when="temperature"),
         Format("🤡 Личность: <b>{personality}</b>", when="personality"),
-        Format("💬 Контекст: {history_count}", when="history_count"),
+        Format(
+            "💬 Сообщений в памяти: <b>{history_count}</b>",
+            when="history_count",
+        ),
+        Format(
+            "📩 Формат сохранения истории: <b>{export_format}</b>",
+            when="export_format",
+        ),
         Const("<b>\nВыберите пункт который хотели бы изменить 👇🏻</b>\n"),
         Group(
             SwitchTo(
@@ -60,6 +68,12 @@ chat_settings_dialog = Dialog(
                 Format("🤡 Личность"),
                 id="personality",
                 state=PersonalitySettings.basic_list,
+            ),
+            Button(
+                Const("🔄 Сменить формат экспорта истории"),
+                id="toggle_format",
+                on_click=toggle_export_format,
+                when="history_count",
             ),
             width=2,
         ),

@@ -76,7 +76,10 @@ class Settings(Base):
     id = mapped_column(Integer, primary_key=True, unique=True)
     api_key = mapped_column(String(51), nullable=True)
     base_url = mapped_column(
-        String(255), nullable=False, server_default="https://api.openai.com/v1"
+        String(255),
+        nullable=False,
+        default="https://api.openai.com/v1",
+        server_default="https://api.openai.com/v1",
     )
     personality_name = mapped_column(
         Text, nullable=True, default="🤵 Ассистент"
@@ -85,6 +88,12 @@ class Settings(Base):
         Text,
         nullable=True,
         default="Действуй как личный ассистент пользователя",
+    )
+    export_format = mapped_column(
+        String(10),
+        nullable=False,
+        default="markdown",
+        server_default="markdown",
     )
     max_tokens = mapped_column(Integer, default=1000)
     model = mapped_column(Text, default="gpt-4o-mini")

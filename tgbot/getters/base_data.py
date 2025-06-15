@@ -21,6 +21,7 @@ async def get_base_data(dialog_manager: DialogManager, **kwargs) -> dict:
         "personality": settings.personality_name,
         "history_count": history_count or 0,
         "base_url": settings.base_url or None,
+        "export_format": settings.export_format,
     }
 
     dialog_manager.dialog_data.update(base_view)

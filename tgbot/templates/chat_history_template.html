@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История переписки с пользователем {user_id}</title>
+    <style>
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }}
+        .container {{
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }}
+        .header {{
+            text-align: center;
+            margin-bottom: 20px;
+        }}
+        .header h1 {{
+            margin: 0;
+            font-size: 24px;
+            color: #1a73e8;
+        }}
+        .settings {{
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }}
+        .settings p {{
+            margin: 5px 0;
+            font-size: 14px;
+        }}
+        .chat {{
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }}
+        .message {{
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            max-width: 70%;
+            padding: 10px;
+            border-radius: 15px;
+            font-size: 14px;
+            line-height: 1.4;
+        }}
+        .message.user {{
+            background-color: #1a73e8;
+            color: #fff;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }}
+        .message.assistant {{
+            background-color: #e8ecef;
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+        }}
+        .avatar {{
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }}
+        .message.user .avatar {{
+            background-color: #fff;
+            color: #1a73e8;
+        }}
+        .message.assistant .avatar {{
+            background-color: #1a73e8;
+            color: #fff;
+        }}
+        .message-content {{
+            flex: 1;
+        }}
+        .timestamp {{
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }}
+        .message.user .timestamp {{
+            color: #d0e0ff;
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>История переписки с пользователем {user_id}</h1>
+        </div>
+        <div class="settings">
+            <p><strong>Личность:</strong> {personality_name}</p>
+            <p><strong>Описание личности:</strong> {personality_text}</p>
+        </div>
+        <div class="chat">
+            {messages}
+        </div>
+    </div>
+</body>
+</html>

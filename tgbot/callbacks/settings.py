@@ -143,3 +143,20 @@ async def on_base_url_selected(
     await repo.set_base_url(user_id=user_id, name=item_id)
     await callback.answer(f"Выбран API: {item_id}!")
     await manager.done()
+
+
+async def toggle_export_format(
+    callback: CallbackQuery, button: Button, manager: DialogManager
+):
+    repo: Repo = manager.middleware_data.get("repo")
+    user_id = manager.bg()._event_context.user.id
+    settings = await repo.get_settings(user_id)
+
+    # Переключаем формат
+    new_format = "html" if settings.export_format == "markdown" else "markdown"
+    await repo.update_export_format(user_id, export_format=new_format)
+
+    # Обновляем данные диалога
+    manager.dialog_data["export_format"] = new_format
+    await callback.answer(f"Формат экспорта изменён на {new_format.upper()}")
+    await manager.update({})

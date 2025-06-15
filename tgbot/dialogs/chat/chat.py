@@ -28,7 +28,7 @@ chat_dialog = Dialog(
         ),
         Row(
             Button(
-                Const("📩 Экспорт в .md"),
+                Format("📩 Экспорт {export_format}"),
                 id="download_history",
                 on_click=download_history,
                 when="history_count",
