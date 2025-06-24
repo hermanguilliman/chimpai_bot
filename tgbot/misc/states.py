@@ -5,28 +5,32 @@ class MainMenu(StatesGroup):
     select = State()
 
 
-class ChatGPT(StatesGroup):
+class NeuralChat(StatesGroup):
     chat = State()
 
 
-class SpeechToText(StatesGroup):
-    transcribe = State()
+class SummaryChat(StatesGroup):
+    chat = State()
 
 
-class Dalle(StatesGroup):
-    create_image = State()
+class SystemSettings(StatesGroup):
+    select = State()
 
 
-class TextToSpeech(StatesGroup):
-    tts = State()
-
-
-class RootSettings(StatesGroup):
+class SetupСhatService(StatesGroup):
     select = State()
     api_key = State()
+    base_url = State()
+    input_base_url = State()
 
 
-class ChatSettings(StatesGroup):
+class SetupSummaryService(StatesGroup):
+    select = State()
+    api_key = State()
+    base_url = State()
+
+
+class NeuralChatSettings(StatesGroup):
     select = State()
     model = State()
     max_length = State()
@@ -40,13 +44,6 @@ class PersonalitySettings(StatesGroup):
     custom_person_edit_name = State()
     custom_person_edit_description = State()
     custom_person_delete_confirm = State()
-
-
-class TTSSettings(StatesGroup):
-    select = State()
-    tts_model = State()
-    tts_speed = State()
-    tts_voice = State()
 
 
 class NewPersonality(StatesGroup):

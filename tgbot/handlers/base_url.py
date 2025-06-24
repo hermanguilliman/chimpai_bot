@@ -24,7 +24,7 @@ async def input_base_url_handler(
             parse_mode=ParseMode.HTML,
         )
         return
-    await repo.set_custom_base_url_to_user(user_id, new_base_url)
+    await repo.set_chat_custom_base_url_to_user(user_id, new_base_url)
     await message.answer(
         "<b>✅ Адрес API сервера установлен!</b>",
         parse_mode=ParseMode.HTML,

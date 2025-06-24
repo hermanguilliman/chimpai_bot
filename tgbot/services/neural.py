@@ -1,19 +1,17 @@
-import io
 from typing import List, Optional
 
 from loguru import logger
 from openai import (
-    APIConnectionError,
     AsyncOpenAI,
-    BadRequestError,
     PermissionDeniedError,
-    RateLimitError,
 )
 
 from tgbot.models.models import ConversationHistory
 
 
-class OpenAIService:
+class NeuralChatService:
+    """Сервис предоставляющий доступ к клиенту OpenAI"""
+
     def __init__(self, openai: AsyncOpenAI):
         self.openai = openai
         self.default_system_message = (
@@ -129,73 +127,3 @@ class OpenAIService:
         except Exception as e:
             logger.error(f"Ошибка получения моделей: {e}")
             return "Ошибка получения моделей"
-
-    async def audio_to_text(
-        self,
-        base_url: str,
-        api_key: str,
-        audio_path: str,
-    ) -> Optional[str]:
-        self.openai.base_url = base_url
-        self.openai.api_key = api_key
-        try:
-            with open(audio_path, "rb") as file:
-                transcript = await self.openai.audio.transcriptions.create(
-                    file=file, model="whisper-1"
-                )
-                return transcript.text
-        except Exception as e:
-            logger.error(f"Ошибка расшифровки аудио: {e}")
-            return None
-
-    async def create_image(
-        self, base_url: str, api_key: str, prompt: str
-    ) -> str:
-        self.openai.base_url = base_url
-        self.openai.api_key = api_key
-        try:
-            response = await self.openai.images.generate(
-                prompt=prompt,
-                model="dall-e-3",
-                n=1,
-                size="1024x1024",
-                quality="hd",
-                response_format="url",
-            )
-            return response.data[0].url
-        except BadRequestError:
-            logger.debug("Ошибка запроса")
-            return "Ошибка запроса"
-        except RateLimitError:
-            logger.debug("Превышен лимит генерации изображений")
-            return "Превышен лимит генерации изображений"
-        except APIConnectionError:
-            logger.debug("Ошибка соединения")
-            return "Ошибка соединения"
-        except Exception as e:
-            logger.error(f"Ошибка генерации изображения: {e}")
-            return str(e)
-
-    async def create_speech(
-        self,
-        prompt: str,
-        base_url: str,
-        api_key: str,
-        model: str = "tts-1",
-        voice: str = "alloy",
-        speed: str = "1.0",
-    ) -> Optional[bytes]:
-        self.openai.base_url = base_url
-        self.openai.api_key = api_key
-        try:
-            response = await self.openai.audio.speech.create(
-                model=model,
-                voice=voice,
-                speed=speed,
-                input=prompt,
-                response_format="opus",
-            )
-            return io.BytesIO(response.read()).getvalue()
-        except Exception as e:
-            logger.error(f"Ошибка генерации голоса: {e}")
-            return None

@@ -9,7 +9,7 @@ from loguru import logger
 
 from tgbot.misc.text_tools import split_text
 from tgbot.models.models import Settings
-from tgbot.services.neural import OpenAIService
+from tgbot.services.neural import NeuralChatService
 from tgbot.services.repository import Repo
 
 
@@ -20,7 +20,7 @@ async def input_text_chat_handler(
 ):
     prompt: str = message.text
     repo: Repo = manager.middleware_data.get("repo")
-    openai: OpenAIService = manager.middleware_data.get("openai")
+    openai: NeuralChatService = manager.middleware_data.get("openai")
     settings: Settings = await repo.get_settings(message.from_user.id)
 
     if settings is None:
@@ -30,14 +30,14 @@ async def input_text_chat_handler(
         )
         return
 
-    if not settings.api_key:
+    if not settings.chat_settings.api_key:
         await message.answer(
             "<b>⚠️ Сначала нужно установить api ключ! </b>",
             parse_mode=ParseMode.HTML,
         )
         return
 
-    if not settings.base_url:
+    if not settings.chat_settings.base_url:
         await message.answer(
             "<b>⚠️ Сначала нужно выбрать сервер API! </b>",
             parse_mode=ParseMode.HTML,
@@ -62,13 +62,13 @@ async def input_text_chat_handler(
     async with ChatActionSender.typing(message.from_user.id, message.bot):
         logger.debug(f"Пользователь {message.from_user.id} отправил запрос")
         answer = await openai.get_answer(
-            base_url=settings.base_url,
-            api_key=settings.api_key,
-            max_tokens=int(settings.max_tokens),
-            model=settings.model,
-            temperature=float(settings.temperature),
+            base_url=settings.chat_settings.base_url,
+            api_key=settings.chat_settings.api_key,
+            max_tokens=int(settings.chat_settings.max_tokens),
+            model=settings.chat_settings.model,
+            temperature=float(settings.chat_settings.temperature),
             prompt=prompt,
-            person_text=settings.personality_text,
+            person_text=settings.chat_settings.personality_text,
             history=history,
         )
 

@@ -2,14 +2,14 @@ from typing import Any, Awaitable, Callable, Dict
 
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
-from openai import AsyncOpenAI
 
-from tgbot.services.neural import NeuralChatService
+from tgbot.api.yandex_summary import YandexSummaryAPI
+from tgbot.services.summary import SummaryChatService
 
 
-class OpenAIMiddleware(BaseMiddleware):
-    def __init__(self, openai: AsyncOpenAI):
-        self.openai = openai
+class SummaryMiddleware(BaseMiddleware):
+    def __init__(self, yandex_api: YandexSummaryAPI):
+        self.yandex_api = yandex_api
 
     async def __call__(
         self,
@@ -17,5 +17,5 @@ class OpenAIMiddleware(BaseMiddleware):
         event: TelegramObject,
         data: Dict[str, Any],
     ) -> Any:
-        data["openai"] = NeuralChatService(self.openai)
+        data["summary"] = SummaryChatService(self.yandex_api)
         return await handler(event, data)

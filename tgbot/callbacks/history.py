@@ -35,10 +35,12 @@ async def download_history(
         return
 
     # Форматирование в зависимости от export_format
-    if settings.export_format == "markdown":
+    if settings.chat_settings.export_format == "markdown":
         content = f"# История переписки с пользователем {user_id}\n"
-        content += f"## Настройки\nЛичность: {settings.personality_name}\n"
-        content += f"Описание личности: {settings.personality_text}\n\n"
+        content += f"## Настройки\nЛичность: {settings.chat_settings.personality_name}\n"
+        content += (
+            f"Описание личности: {settings.chat_settings.personality_text}\n\n"
+        )
         for entry in history:
             timestamp = entry.created_at.strftime("%Y-%m-%d %H:%M:%S")
             role = "Пользователь" if entry.role == "user" else "ChimpAI"
@@ -77,8 +79,12 @@ async def download_history(
         # Подставляем данные в шаблон
         content = template.format(
             user_id=user_id,
-            personality_name=html.escape(settings.personality_name or ""),
-            personality_text=html.escape(settings.personality_text or ""),
+            personality_name=html.escape(
+                settings.chat_settings.personality_name or ""
+            ),
+            personality_text=html.escape(
+                settings.chat_settings.personality_text or ""
+            ),
             messages=messages_html,
         )
         file_extension = ".html"

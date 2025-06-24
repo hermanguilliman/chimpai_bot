@@ -71,9 +71,36 @@ class BaseUrl(Base):
 
 
 class Settings(Base):
+    """Таблица общих настроек"""
+
     __tablename__ = "settings"
 
     id = mapped_column(Integer, primary_key=True, unique=True)
+    user_id = mapped_column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False,
+    )
+    user = relationship("Users", back_populates="settings")
+    chat_settings = relationship(
+        "ChatSettings", uselist=False, back_populates="settings"
+    )
+    summary_settings = relationship(
+        "SummarySettings", uselist=False, back_populates="settings"
+    )
+
+
+class ChatSettings(Base):
+    """Таблица настроек чата"""
+
+    __tablename__ = "chat_settings"
+
+    id = mapped_column(Integer, primary_key=True, unique=True)
+    settings_id = mapped_column(
+        Integer,
+        ForeignKey("settings.id", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False,
+    )
     api_key = mapped_column(String(51), nullable=True)
     base_url = mapped_column(
         String(255),
@@ -95,35 +122,42 @@ class Settings(Base):
         default="markdown",
         server_default="markdown",
     )
-    max_tokens = mapped_column(Integer, default=1000)
     model = mapped_column(Text, default="gpt-4o-mini")
+    max_tokens = mapped_column(Integer, default=1000)
     temperature = mapped_column(Text, default="0.7")
-    tts_model = mapped_column(String, nullable=True, default="tts-1-hd")
-    tts_speed = mapped_column(String, nullable=True, default="1.0")
-    tts_voice = mapped_column(String, nullable=True, default="alloy")
-    user_id = mapped_column(
+    settings = relationship("Settings", back_populates="chat_settings")
+
+
+class SummarySettings(Base):
+    """Таблица настроек пересказчика"""
+
+    __tablename__ = "summary_settings"
+
+    id = mapped_column(Integer, primary_key=True, unique=True)
+    settings_id = mapped_column(
         Integer,
-        ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"),
+        ForeignKey("settings.id", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
     )
-    user = relationship("Users", back_populates="settings")
-
-    def __str__(self):
-        return f"""
-        MaxTokens: {self.max_tokens}
-        Model: {self.model}
-        Temperature: {self.temperature}
-        """
-
-    def __repr__(self):
-        return f"""
-        MaxTokens: {self.max_tokens}
-        Model: {self.model}
-        Temperature: {self.temperature}
-        """
+    api_key = mapped_column(String, nullable=True)
+    base_url = mapped_column(
+        String(255),
+        nullable=False,
+        default="https://300.ya.ru/api",
+        server_default="https://300.ya.ru/api",
+    )
+    summary_type = mapped_column(
+        String(10),
+        nullable=False,
+        default="detailed",
+        server_default="detailed",
+    )
+    settings = relationship("Settings", back_populates="summary_settings")
 
 
 class Users(Base):
+    """Таблица пользователей"""
+
     __tablename__ = "users"
 
     id = mapped_column(BigInteger, primary_key=True, unique=True)
@@ -135,3 +169,9 @@ class Users(Base):
     custom_personality: Mapped[list["CustomPersonality"]] = relationship(
         back_populates="user"
     )
+
+
+if __name__ == "__main__":
+    from eralchemy import render_er
+
+    render_er(Base, "diagram.png")

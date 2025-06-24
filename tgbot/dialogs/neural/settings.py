@@ -23,13 +23,13 @@ from tgbot.callbacks.settings import (
     on_temperature_selected,
     toggle_export_format,
 )
-from tgbot.getters.base_data import get_base_data
+from tgbot.getters.chat import chat_data_getter
 from tgbot.getters.settings import (
     models_selector_getter,
     temperature_getter,
 )
 from tgbot.handlers.engines import search_engines_handler
-from tgbot.misc.states import ChatSettings, PersonalitySettings
+from tgbot.misc.states import NeuralChatSettings, PersonalitySettings
 
 chat_settings_dialog = Dialog(
     Window(
@@ -52,17 +52,17 @@ chat_settings_dialog = Dialog(
             SwitchTo(
                 Format("🧠 Модель"),
                 id="set_model",
-                state=ChatSettings.model,
+                state=NeuralChatSettings.model,
             ),
             SwitchTo(
                 Format("🔋 Токены"),
                 id="set_max_length",
-                state=ChatSettings.max_length,
+                state=NeuralChatSettings.max_length,
             ),
             SwitchTo(
                 Format("🌡️ Температура"),
                 id="set_temperature",
-                state=ChatSettings.temperature,
+                state=NeuralChatSettings.temperature,
             ),
             Start(
                 Format("🤡 Личность"),
@@ -77,9 +77,9 @@ chat_settings_dialog = Dialog(
             width=2,
         ),
         Cancel(Const("👈 Назад")),
-        state=ChatSettings.select,
+        state=NeuralChatSettings.select,
         parse_mode=ParseMode.HTML,
-        getter=get_base_data,
+        getter=chat_data_getter,
         disable_web_page_preview=True,
     ),
     Window(
@@ -134,10 +134,10 @@ chat_settings_dialog = Dialog(
         SwitchTo(
             Const("👈 Назад"),
             id="back",
-            state=ChatSettings.select,
+            state=NeuralChatSettings.select,
             on_click=on_clear_search_query,
         ),
-        state=ChatSettings.model,
+        state=NeuralChatSettings.model,
         parse_mode=ParseMode.HTML,
         getter=models_selector_getter,
     ),
@@ -154,8 +154,10 @@ chat_settings_dialog = Dialog(
             ),
             width=5,
         ),
-        SwitchTo(Const("👈 Назад"), id="back", state=ChatSettings.select),
-        state=ChatSettings.max_length,
+        SwitchTo(
+            Const("👈 Назад"), id="back", state=NeuralChatSettings.select
+        ),
+        state=NeuralChatSettings.max_length,
         parse_mode=ParseMode.HTML,
     ),
     Window(
@@ -177,7 +179,9 @@ chat_settings_dialog = Dialog(
             width=2,
         ),
         Group(
-            SwitchTo(Const("👈 Назад"), id="back", state=ChatSettings.select),
+            SwitchTo(
+                Const("👈 Назад"), id="back", state=NeuralChatSettings.select
+            ),
             Button(
                 Const("🌚 Стандартные"),
                 id="reset_temp",
@@ -185,7 +189,7 @@ chat_settings_dialog = Dialog(
             ),
             width=2,
         ),
-        state=ChatSettings.temperature,
+        state=NeuralChatSettings.temperature,
         parse_mode=ParseMode.HTML,
         getter=temperature_getter,
     ),

@@ -4,20 +4,21 @@ from aiogram_dialog import DialogManager
 
 from tgbot.misc.text_tools import get_short_id
 from tgbot.models.models import Settings
-from tgbot.services.neural import OpenAIService
+from tgbot.services.neural import NeuralChatService
 from tgbot.services.repository import Repo
 
 
 async def models_selector_getter(dialog_manager: DialogManager, **kwargs):
     repo: Repo = dialog_manager.middleware_data.get("repo")
-    openai: OpenAIService = dialog_manager.middleware_data.get("openai")
+    openai: NeuralChatService = dialog_manager.middleware_data.get("openai")
     settings: Settings = await repo.get_settings(
         dialog_manager.bg()._event_context.user.id
     )
     search_query = dialog_manager.dialog_data.get("search_query", "").lower()
 
     engines = await openai.get_engines(
-        base_url=settings.base_url, api_key=settings.api_key
+        base_url=settings.chat_settings.base_url,
+        api_key=settings.chat_settings.api_key,
     )
     if isinstance(engines, list):
         engine_ids = [engine.id for engine in engines]
@@ -90,9 +91,9 @@ async def temperature_getter(dialog_manager: DialogManager, **kwargs):
 async def base_urls_getter(dialog_manager: DialogManager, **kwargs):
     repo: Repo = dialog_manager.middleware_data.get("repo")
     user_id = dialog_manager.bg()._event_context.user.id
-    current_base_url = await repo.get_settings(user_id=user_id)
+    settings = await repo.get_settings(user_id=user_id)
     url_list = await repo.get_base_urls()
     return {
-        "current_base_url": current_base_url.base_url,
+        "current_base_url": settings.chat_settings.base_url,
         "base_urls": url_list,
     }

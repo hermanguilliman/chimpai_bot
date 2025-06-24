@@ -6,10 +6,9 @@ from aiogram_dialog.widgets.kbd import Button, Cancel, Row, Start
 from aiogram_dialog.widgets.text import Const, Format
 
 from tgbot.callbacks.history import clear_context, download_history
-from tgbot.getters.base_data import get_base_data
-from tgbot.handlers.text_chat import input_text_chat_handler
-from tgbot.handlers.voice import voice_input_handler
-from tgbot.misc.states import ChatGPT, ChatSettings
+from tgbot.getters.chat import chat_data_getter
+from tgbot.handlers.neural_chat import input_text_chat_handler
+from tgbot.misc.states import NeuralChat, NeuralChatSettings
 
 chat_dialog = Dialog(
     Window(
@@ -21,8 +20,7 @@ chat_dialog = Dialog(
         Format(
             "💬 Сообщений в памяти: {history_count}\n", when="history_count"
         ),
-        Const("<b>Отправь сообщение или голос 🤙🏻</b>"),
-        MessageInput(voice_input_handler, content_types=[ContentType.VOICE]),
+        Const("<b>Спросите что-нибудь... 🙋‍♂️</b>"),
         MessageInput(
             input_text_chat_handler, content_types=[ContentType.TEXT]
         ),
@@ -45,11 +43,11 @@ chat_dialog = Dialog(
             Start(
                 Const("⚙️ Настройки"),
                 id="settings",
-                state=ChatSettings.select,
+                state=NeuralChatSettings.select,
             ),
         ),
-        state=ChatGPT.chat,
+        state=NeuralChat.chat,
         parse_mode=ParseMode.HTML,
-        getter=get_base_data,
+        getter=chat_data_getter,
     )
 )

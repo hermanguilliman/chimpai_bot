@@ -1,44 +1,40 @@
-from aiogram import F
 from aiogram.enums import ParseMode
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.kbd import Row, Start
 from aiogram_dialog.widgets.text import Const
 
-from tgbot.getters.base_data import get_base_data
+from tgbot.getters.system import system_data_getter
 from tgbot.misc.states import (
-    ChatGPT,
-    Dalle,
     MainMenu,
-    RootSettings,
-    SpeechToText,
-    TextToSpeech,
+    NeuralChat,
+    SummaryChat,
+    SystemSettings,
 )
 
 main_dialog = Dialog(
     Window(
-        # Главное окно
-        Const("<b>Главный экран ChimpAI 🐵</b>\n"),
-        Start(
-            Const("🚨 Ключ OpenAI отстутсвует! 🔑"),
-            id="setup_api_key",
-            state=RootSettings.api_key,
-            when=~F["api_key"],
-        ),
-        Row(
-            Start(Const("🤖 Нейро чат"), id="neural_chat", state=ChatGPT.chat),
-            Start(Const("🎨 DALL-E"), id="dalle", state=Dalle.create_image),
-        ),
+        Const("<b>Привет, я ChimpAI! 🐵</b>\n"),
         Row(
             Start(
-                Const("🎧 Звук в текст"),
-                id="voice_transcribe",
-                state=SpeechToText.transcribe,
+                Const("🤖 Нейро чат"),
+                id="neural_chat",
+                state=NeuralChat.chat,
+                when="chat_api_key",
             ),
-            Start(Const("🎙 Текст в звук"), id="tts", state=TextToSpeech.tts),
+            Start(
+                Const("📄 Пересказчик"),
+                id="summary_chat",
+                state=SummaryChat.chat,
+                when="summary_api_key",
+            ),
         ),
-        Start(Const("📝 Настройки"), id="settings", state=RootSettings.select),
+        Start(
+            Const("🔩 Системные настройки"),
+            id="system_settings",
+            state=SystemSettings.select,
+        ),
         state=MainMenu.select,
-        getter=get_base_data,
+        getter=system_data_getter,
         parse_mode=ParseMode.HTML,
     ),
 )

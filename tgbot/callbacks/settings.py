@@ -6,7 +6,7 @@ from aiogram.types import CallbackQuery
 from aiogram_dialog import ChatEvent, DialogManager
 from aiogram_dialog.widgets.kbd import Button
 
-from tgbot.misc.states import ChatSettings, PersonalitySettings
+from tgbot.misc.states import NeuralChatSettings, PersonalitySettings
 from tgbot.services.repository import Repo
 
 
@@ -27,7 +27,7 @@ async def on_new_model_selected(
     await repo.update_settings(user_id=user_id, model=full_model_name)
 
     await callback.answer(f"Модель {full_model_name} успешно установлена!")
-    await manager.switch_to(state=ChatSettings.select)
+    await manager.switch_to(state=NeuralChatSettings.select)
 
 
 async def on_basic_personality_selected(
@@ -81,7 +81,7 @@ async def on_max_length_selected(
     user_id = manager.bg()._event_context.user.id
     await repo.update_max_token(user_id=user_id, max_tokens=item_id)
     await callback.answer(f"Новая длина ответа составляет {item_id} токенов")
-    await manager.switch_to(state=ChatSettings.select)
+    await manager.switch_to(state=NeuralChatSettings.select)
 
 
 # кнопка сброса значения температуры
@@ -126,7 +126,7 @@ async def on_temperature_selected(
         user_id=user_id, temperature=str(temperature)
     )
     await callback.answer(f"Задана температура: {temperature}")
-    await manager.switch_to(state=ChatSettings.select)
+    await manager.switch_to(state=NeuralChatSettings.select)
 
 
 async def on_clear_search_query(
@@ -140,7 +140,7 @@ async def on_base_url_selected(
 ):
     repo: Repo = manager.middleware_data.get("repo")
     user_id = manager.bg()._event_context.user.id
-    await repo.set_base_url(user_id=user_id, name=item_id)
+    await repo.set_chat_base_url(user_id=user_id, name=item_id)
     await callback.answer(f"Выбран API: {item_id}!")
     await manager.done()
 
@@ -153,8 +153,12 @@ async def toggle_export_format(
     settings = await repo.get_settings(user_id)
 
     # Переключаем формат
-    new_format = "html" if settings.export_format == "markdown" else "markdown"
-    await repo.update_export_format(user_id, export_format=new_format)
+    new_format = (
+        "html"
+        if settings.chat_settings.export_format == "markdown"
+        else "markdown"
+    )
+    await repo.update_chat_export_format(user_id, export_format=new_format)
 
     # Обновляем данные диалога
     manager.dialog_data["export_format"] = new_format

@@ -15,23 +15,26 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from tgbot.api.yandex_summary import YandexSummaryAPI
 from tgbot.config import load_config, setup_logger
-from tgbot.dialogs.chat.chat import chat_dialog
-from tgbot.dialogs.chat.settings import chat_settings_dialog
-from tgbot.dialogs.images.dalle import dalle_dialog
+from tgbot.dialogs.neural.chat import chat_dialog
+from tgbot.dialogs.neural.settings import chat_settings_dialog
 from tgbot.dialogs.personality.create import new_person_dialog
 from tgbot.dialogs.personality.menu import personality_menu_dialog
 from tgbot.dialogs.root.menu import main_dialog
-from tgbot.dialogs.settings.base_url import base_url_dialog
-from tgbot.dialogs.settings.menu import root_settings_dialog
-from tgbot.dialogs.speech_to_text.stt import speech_to_text_dialog
-from tgbot.dialogs.text_to_speech.settings import tts_settings_dialog
-from tgbot.dialogs.text_to_speech.tts import text_to_speech_dialog
+from tgbot.dialogs.summary.chat import summary_chat_dialog
+from tgbot.dialogs.system_settings.base_url import base_url_dialog
+from tgbot.dialogs.system_settings.chat_service import chat_service_dialog
+from tgbot.dialogs.system_settings.menu import system_settings_dialog
+from tgbot.dialogs.system_settings.summary_service import (
+    summary_service_dialog,
+)
 from tgbot.filters.is_admin import AdminFilter
 from tgbot.handlers.admin_start import admin_start_handler
 from tgbot.handlers.user_start import user_start_handler
 from tgbot.middlewares.openai_api import OpenAIMiddleware
 from tgbot.middlewares.repo import RepoMiddleware
+from tgbot.middlewares.summary_api import SummaryMiddleware
 from tgbot.middlewares.trottling import ThrottlingMiddleware
 from tgbot.misc.base_urls import add_base_urls
 from tgbot.misc.personality import add_basic_persons
@@ -69,19 +72,19 @@ async def main():
     dp = Dispatcher(storage=storage)
     sessionmaker = await create_sessionmaker(echo=False)
     openai = AsyncOpenAI(api_key="sk-")
+    yandex_summary = YandexSummaryAPI()
 
     dp.include_routers(
         main_dialog,
         chat_dialog,
-        dalle_dialog,
-        speech_to_text_dialog,
-        text_to_speech_dialog,
         personality_menu_dialog,
-        root_settings_dialog,
+        system_settings_dialog,
         new_person_dialog,
         chat_settings_dialog,
-        tts_settings_dialog,
         base_url_dialog,
+        chat_service_dialog,
+        summary_chat_dialog,
+        summary_service_dialog,
     )
 
     setup_dialogs(dp)
@@ -90,6 +93,7 @@ async def main():
     dp.callback_query.middleware(ThrottlingMiddleware(rate_limit=0.5))
     dp.update.middleware(RepoMiddleware(sessionmaker))
     dp.update.middleware(OpenAIMiddleware(openai))
+    dp.update.middleware(SummaryMiddleware(yandex_summary))
     dp.message.register(
         admin_start_handler,
         CommandStart(),
