@@ -5,13 +5,20 @@ from aiogram_dialog import DialogManager
 from tgbot.misc.text_tools import get_short_id
 from tgbot.models.models import Settings
 from tgbot.services.neural import NeuralChatService
-from tgbot.services.repository import Repo
+from tgbot.services.repository.api_urls import BaseUrlService
+from tgbot.services.repository.personalities import (
+    BasicPersonalityService,
+    CustomPersonalityService,
+)
+from tgbot.services.repository.settings import SettingsService
 
 
 async def models_selector_getter(dialog_manager: DialogManager, **kwargs):
-    repo: Repo = dialog_manager.middleware_data.get("repo")
+    settings_service: SettingsService = dialog_manager.middleware_data.get(
+        "settings_service"
+    )
     openai: NeuralChatService = dialog_manager.middleware_data.get("openai")
-    settings: Settings = await repo.get_settings(
+    settings: Settings = await settings_service.get_settings(
         dialog_manager.bg()._event_context.user.id
     )
     search_query = dialog_manager.dialog_data.get("search_query", "").lower()
@@ -47,8 +54,10 @@ async def models_selector_getter(dialog_manager: DialogManager, **kwargs):
 
 async def basic_person_getter(dialog_manager: DialogManager, **kwargs):
     # Получаем список личностей
-    repo: Repo = dialog_manager.middleware_data.get("repo")
-    pb_list = await repo.get_basic_personality_list()
+    basic_personality_service: BasicPersonalityService = (
+        dialog_manager.middleware_data.get("basic_personality_service")
+    )
+    pb_list = await basic_personality_service.get_basic_personality_list()
     return {
         "persons": pb_list,
     }
@@ -56,9 +65,13 @@ async def basic_person_getter(dialog_manager: DialogManager, **kwargs):
 
 async def custom_person_list_getter(dialog_manager: DialogManager, **kwargs):
     # Получаем список личностей
-    repo: Repo = dialog_manager.middleware_data.get("repo")
+    custom_personality_service: CustomPersonalityService = (
+        dialog_manager.middleware_data.get("custom_personality_service")
+    )
     user_id = dialog_manager.bg()._event_context.user.id
-    cp_list = await repo.get_custom_personality_list(user_id=user_id)
+    cp_list = await custom_personality_service.get_custom_personality_list(
+        user_id=user_id
+    )
 
     return {
         "persons": cp_list,
@@ -67,11 +80,15 @@ async def custom_person_list_getter(dialog_manager: DialogManager, **kwargs):
 
 async def custom_personality_getter(dialog_manager: DialogManager, **kwargs):
     # Показываем название и описание кастомной личности
-    repo: Repo = dialog_manager.middleware_data.get("repo")
+    custom_personality_service: CustomPersonalityService = (
+        dialog_manager.middleware_data.get("custom_personality_service")
+    )
     user_id = dialog_manager.bg()._event_context.user.id
     custom_name = dialog_manager.dialog_data.get("custom_name")
-    custom_desc = await repo.get_custom_personality(
-        user_id=user_id, personality_name=custom_name
+    custom_desc = (
+        await custom_personality_service.get_custom_personality_description(
+            user_id=user_id, personality_name=custom_name
+        )
     )
 
     return {
@@ -89,10 +106,15 @@ async def temperature_getter(dialog_manager: DialogManager, **kwargs):
 
 
 async def base_urls_getter(dialog_manager: DialogManager, **kwargs):
-    repo: Repo = dialog_manager.middleware_data.get("repo")
+    base_url_service: BaseUrlService = dialog_manager.middleware_data.get(
+        "base_url_service"
+    )
+    settings_service: SettingsService = dialog_manager.middleware_data.get(
+        "settings_service"
+    )
     user_id = dialog_manager.bg()._event_context.user.id
-    settings = await repo.get_settings(user_id=user_id)
-    url_list = await repo.get_base_urls()
+    settings = await settings_service.get_settings(user_id=user_id)
+    url_list = await base_url_service.get_base_urls()
     return {
         "current_base_url": settings.chat_settings.base_url,
         "base_urls": url_list,

@@ -10,7 +10,8 @@ from loguru import logger
 from tgbot.misc.text_tools import split_text
 from tgbot.models.models import Settings
 from tgbot.services.neural import NeuralChatService
-from tgbot.services.repository import Repo
+from tgbot.services.repository.history import ConversationHistoryService
+from tgbot.services.repository.settings import SettingsService
 
 
 async def input_text_chat_handler(
@@ -19,9 +20,16 @@ async def input_text_chat_handler(
     manager: DialogManager,
 ):
     prompt: str = message.text
-    repo: Repo = manager.middleware_data.get("repo")
+    settings_service: SettingsService = manager.middleware_data.get(
+        "settings_service"
+    )
+    conversation_service: ConversationHistoryService = (
+        manager.middleware_data.get("conversation_service")
+    )
     openai: NeuralChatService = manager.middleware_data.get("openai")
-    settings: Settings = await repo.get_settings(message.from_user.id)
+    settings: Settings = await settings_service.get_settings(
+        message.from_user.id
+    )
 
     if settings is None:
         await message.answer(
@@ -45,12 +53,12 @@ async def input_text_chat_handler(
         return
 
     # Получаем последние 10 сообщений из истории
-    history = await repo.get_conversation_history(
+    history = await conversation_service.get_conversation_history(
         message.from_user.id, limit=15
     )
 
     # Добавляем запрос пользователя в историю
-    await repo.add_message_to_history(
+    await conversation_service.add_message_to_history(
         user_id=message.from_user.id, role="user", content=prompt
     )
 
@@ -74,7 +82,7 @@ async def input_text_chat_handler(
 
         if answer:
             # Добавляем ответ бота в историю
-            await repo.add_message_to_history(
+            await conversation_service.add_message_to_history(
                 user_id=message.from_user.id, role="assistant", content=answer
             )
 

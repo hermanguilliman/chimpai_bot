@@ -2,6 +2,7 @@ from aiogram.enums import ContentType, ParseMode
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import (
+    Cancel,
     SwitchTo,
 )
 from aiogram_dialog.widgets.text import Const
@@ -20,6 +21,7 @@ summary_service_dialog = Dialog(
             id="set_api_key",
             state=SetupSummaryService.api_key,
         ),
+        Cancel(Const("👈 Назад")),
         parse_mode=ParseMode.HTML,
         state=SetupSummaryService.select,
     ),

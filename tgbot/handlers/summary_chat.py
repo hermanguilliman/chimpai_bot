@@ -6,7 +6,7 @@ from aiogram_dialog.widgets.input import MessageInput
 from loguru import logger
 
 from tgbot.models.models import Settings
-from tgbot.services.repository import Repo
+from tgbot.services.repository.settings import SettingsService
 from tgbot.services.summary import SummaryChatService
 
 
@@ -15,9 +15,13 @@ async def input_summary_chat_handler(
     message_input: MessageInput,
     manager: DialogManager,
 ):
-    repo: Repo = manager.middleware_data.get("repo")
+    settings_service: SettingsService = manager.middleware_data.get(
+        "settings_service"
+    )
     summary: SummaryChatService = manager.middleware_data.get("summary")
-    settings: Settings = await repo.get_settings(message.from_user.id)
+    settings: Settings = await settings_service.get_settings(
+        message.from_user.id
+    )
 
     if settings is None:
         await message.answer(

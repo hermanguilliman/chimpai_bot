@@ -8,15 +8,18 @@ from aiogram.types import CallbackQuery
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.kbd import Button
 
-from tgbot.services.repository import Repo
+from tgbot.services.repository.history import ConversationHistoryService
+from tgbot.services.repository.settings import SettingsService
 
 
 async def clear_context(
     callback: CallbackQuery, button: Button, manager: DialogManager
 ):
     user_id = manager.bg()._event_context.user.id
-    repo: Repo = manager.middleware_data.get("repo")
-    await repo.clear_conversation_history(user_id)
+    conversation_service: ConversationHistoryService = (
+        manager.middleware_data.get("conversation_service")
+    )
+    await conversation_service.clear_conversation_history(user_id)
     await callback.answer(
         "🗑 История беседы очищена!",
     )
@@ -26,9 +29,14 @@ async def download_history(
     callback: types.CallbackQuery, button: Button, manager: DialogManager
 ):
     user_id = manager.bg()._event_context.user.id
-    repo: Repo = manager.middleware_data.get("repo")
-    history = await repo.get_full_conversation_history(user_id)
-    settings = await repo.get_settings(user_id)
+    settings_service: SettingsService = manager.middleware_data.get(
+        "settings_service"
+    )
+    conversation_service: ConversationHistoryService = (
+        manager.middleware_data.get("conversation_service")
+    )
+    history = await conversation_service.get_full_conversation_history(user_id)
+    settings = await settings_service.get_settings(user_id)
 
     if not history:
         await callback.answer("Ваша история сообщений пуста")

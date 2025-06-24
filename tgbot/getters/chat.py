@@ -1,14 +1,20 @@
 from aiogram_dialog import DialogManager
 
 from tgbot.models.models import ChatSettings
-from tgbot.services.repository import Repo
+from tgbot.services.repository.history import ConversationHistoryService
+from tgbot.services.repository.settings import SettingsService
 
 
 async def chat_data_getter(dialog_manager: DialogManager, **kwargs) -> dict:
-    repo: Repo = dialog_manager.middleware_data.get("repo")
+    settings_service: SettingsService = dialog_manager.middleware_data.get(
+        "settings_service"
+    )
+    conversation_service: ConversationHistoryService = (
+        dialog_manager.middleware_data.get("conversation_service")
+    )
     user_id: int = dialog_manager.bg()._event_context.user.id
-    settings: ChatSettings = await repo.get_settings(user_id)
-    history_count: int = await repo.get_history_count(user_id)
+    settings: ChatSettings = await settings_service.get_settings(user_id)
+    history_count: int = await conversation_service.get_history_count(user_id)
     data = {
         "api_key": True if settings.chat_settings.api_key else None,
         "model": settings.chat_settings.model,

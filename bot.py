@@ -31,29 +31,28 @@ from tgbot.dialogs.system_settings.summary_service import (
 )
 from tgbot.filters.is_admin import AdminFilter
 from tgbot.handlers.admin_start import admin_start_handler
-from tgbot.handlers.user_start import user_start_handler
+from tgbot.middlewares.database import DatabaseMiddleware
 from tgbot.middlewares.openai_api import OpenAIMiddleware
-from tgbot.middlewares.repo import RepoMiddleware
 from tgbot.middlewares.summary_api import SummaryMiddleware
 from tgbot.middlewares.trottling import ThrottlingMiddleware
 from tgbot.misc.base_urls import add_base_urls
 from tgbot.misc.personality import add_basic_persons
 
 
-async def create_sessionmaker(echo) -> AsyncSession:
+async def create_session_pool(echo) -> AsyncSession:
     url = "sqlite+aiosqlite:///database/settings.db"
     engine = create_async_engine(url, echo=echo, future=True)
 
     await add_basic_persons(engine)
     await add_base_urls(engine)
 
-    sessionmaker = async_sessionmaker(
+    pool = async_sessionmaker(
         engine,
         expire_on_commit=False,
         class_=AsyncSession,
         autoflush=False,
     )
-    return sessionmaker
+    return pool
 
 
 async def main():
@@ -70,8 +69,8 @@ async def main():
     )
     bot = Bot(token=config.tg_bot.token)
     dp = Dispatcher(storage=storage)
-    sessionmaker = await create_sessionmaker(echo=False)
-    openai = AsyncOpenAI(api_key="sk-")
+    session_pool = await create_session_pool(echo=False)
+    openai = AsyncOpenAI(api_key="dummy_key")
     yandex_summary = YandexSummaryAPI()
 
     dp.include_routers(
@@ -91,7 +90,7 @@ async def main():
 
     dp.update.middleware(ThrottlingMiddleware(rate_limit=0.5))
     dp.callback_query.middleware(ThrottlingMiddleware(rate_limit=0.5))
-    dp.update.middleware(RepoMiddleware(sessionmaker))
+    dp.update.middleware(DatabaseMiddleware(session_pool))
     dp.update.middleware(OpenAIMiddleware(openai))
     dp.update.middleware(SummaryMiddleware(yandex_summary))
     dp.message.register(
@@ -99,7 +98,6 @@ async def main():
         CommandStart(),
         AdminFilter(config.tg_bot.admin_ids),
     )
-    dp.message.register(user_start_handler, CommandStart())
     await bot(DeleteWebhook(drop_pending_updates=True))
     logger.info("Запуск ChimpAI")
     await dp.start_polling(bot)

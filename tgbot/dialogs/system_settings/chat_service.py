@@ -1,3 +1,4 @@
+from aiogram import F
 from aiogram.enums import ContentType, ParseMode
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import MessageInput
@@ -13,6 +14,7 @@ from aiogram_dialog.widgets.text import Const, Format
 
 from tgbot.callbacks.settings import on_base_url_selected
 from tgbot.getters.settings import base_urls_getter
+from tgbot.getters.system import system_data_getter
 from tgbot.handlers.api_key import input_chat_api_key_handler
 from tgbot.handlers.base_url import input_base_url_handler
 from tgbot.misc.states import (
@@ -24,15 +26,24 @@ chat_service_dialog = Dialog(
     Window(
         Const("<b>Меню управления сервисом чата</b>"),
         SwitchTo(
-            Const("Установить API ключ для сервиса чата"),
+            Const("🔑 Установить API ключ"),
+            when=~F["chat_api_key"],
             id="set_api_key",
             state=SetupСhatService.api_key,
         ),
         SwitchTo(
-            Const("Сменить адрес сервера"),
+            Const("🔑 Изменить API ключ"),
+            id="set_api_key",
+            state=SetupСhatService.api_key,
+            when=F["chat_api_key"],
+        ),
+        SwitchTo(
+            Const("🗺 Сменить адрес сервера"),
             id="set_base_url",
             state=SetupСhatService.base_url,
         ),
+        Cancel(Const("👈 Назад")),
+        getter=system_data_getter,
         parse_mode=ParseMode.HTML,
         state=SetupСhatService.select,
     ),

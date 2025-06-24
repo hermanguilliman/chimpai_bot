@@ -3,14 +3,16 @@ from aiogram.types import Message
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import MessageInput
 
-from tgbot.services.repository import Repo
+from tgbot.services.repository.api_urls import BaseUrlService
 
 
 async def input_base_url_handler(
     message: Message, message_input: MessageInput, manager: DialogManager
 ):
     user_id = manager.bg()._event_context.user.id
-    repo: Repo = manager.middleware_data.get("repo")
+    base_url_service: BaseUrlService = manager.middleware_data.get(
+        "base_url_service"
+    )
     new_base_url = message.text
     if (
         not (
@@ -24,7 +26,9 @@ async def input_base_url_handler(
             parse_mode=ParseMode.HTML,
         )
         return
-    await repo.set_chat_custom_base_url_to_user(user_id, new_base_url)
+    await base_url_service.set_chat_custom_base_url_to_user(
+        user_id, new_base_url
+    )
     await message.answer(
         "<b>✅ Адрес API сервера установлен!</b>",
         parse_mode=ParseMode.HTML,

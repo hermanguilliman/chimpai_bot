@@ -18,22 +18,26 @@ system_settings_dialog = Dialog(
     Window(
         Const("<b>🛠 Системное меню 🛠</b>"),
         Start(
-            Format("✅ Чат активен", when="chat_api_key"),
+            Const("✅ Чат активен"),
+            when="chat_api_key",
             id="set_chat_api_key",
             state=SetupСhatService.select,
         ),
         Start(
-            Const("⛔️ Чат неактивен", when=~F["chat_api_key"]),
+            Const("⛔️ Чат неактивен"),
             id="set_chat_api_key",
+            when=~F["chat_api_key"],
             state=SetupСhatService.select,
         ),
         Start(
-            Format("✅ Пересказчик активен", when="summary_api_key"),
+            Format("✅ Пересказчик активен"),
+            when="summary_api_key",
             id="set_summary_api_key",
             state=SetupSummaryService.select,
         ),
         Start(
-            Const("⛔️ Пересказчик неактивен", when=~F["summary_api_key"]),
+            Const("⛔️ Пересказчик неактивен"),
+            when=~F["summary_api_key"],
             id="set_summary_api_key",
             state=SetupSummaryService.select,
         ),

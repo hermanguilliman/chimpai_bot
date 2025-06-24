@@ -4,16 +4,18 @@ from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.input import MessageInput
 
 from tgbot.misc.states import NewPersonality, PersonalitySettings
-from tgbot.services.repository import Repo
+from tgbot.services.repository.personalities import CustomPersonalityService
 
 
 async def input_new_personality_name_handler(
     message: Message, message_input: MessageInput, manager: DialogManager
 ):
     user_id = manager.bg()._event_context.user.id
-    repo: Repo = manager.middleware_data.get("repo")
+    custom_personality_service: CustomPersonalityService = (
+        manager.middleware_data.get("custom_personality_service")
+    )
     new_name = message.text
-    is_exists = await repo.is_custom_personality_exists(
+    is_exists = await custom_personality_service.is_custom_personality_exists(
         user_id=user_id, name=new_name
     )
 
@@ -39,12 +41,16 @@ async def input_new_personality_text_handler(
     message: Message, message_input: MessageInput, manager: DialogManager
 ):
     user_id = manager.bg()._event_context.user.id
-    repo: Repo = manager.middleware_data.get("repo")
+    custom_personality_service: CustomPersonalityService = (
+        manager.middleware_data.get("custom_personality_service")
+    )
 
     name = manager.dialog_data.get("name")
     text = message.text
 
-    await repo.add_custom_personality(user_id=user_id, name=name, text=text)
+    await custom_personality_service.add_custom_personality(
+        user_id=user_id, name=name, text=text
+    )
     await message.answer(
         f'👌 Личность "<b>{name}</b>" успешно добавлена!',
         parse_mode=ParseMode.HTML,
@@ -58,10 +64,12 @@ async def update_personality_text_handler(
 ):
     """Обновляет описание личности"""
     user_id = manager.bg()._event_context.user.id
-    repo: Repo = manager.middleware_data.get("repo")
+    custom_personality_service: CustomPersonalityService = (
+        manager.middleware_data.get("custom_personality_service")
+    )
     name = manager.dialog_data.get("custom_name")
     new_text = message.text
-    await repo.update_personality_text(
+    await custom_personality_service.update_personality_text(
         user_id=user_id, name=name, new_text=new_text
     )
     await message.answer(
@@ -76,10 +84,12 @@ async def update_personality_name_handler(
 ):
     """Обновляет имя личности"""
     user_id = manager.bg()._event_context.user.id
-    repo: Repo = manager.middleware_data.get("repo")
+    custom_personality_service: CustomPersonalityService = (
+        manager.middleware_data.get("custom_personality_service")
+    )
     name = manager.dialog_data.get("custom_name")
     new_name = message.text
-    is_exists = await repo.is_custom_personality_exists(
+    is_exists = await custom_personality_service.is_custom_personality_exists(
         user_id=user_id, name=new_name
     )
     if name == new_name:
@@ -102,7 +112,7 @@ async def update_personality_name_handler(
         )
         return
 
-    await repo.update_personality_name(
+    await custom_personality_service.update_personality_name(
         user_id=user_id, name=name, new_name=new_name
     )
     await message.answer(
