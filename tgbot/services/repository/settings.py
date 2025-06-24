@@ -139,3 +139,35 @@ class SettingsService(BaseService):
         await self.session.execute(stmt)
         await self.session.commit()
         logger.info(f"Пользователь {user_id} обновил API ключ пересказчика")
+
+    async def delete_summary_api_key(self, user_id: int) -> None:
+        """Сбрасывает API ключ для пересказчика"""
+        stmt = (
+            update(SummarySettings)
+            .where(
+                SummarySettings.settings_id
+                == select(Settings.id)
+                .where(Settings.user_id == user_id)
+                .scalar_subquery()
+            )
+            .values(api_key=None)
+        )
+        await self.session.execute(stmt)
+        await self.session.commit()
+        logger.info(f"Пользователь {user_id} сбросил API ключ пересказчика")
+
+    async def delete_chat_api_key(self, user_id: int) -> None:
+        """Сбрасывает API ключ для чата"""
+        stmt = (
+            update(ChatSettings)
+            .where(
+                ChatSettings.settings_id
+                == select(Settings.id)
+                .where(Settings.user_id == user_id)
+                .scalar_subquery()
+            )
+            .values(api_key=None)
+        )
+        await self.session.execute(stmt)
+        await self.session.commit()
+        logger.info(f"Пользователь {user_id} сбросил API ключ чата")

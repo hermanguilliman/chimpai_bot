@@ -4,6 +4,7 @@ from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import (
     Back,
+    Button,
     Cancel,
     Next,
     ScrollingGroup,
@@ -12,7 +13,10 @@ from aiogram_dialog.widgets.kbd import (
 )
 from aiogram_dialog.widgets.text import Const, Format
 
-from tgbot.callbacks.settings import on_base_url_selected
+from tgbot.callbacks.settings import (
+    on_base_url_selected,
+    on_delete_chat_api_key,
+)
 from tgbot.getters.settings import base_urls_getter
 from tgbot.getters.system import system_data_getter
 from tgbot.handlers.api_key import input_chat_api_key_handler
@@ -24,7 +28,8 @@ from tgbot.misc.states import (
 # Управление сервисом чата
 chat_service_dialog = Dialog(
     Window(
-        Const("<b>Меню управления сервисом чата</b>"),
+        Const("<b>👷‍♂️ Меню управления сервисом чата\n</b>"),
+        Const("<b>💡 Удаление API ключа отключает сервис</b>"),
         SwitchTo(
             Const("🔑 Установить API ключ"),
             when=~F["chat_api_key"],
@@ -41,6 +46,12 @@ chat_service_dialog = Dialog(
             Const("🗺 Сменить адрес сервера"),
             id="set_base_url",
             state=SetupСhatService.base_url,
+        ),
+        Button(
+            Const("♻️ Удалить API ключ"),
+            when=F["chat_api_key"],
+            id="delete_api_key",
+            on_click=on_delete_chat_api_key,
         ),
         Cancel(Const("👈 Назад")),
         getter=system_data_getter,

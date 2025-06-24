@@ -22,7 +22,7 @@ main_dialog = Dialog(
                 when="chat_api_key",
             ),
             Start(
-                Const("📄 Пересказчик"),
+                Const("📖 Пересказчик"),
                 id="summary_chat",
                 state=SummaryChat.chat,
                 when="summary_api_key",

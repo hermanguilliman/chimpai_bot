@@ -36,7 +36,7 @@ from tgbot.middlewares.openai_api import OpenAIMiddleware
 from tgbot.middlewares.summary_api import SummaryMiddleware
 from tgbot.middlewares.trottling import ThrottlingMiddleware
 from tgbot.misc.base_urls import add_base_urls
-from tgbot.misc.personality import add_basic_persons
+from tgbot.misc.personalities import add_basic_persons
 
 
 async def create_session_pool(echo) -> AsyncSession:

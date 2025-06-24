@@ -197,3 +197,15 @@ async def toggle_export_format(
     manager.dialog_data["export_format"] = new_format
     await callback.answer(f"Формат экспорта изменён на {new_format.upper()}")
     await manager.update({})
+
+
+async def on_delete_chat_api_key(
+    callback: CallbackQuery, button: Button, manager: DialogManager
+):
+    user_id = manager.bg()._event_context.user.id
+    settings_service: SettingsService = manager.middleware_data.get(
+        "settings_service"
+    )
+    await settings_service.delete_chat_api_key(user_id)
+    await callback.answer("API ключ чата удалён. Сервис отключен.")
+    await manager.done()

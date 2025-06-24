@@ -10,8 +10,12 @@ async def summary_data_getter(dialog_manager: DialogManager, **kwargs) -> dict:
     )
     user_id: int = dialog_manager.bg()._event_context.user.id
     settings: ChatSettings = await settings_service.get_settings(user_id)
+    summary_type_mapping = {"detailed": "подробный", "short": "краткий"}
+    summary_type = settings.summary_settings.summary_type
     data = {
-        "summary_type": settings.summary_settings.summary_type or None,
+        "summary_type": summary_type_mapping.get(summary_type, None)
+        if summary_type
+        else None,
     }
 
     return data

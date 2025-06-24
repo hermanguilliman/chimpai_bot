@@ -11,16 +11,18 @@ from tgbot.misc.states import SummaryChat
 
 summary_chat_dialog = Dialog(
     Window(
-        Const("<b>📄 Yandex Пересказчик</b>\n"),
-        Const("<b>Отправьте ссылку на статью или видео...</b>"),
-        Format("Текущий формат пересказа {summary_type}", when="summary_type"),
+        Const("<b>📖 Пересказчик</b>\n"),
+        Format(
+            "Текущий тип пересказа: <b>{summary_type}</b>", when="summary_type"
+        ),
+        Const("\n<b>Отправьте ссылку на статью или видео...</b>"),
         MessageInput(
             input_summary_chat_handler, content_types=[ContentType.TEXT]
         ),
         Row(
             Cancel(Const("👈 Назад")),
             Button(
-                Const("🔄 Тип пересказа"),
+                Const("🔄 Сменить тип"),
                 id="toggle_type",
                 on_click=toggle_summary_type,
             ),

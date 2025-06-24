@@ -24,5 +24,20 @@ async def toggle_summary_type(
 
     # Обновляем данные диалога
     manager.dialog_data["summary_type"] = new_type
-    await callback.answer(f"Формат экспорта изменён на {new_type}")
+    if new_type == "short":
+        await callback.answer("Формат экспорта изменён на краткий")
+    else:
+        await callback.answer("Формат экспорта изменён на подробный")
     await manager.update({})
+
+
+async def on_delete_summary_api_key(
+    callback: CallbackQuery, button: Button, manager: DialogManager
+):
+    user_id = manager.bg()._event_context.user.id
+    settings_service: SettingsService = manager.middleware_data.get(
+        "settings_service"
+    )
+    await settings_service.delete_summary_api_key(user_id)
+    await callback.answer("API ключ Пересказчика удалён. Сервис отключен.")
+    await manager.done()
