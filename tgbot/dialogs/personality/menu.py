@@ -20,6 +20,7 @@ from tgbot.callbacks.settings import (
     on_custom_personality_activate,
     on_custom_personality_delete_confirm,
     on_custom_personality_selected,
+    on_share_personality,
 )
 from tgbot.getters.settings import (
     basic_person_getter,
@@ -128,6 +129,13 @@ personality_menu_dialog = Dialog(
                 id="edit_custom_personality_desc",
                 state=PersonalitySettings.custom_person_edit_description,
             ),
+        ),
+        Row(
+            Button(
+                Const("📬 Поделиться личностью"),
+                id="share_personality",
+                on_click=on_share_personality,
+            )
         ),
         Back(Const("👈 Назад")),
         getter=custom_personality_getter,

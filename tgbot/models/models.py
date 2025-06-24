@@ -28,6 +28,7 @@ class CustomPersonality(Base):
     id = mapped_column(Integer, primary_key=True, unique=True)
     name: Mapped[str]
     text: Mapped[str]
+    shared_token = mapped_column(String(36), unique=True, index=True)
     user_id = mapped_column(
         Integer,
         ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"),

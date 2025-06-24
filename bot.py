@@ -95,7 +95,7 @@ async def main():
     dp.update.middleware(SummaryMiddleware(yandex_summary))
     dp.message.register(
         admin_start_handler,
-        CommandStart(),
+        CommandStart(deep_link_encoded=True),
         AdminFilter(config.tg_bot.admin_ids),
     )
     await bot(DeleteWebhook(drop_pending_updates=True))

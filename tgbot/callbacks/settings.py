@@ -209,3 +209,27 @@ async def on_delete_chat_api_key(
     await settings_service.delete_chat_api_key(user_id)
     await callback.answer("API ключ чата удалён. Сервис отключен.")
     await manager.done()
+
+
+async def on_share_personality(
+    callback: CallbackQuery, button: Button, manager: DialogManager
+):
+    personality_name = manager.dialog_data.get("custom_name")
+    custom_personality_service: CustomPersonalityService = (
+        manager.middleware_data.get("custom_personality_service")
+    )
+    personality = await custom_personality_service.get_custom_personality(
+        user_id=callback.from_user.id, personality_name=personality_name
+    )
+
+    if not personality.shared_token:
+        shared_token = await custom_personality_service.generate_shared_token(
+            user_id=callback.from_user.id, personality_name=personality_name
+        )
+    else:
+        shared_token = personality.shared_token
+
+    share_link = f"https://t.me/reallyimnotyourbot?start=share_{shared_token}"
+    await callback.message.answer(
+        f"📩 Ссылка для общего доступа:\n{share_link}"
+    )
