@@ -229,7 +229,7 @@ async def on_share_personality(
     else:
         shared_token = personality.shared_token
 
-    share_link = f"https://t.me/reallyimnotyourbot?start=share_{shared_token}"
+    share_link = f"https://t.me/chimpaibot?start=share_{shared_token}"
     await callback.message.answer(
         f"📩 Ссылка для общего доступа:\n{share_link}"
     )
