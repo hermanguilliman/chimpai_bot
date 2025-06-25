@@ -231,5 +231,6 @@ async def on_share_personality(
 
     share_link = f"https://t.me/chimpaibot?start=share_{shared_token}"
     await callback.message.answer(
-        f"📩 Ссылка для общего доступа:\n{share_link}"
+        f"📩 <b>Личность {personality.name} доступна по ссылке:</b>\n{share_link}",
+        parse_mode=ParseMode.HTML,
     )
