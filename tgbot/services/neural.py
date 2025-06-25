@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from loguru import logger
 from openai import (
+    APIError,
     AsyncOpenAI,
     PermissionDeniedError,
 )
@@ -86,6 +87,17 @@ class NeuralChatService:
         self.openai.api_key = api_key
         messages = await self._prepare_messages(prompt, person_text, history)
 
+        error_messages = {
+            400: "ChimpAI сообщает - Ошибка 400: Неверный запрос",
+            401: "ChimpAI сообщает - Ошибка 401: Неверный API-ключ",
+            402: "ChimpAI сообщает - Ошибка 402: Требуется оплата",
+            403: "ChimpAI сообщает - Ошибка 403: Доступ запрещен",
+            404: "ChimpAI сообщает - Ошибка 404: Ресурс не найден",
+            409: "ChimpAI сообщает - Ошибка 409: Конфликт запроса",
+            422: "ChimpAI сообщает - Ошибка 422: Неверные параметры запроса",
+            429: "ChimpAI сообщает - Ошибка 429: Превышен лимит запросов",
+        }
+
         for attempt in range(max_retries):
             try:
                 response = await self.openai.chat.completions.create(
@@ -103,7 +115,16 @@ class NeuralChatService:
                 )
             except PermissionDeniedError:
                 logger.error("Доступ запрещен")
-                return "Доступ запрещен (403)"
+                return error_messages[403]
+            except APIError as e:
+                for status_code, message in error_messages.items():
+                    if e.status_code == status_code:
+                        logger.error(message)
+                        return message
+                logger.error(f"Ошибка API на попытке {attempt + 1}: {e}")
+                if attempt == max_retries - 1:
+                    logger.error("Все попытки закончились неудачей")
+                    return None
             except Exception as e:
                 logger.error(f"Ошибка на попытке {attempt + 1}: {e}")
                 if attempt == max_retries - 1:
@@ -121,9 +142,31 @@ class NeuralChatService:
             return "Отсутствует API ключ"
         self.openai.base_url = base_url
         self.openai.api_key = api_key
+
+        error_messages = {
+            400: "ChimpAI сообщает - Ошибка 400: Неверный запрос",
+            401: "ChimpAI сообщает - Ошибка 401: Неверный API-ключ",
+            402: "ChimpAI сообщает - Ошибка 402: Требуется оплата",
+            403: "ChimpAI сообщает - Ошибка 403: Доступ запрещен",
+            404: "ChimpAI сообщает - Ошибка 404: Ресурс не найден",
+            409: "ChimpAI сообщает - Ошибка 409: Конфликт запроса",
+            422: "ChimpAI сообщает - Ошибка 422: Неверные параметры запроса",
+            429: "ChimpAI сообщает - Ошибка 429: Превышен лимит запросов",
+        }
+
         try:
             engines = await self.openai.models.list()
             return engines.data
+        except PermissionDeniedError:
+            logger.error("Доступ запрещен")
+            return error_messages[403]
+        except APIError as e:
+            for status_code, message in error_messages.items():
+                if e.status_code == status_code:
+                    logger.error(message)
+                    return message
+            logger.error(f"Ошибка получения моделей: {e}")
+            return "Ошибка получения моделей"
         except Exception as e:
             logger.error(f"Ошибка получения моделей: {e}")
             return "Ошибка получения моделей"
