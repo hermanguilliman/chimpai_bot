@@ -1,8 +1,9 @@
 from aiogram import Bot, Dispatcher
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, ExceptionTypeFilter
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.storage.redis import DefaultKeyBuilder, RedisStorage
 from aiogram_dialog import setup_dialogs
+from aiogram_dialog.api.exceptions import UnknownIntent, UnknownState
 from openai import AsyncOpenAI
 from redis.asyncio.client import Redis
 from sqlalchemy.ext.asyncio import (
@@ -26,6 +27,7 @@ from tgbot.dialogs.system_settings.summary_service import (
 )
 from tgbot.filters.is_admin import AdminFilter
 from tgbot.handlers.admin_start import admin_start_handler
+from tgbot.handlers.errors import on_unknown_intent, on_unknown_state
 from tgbot.middlewares.database import DatabaseMiddleware
 from tgbot.middlewares.openai_api import OpenAIMiddleware
 from tgbot.middlewares.summary_api import SummaryMiddleware
@@ -77,7 +79,14 @@ async def setup_bot(config):
         summary_chat_dialog,
         summary_service_dialog,
     )
-
+    dp.errors.register(
+        on_unknown_intent,
+        ExceptionTypeFilter(UnknownIntent),
+    )
+    dp.errors.register(
+        on_unknown_state,
+        ExceptionTypeFilter(UnknownState),
+    )
     setup_dialogs(dp)
 
     dp.update.middleware(ThrottlingMiddleware(rate_limit=0.5))
