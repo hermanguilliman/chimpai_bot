@@ -8,7 +8,7 @@ async def summary_data_getter(dialog_manager: DialogManager, **kwargs) -> dict:
     settings_service: SettingsService = dialog_manager.middleware_data.get(
         "settings_service"
     )
-    user_id: int = dialog_manager.bg()._event_context.user.id
+    user_id: int = dialog_manager.event.from_user.id
     settings: ChatSettings = await settings_service.get_settings(user_id)
     summary_type_mapping = {"detailed": "подробный", "short": "краткий"}
     summary_type = settings.summary_settings.summary_type

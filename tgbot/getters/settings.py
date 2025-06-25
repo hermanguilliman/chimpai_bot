@@ -68,7 +68,7 @@ async def custom_person_list_getter(dialog_manager: DialogManager, **kwargs):
     custom_personality_service: CustomPersonalityService = (
         dialog_manager.middleware_data.get("custom_personality_service")
     )
-    user_id = dialog_manager.bg()._event_context.user.id
+    user_id = dialog_manager.event.from_user.id
     cp_list = await custom_personality_service.get_custom_personality_list(
         user_id=user_id
     )
@@ -83,7 +83,7 @@ async def custom_personality_getter(dialog_manager: DialogManager, **kwargs):
     custom_personality_service: CustomPersonalityService = (
         dialog_manager.middleware_data.get("custom_personality_service")
     )
-    user_id = dialog_manager.bg()._event_context.user.id
+    user_id = dialog_manager.event.from_user.id
     custom_name = dialog_manager.dialog_data.get("custom_name")
     custom_desc = (
         await custom_personality_service.get_custom_personality_description(
@@ -112,7 +112,7 @@ async def base_urls_getter(dialog_manager: DialogManager, **kwargs):
     settings_service: SettingsService = dialog_manager.middleware_data.get(
         "settings_service"
     )
-    user_id = dialog_manager.bg()._event_context.user.id
+    user_id = dialog_manager.event.from_user.id
     settings = await settings_service.get_settings(user_id=user_id)
     url_list = await base_url_service.get_base_urls()
     return {

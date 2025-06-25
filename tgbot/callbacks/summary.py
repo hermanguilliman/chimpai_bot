@@ -11,7 +11,7 @@ async def toggle_summary_type(
     settings_service: SettingsService = manager.middleware_data.get(
         "settings_service"
     )
-    user_id = manager.bg()._event_context.user.id
+    user_id = callback.from_user.id
     settings = await settings_service.get_settings(user_id)
 
     # Переключаем формат
@@ -34,7 +34,7 @@ async def toggle_summary_type(
 async def on_delete_summary_api_key(
     callback: CallbackQuery, button: Button, manager: DialogManager
 ):
-    user_id = manager.bg()._event_context.user.id
+    user_id = callback.from_user.id
     settings_service: SettingsService = manager.middleware_data.get(
         "settings_service"
     )

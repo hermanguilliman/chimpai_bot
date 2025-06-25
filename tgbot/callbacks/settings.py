@@ -30,7 +30,7 @@ async def on_new_model_selected(
     settings_service: SettingsService = manager.middleware_data.get(
         "settings_service"
     )
-    user_id = manager.bg()._event_context.user.id
+    user_id = callback.from_user.id
     await settings_service.update_settings(
         user_id=user_id, model=full_model_name
     )
@@ -46,7 +46,7 @@ async def on_basic_personality_selected(
     basic_personality_service: BasicPersonalityService = (
         manager.middleware_data.get("basic_personality_service")
     )
-    user_id = manager.bg()._event_context.user.id
+    user_id = callback.from_user.id
     await basic_personality_service.select_basic_personality(
         user_id=user_id, name=item_id
     )
@@ -68,7 +68,7 @@ async def on_custom_personality_activate(
     custom_personality_service: CustomPersonalityService = (
         manager.middleware_data.get("custom_personality_service")
     )
-    user_id = manager.bg()._event_context.user.id
+    user_id = callback.from_user.id
     name = manager.dialog_data.get("custom_name")
     await custom_personality_service.set_custom_personality(
         user_id=user_id, name=name
@@ -83,7 +83,7 @@ async def on_custom_personality_delete_confirm(
     custom_personality_service: CustomPersonalityService = (
         manager.middleware_data.get("custom_personality_service")
     )
-    user_id = manager.bg()._event_context.user.id
+    user_id = callback.from_user.id
     name = manager.dialog_data.get("custom_name")
     await custom_personality_service.delete_custom_personality(
         user_id=user_id, name=name
@@ -101,7 +101,7 @@ async def on_max_length_selected(
     settings_service: SettingsService = manager.middleware_data.get(
         "settings_service"
     )
-    user_id = manager.bg()._event_context.user.id
+    user_id = callback.from_user.id
     await settings_service.update_max_token(
         user_id=user_id, max_tokens=item_id
     )
@@ -147,7 +147,7 @@ async def on_temperature_selected(
     settings_service: SettingsService = manager.middleware_data.get(
         "settings_service"
     )
-    user_id = manager.bg()._event_context.user.id
+    user_id = callback.from_user.id
     temperature = manager.dialog_data.get("temperature")
     await settings_service.update_temperature(
         user_id=user_id, temperature=str(temperature)
@@ -168,7 +168,7 @@ async def on_base_url_selected(
     base_url_service: BaseUrlService = manager.middleware_data.get(
         "base_url_service"
     )
-    user_id = manager.bg()._event_context.user.id
+    user_id = callback.from_user.id
     await base_url_service.set_chat_base_url(user_id=user_id, name=item_id)
     await callback.answer(f"Выбран API: {item_id}!")
     await manager.done()
@@ -180,7 +180,7 @@ async def toggle_export_format(
     settings_service: SettingsService = manager.middleware_data.get(
         "settings_service"
     )
-    user_id = manager.bg()._event_context.user.id
+    user_id = callback.from_user.id
     settings = await settings_service.get_settings(user_id)
 
     # Переключаем формат
@@ -202,7 +202,7 @@ async def toggle_export_format(
 async def on_delete_chat_api_key(
     callback: CallbackQuery, button: Button, manager: DialogManager
 ):
-    user_id = manager.bg()._event_context.user.id
+    user_id = callback.from_user.id
     settings_service: SettingsService = manager.middleware_data.get(
         "settings_service"
     )
@@ -214,17 +214,18 @@ async def on_delete_chat_api_key(
 async def on_share_personality(
     callback: CallbackQuery, button: Button, manager: DialogManager
 ):
+    user_id = callback.from_user.id
     personality_name = manager.dialog_data.get("custom_name")
     custom_personality_service: CustomPersonalityService = (
         manager.middleware_data.get("custom_personality_service")
     )
     personality = await custom_personality_service.get_custom_personality(
-        user_id=callback.from_user.id, personality_name=personality_name
+        user_id=user_id, personality_name=personality_name
     )
 
     if not personality.shared_token:
         shared_token = await custom_personality_service.generate_shared_token(
-            user_id=callback.from_user.id, personality_name=personality_name
+            user_id=user_id, personality_name=personality_name
         )
     else:
         shared_token = personality.shared_token

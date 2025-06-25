@@ -15,7 +15,7 @@ from tgbot.services.repository.settings import SettingsService
 async def clear_context(
     callback: CallbackQuery, button: Button, manager: DialogManager
 ):
-    user_id = manager.bg()._event_context.user.id
+    user_id = callback.from_user.id
     conversation_service: ConversationHistoryService = (
         manager.middleware_data.get("conversation_service")
     )
@@ -28,7 +28,7 @@ async def clear_context(
 async def download_history(
     callback: types.CallbackQuery, button: Button, manager: DialogManager
 ):
-    user_id = manager.bg()._event_context.user.id
+    user_id = callback.from_user.id
     settings_service: SettingsService = manager.middleware_data.get(
         "settings_service"
     )
