@@ -1,4 +1,5 @@
 from asyncio import sleep
+from html import escape
 
 from aiogram.enums import ParseMode
 from aiogram.types import Message
@@ -89,15 +90,15 @@ async def input_text_chat_handler(
             text_chunks = split_text(answer, 4000)
             for chunk in text_chunks:
                 try:
-                    await message.reply(chunk, parse_mode=ParseMode.MARKDOWN)
+                    await message.reply(
+                        escape(chunk), parse_mode=ParseMode.HTML
+                    )
                     await sleep(1)
-                    logger.debug("Ответ от нейросети получен")
-                except Exception:
-                    await message.reply(chunk, parse_mode=ParseMode.HTML)
-                    await sleep(1)
-                    logger.debug("Ответ от нейросети получен")
+                except Exception as e:
+                    logger.critical(f"Неожиданная ошибка: {e}")
+                logger.debug("Сообщение с ответом отправлено")
         else:
             await message.answer(
-                "<b>Что-то пошло не так, ответ от OpenAI не получен</b>",
+                "<b>Что-то пошло не так, ответ не получен</b>",
                 parse_mode=ParseMode.HTML,
             )
