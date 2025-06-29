@@ -1,13 +1,10 @@
-FROM python:3.13-alpine
+FROM ghcr.io/astral-sh/uv:python3.13-alpine
 
 WORKDIR /app
 
-COPY poetry.lock pyproject.toml /app/
+COPY pyproject.toml poetry.lock /app/
 
-RUN pip install --upgrade pip --root-user-action=ignore && \
-    pip install --no-cache-dir poetry --root-user-action=ignore && \
-    poetry config virtualenvs.create false && \
-    poetry install --only main --no-interaction --no-ansi
+RUN uv pip install --system --no-cache-dir -r <(uv export --no-hashes)
 
 COPY . /app/
 
