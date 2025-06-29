@@ -2,7 +2,7 @@ FROM ghcr.io/astral-sh/uv:python3.13-alpine
 
 WORKDIR /app
 
-COPY pyproject.toml poetry.lock /app/
+COPY pyproject.toml /app/
 
 RUN uv pip install --system --no-cache-dir -r <(uv export --no-hashes)
 
