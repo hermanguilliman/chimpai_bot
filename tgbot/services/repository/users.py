@@ -7,7 +7,6 @@ from sqlalchemy.orm import selectinload
 from tgbot.models.models import (
     ChatSettings,
     Settings,
-    SummarySettings,
     Users,
 )
 from tgbot.services.repository.base import BaseService
@@ -18,8 +17,7 @@ class UserService(BaseService):
         user = Users(id=user_id)
         settings = Settings(user=user)
         chat_settings = ChatSettings(settings=settings)
-        summary_settings = SummarySettings(settings=settings)
-        self.session.add_all([user, settings, chat_settings, summary_settings])
+        self.session.add_all([user, settings, chat_settings])
         await self.session.commit()
         logger.info(f"Добавлен пользователь {user_id}")
 
@@ -30,9 +28,6 @@ class UserService(BaseService):
             .options(
                 selectinload(Users.settings).selectinload(
                     Settings.chat_settings
-                ),
-                selectinload(Users.settings).selectinload(
-                    Settings.summary_settings
                 ),
                 selectinload(Users.conversation_history),
                 selectinload(Users.custom_personality),

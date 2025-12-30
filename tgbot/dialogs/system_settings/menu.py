@@ -5,11 +5,10 @@ from aiogram_dialog.widgets.kbd import (
     Cancel,
     Start,
 )
-from aiogram_dialog.widgets.text import Const, Format
+from aiogram_dialog.widgets.text import Const
 
 from tgbot.getters.system import system_data_getter
 from tgbot.misc.states import (
-    SetupSummaryService,
     SetupСhatService,
     SystemSettings,
 )
@@ -28,18 +27,6 @@ system_settings_dialog = Dialog(
             id="set_chat_api_key",
             when=~F["chat_api_key"],
             state=SetupСhatService.select,
-        ),
-        Start(
-            Format("✅ Пересказчик активен"),
-            when="summary_api_key",
-            id="set_summary_api_key",
-            state=SetupSummaryService.select,
-        ),
-        Start(
-            Const("⛔️ Пересказчик неактивен"),
-            when=~F["summary_api_key"],
-            id="set_summary_api_key",
-            state=SetupSummaryService.select,
         ),
         Cancel(Const("👈 Назад")),
         state=SystemSettings.select,

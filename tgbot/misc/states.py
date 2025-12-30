@@ -9,10 +9,6 @@ class NeuralChat(StatesGroup):
     chat = State()
 
 
-class SummaryChat(StatesGroup):
-    chat = State()
-
-
 class SystemSettings(StatesGroup):
     select = State()
 
@@ -22,12 +18,6 @@ class SetupСhatService(StatesGroup):
     api_key = State()
     base_url = State()
     input_base_url = State()
-
-
-class SetupSummaryService(StatesGroup):
-    select = State()
-    api_key = State()
-    base_url = State()
 
 
 class NeuralChatSettings(StatesGroup):

@@ -13,8 +13,6 @@ async def system_data_getter(dialog_manager: DialogManager, **kwargs) -> dict:
     data = {
         "chat_api_key": True if settings.chat_settings.api_key else None,
         "chat_base_url": settings.chat_settings.base_url or None,
-        "summary_api_key": True if settings.summary_settings.api_key else None,
-        "summary_base_url": settings.summary_settings.base_url or None,
     }
 
     return data

@@ -5,7 +5,6 @@ from sqlalchemy.orm import selectinload
 from tgbot.models.models import (
     ChatSettings,
     Settings,
-    SummarySettings,
 )
 from tgbot.services.repository.base import BaseService
 
@@ -17,7 +16,6 @@ class SettingsService(BaseService):
             .where(Settings.user_id == user_id)
             .options(
                 selectinload(Settings.chat_settings),
-                selectinload(Settings.summary_settings),
             )
         )
         result = await self.session.execute(stmt)
@@ -52,23 +50,6 @@ class SettingsService(BaseService):
         await self.session.execute(stmt)
         await self.session.commit()
         logger.info(f"Пользователь {user_id} обновил модель на {model}")
-
-    async def update_summary_type(self, user_id: int, type: str) -> None:
-        stmt = (
-            update(SummarySettings)
-            .where(
-                SummarySettings.settings_id
-                == select(Settings.id)
-                .where(Settings.user_id == user_id)
-                .scalar_subquery()
-            )
-            .values(summary_type=type)
-        )
-        await self.session.execute(stmt)
-        await self.session.commit()
-        logger.info(
-            f"Пользователь {user_id} обновил формат пересказа на {type}"
-        )
 
     async def update_chat_export_format(
         self, user_id: int, export_format: str
@@ -108,22 +89,6 @@ class SettingsService(BaseService):
             f"Пользователь {user_id} обновил температуру на {temperature}"
         )
 
-    async def update_summary_api_key(self, user_id: int, api_key: str) -> None:
-        """Обновляет API ключ для пересказчика"""
-        stmt = (
-            update(SummarySettings)
-            .where(
-                SummarySettings.settings_id
-                == select(Settings.id)
-                .where(Settings.user_id == user_id)
-                .scalar_subquery()
-            )
-            .values(api_key=api_key)
-        )
-        await self.session.execute(stmt)
-        await self.session.commit()
-        logger.info(f"Пользователь {user_id} обновил API ключ чата")
-
     async def update_chat_api_key(self, user_id: int, api_key: str) -> None:
         """Обновляет API ключ для чата"""
         stmt = (
@@ -139,22 +104,6 @@ class SettingsService(BaseService):
         await self.session.execute(stmt)
         await self.session.commit()
         logger.info(f"Пользователь {user_id} обновил API ключ пересказчика")
-
-    async def delete_summary_api_key(self, user_id: int) -> None:
-        """Сбрасывает API ключ для пересказчика"""
-        stmt = (
-            update(SummarySettings)
-            .where(
-                SummarySettings.settings_id
-                == select(Settings.id)
-                .where(Settings.user_id == user_id)
-                .scalar_subquery()
-            )
-            .values(api_key=None)
-        )
-        await self.session.execute(stmt)
-        await self.session.commit()
-        logger.info(f"Пользователь {user_id} сбросил API ключ пересказчика")
 
     async def delete_chat_api_key(self, user_id: int) -> None:
         """Сбрасывает API ключ для чата"""

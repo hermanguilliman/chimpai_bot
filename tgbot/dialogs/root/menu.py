@@ -7,7 +7,6 @@ from tgbot.getters.system import system_data_getter
 from tgbot.misc.states import (
     MainMenu,
     NeuralChat,
-    SummaryChat,
     SystemSettings,
 )
 
@@ -20,12 +19,6 @@ main_dialog = Dialog(
                 id="neural_chat",
                 state=NeuralChat.chat,
                 when="chat_api_key",
-            ),
-            Start(
-                Const("📖 Пересказчик"),
-                id="summary_chat",
-                state=SummaryChat.chat,
-                when="summary_api_key",
             ),
         ),
         Start(

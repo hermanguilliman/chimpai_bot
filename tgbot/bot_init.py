@@ -12,25 +12,19 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from tgbot.api.yandex_summary import YandexSummaryAPI
 from tgbot.dialogs.neural.chat import chat_dialog
 from tgbot.dialogs.neural.settings import chat_settings_dialog
 from tgbot.dialogs.personality.create import new_person_dialog
 from tgbot.dialogs.personality.menu import personality_menu_dialog
 from tgbot.dialogs.root.menu import main_dialog
-from tgbot.dialogs.summary.chat import summary_chat_dialog
 from tgbot.dialogs.system_settings.base_url import base_url_dialog
 from tgbot.dialogs.system_settings.chat_service import chat_service_dialog
 from tgbot.dialogs.system_settings.menu import system_settings_dialog
-from tgbot.dialogs.system_settings.summary_service import (
-    summary_service_dialog,
-)
 from tgbot.filters.is_admin import AdminFilter
 from tgbot.handlers.admin_start import admin_start_handler
 from tgbot.handlers.errors import on_unknown_intent, on_unknown_state
 from tgbot.middlewares.database import DatabaseMiddleware
 from tgbot.middlewares.openai_api import OpenAIMiddleware
-from tgbot.middlewares.summary_api import SummaryMiddleware
 from tgbot.middlewares.trottling import ThrottlingMiddleware
 from tgbot.misc.base_urls import add_base_urls
 from tgbot.misc.personalities import add_basic_persons
@@ -65,7 +59,6 @@ async def setup_bot(config):
     dp = Dispatcher(storage=storage)
     session_pool = await create_session_pool(echo=False)
     openai = AsyncOpenAI(api_key="dummy_key")
-    yandex_summary = YandexSummaryAPI()
 
     dp.include_routers(
         main_dialog,
@@ -76,8 +69,6 @@ async def setup_bot(config):
         chat_settings_dialog,
         base_url_dialog,
         chat_service_dialog,
-        summary_chat_dialog,
-        summary_service_dialog,
     )
     dp.errors.register(
         on_unknown_intent,
@@ -93,7 +84,6 @@ async def setup_bot(config):
     dp.callback_query.middleware(ThrottlingMiddleware(rate_limit=0.5))
     dp.update.middleware(DatabaseMiddleware(session_pool))
     dp.update.middleware(OpenAIMiddleware(openai))
-    dp.update.middleware(SummaryMiddleware(yandex_summary))
     dp.message.register(
         admin_start_handler,
         CommandStart(deep_link_encoded=True),
